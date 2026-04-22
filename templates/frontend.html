@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CoreExtract — Motor Inteligente de Currículos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset & Base ──────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:    #0D1B2A;
+      --blue:    #1A6BFF;
+      --cyan:    #00C8FF;
+      --emerald: #00D68F;
+      --amber:   #FFB830;
+      --coral:   #FF5757;
+      --slate:   #F0F4FF;
+      --gray:    #6B7A99;
+      --white:   #FFFFFF;
+      --grad-primary: linear-gradient(135deg, #0D1B2A 0%, #1A3A6B 60%, #1A6BFF 100%);
+      --grad-accent:  linear-gradient(90deg, #1A6BFF, #00C8FF);
+      --grad-success: linear-gradient(90deg, #00C8FF, #00D68F);
+      --shadow-card:  0 4px 24px rgba(13,27,42,0.10);
+      --shadow-blue:  0 8px 32px rgba(26,107,255,0.25);
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--slate);
+      color: var(--navy);
+      min-height: 100vh;
+    }
+
+    /* ── Scrollbar ───────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #DDE4F5; }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+
+    /* ── Navbar ──────────────────────────────────────── */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(13,27,42,0.94);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(26,107,255,0.18);
+      padding: 0 40px;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo-icon {
+      width: 32px; height: 32px;
+      background: rgba(26,107,255,0.15);
+      border: 1px solid rgba(0,200,255,0.3);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-wordmark { font-size: 15px; font-weight: 700; color: var(--white); }
+    .nav-wordmark span { color: var(--cyan); }
+
+    .nav-right { display: flex; align-items: center; gap: 14px; }
+
+    /* Online indicator */
+    .nav-online {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 600; color: var(--emerald);
+    }
+    .online-dot {
+      width: 8px; height: 8px;
+      background: var(--emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(0,214,143,0.6);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%   { box-shadow: 0 0 0 0 rgba(0,214,143,0.6); }
+      60%  { box-shadow: 0 0 0 6px rgba(0,214,143,0); }
+      100% { box-shadow: 0 0 0 0 rgba(0,214,143,0); }
+    }
+
+    .nav-badge {
+      background: rgba(0,200,255,0.12);
+      color: var(--cyan);
+      border: 1px solid rgba(0,200,255,0.25);
+      border-radius: 20px;
+      padding: 3px 11px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* ── Hero ────────────────────────────────────────── */
+    .hero {
+      background: var(--grad-primary);
+      min-height: 340px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 100px 24px 64px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 50% at 68% 50%, rgba(26,107,255,0.14) 0%, transparent 70%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(26,107,255,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26,107,255,0.05) 1px, transparent 1px);
+      background-size: 52px 52px;
+    }
+    .hero-content { position: relative; text-align: center; max-width: 680px; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(0,200,255,0.10);
+      border: 1px solid rgba(0,200,255,0.22);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 11px; font-weight: 600; color: var(--cyan);
+      letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .hero-title {
+      font-size: clamp(26px, 4.5vw, 40px);
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+    }
+    .hero-title .accent {
+      background: var(--grad-accent);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-subtitle {
+      margin-top: 14px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.50);
+      line-height: 1.7;
+      max-width: 500px;
+      margin-left: auto; margin-right: auto;
+    }
+    .hero-formats {
+      display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .format-pill {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 20px;
+      padding: 4px 13px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.55);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── Main ────────────────────────────────────────── */
+    .main { max-width: 880px; margin: 0 auto; padding: 44px 24px 80px; }
+
+    /* ── Card ────────────────────────────────────────── */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 32px 36px;
+      margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 15px; font-weight: 700; color: var(--navy);
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 4px;
+    }
+    .card-title .icon {
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, rgba(26,107,255,0.12), rgba(0,200,255,0.10));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .card-desc { font-size: 13px; color: var(--gray); margin-bottom: 22px; }
+
+    /* ── Drop Zone ───────────────────────────────────── */
+    .drop-zone {
+      border: 2px dashed #C8D4EE;
+      border-radius: var(--radius-md);
+      background: #F6F9FF;
+      padding: 44px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: var(--blue);
+      background: rgba(26,107,255,0.03);
+      box-shadow: 0 0 0 4px rgba(26,107,255,0.06);
+    }
+    .drop-zone input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .drop-icon-wrap { margin-bottom: 12px; }
+    .drop-title { font-size: 14px; font-weight: 600; color: var(--navy); }
+    .drop-subtitle { font-size: 13px; color: var(--gray); margin-top: 4px; }
+    .drop-subtitle b { color: var(--blue); }
+
+    /* Empty hint */
+    .drop-hint {
+      margin-top: 10px;
+      font-size: 12px;
+      color: rgba(107,122,153,0.6);
+      font-style: italic;
+    }
+
+    /* ── File List ───────────────────────────────────── */
+    .file-list { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .file-item {
+      display: flex; align-items: center; gap: 12px;
+      background: #F4F7FF;
+      border: 1px solid #E0E8F8;
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+    }
+    .file-ext {
+      width: 34px; height: 34px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      flex-shrink: 0;
+    }
+    .ext-pdf  { background: #FFE8E8; color: #CC2200; }
+    .ext-docx { background: #E0EEFF; color: #0047B3; }
+    .ext-xlsx { background: #E0F5EC; color: #007A4C; }
+    .ext-txt  { background: #F0EFFF; color: #5533CC; }
+    .file-info { flex: 1; min-width: 0; }
+    .file-name { font-size: 13px; font-weight: 600; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .file-size { font-size: 11px; color: var(--gray); }
+    .file-remove { background: none; border: none; cursor: pointer; color: #C0CCE0; font-size: 18px; padding: 4px; transition: color 0.15s; }
+    .file-remove:hover { color: var(--coral); }
+
+    /* ── Form Fields ─────────────────────────────────── */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-label {
+      font-size: 11px; font-weight: 700; color: var(--navy);
+      text-transform: uppercase; letter-spacing: 0.7px;
+    }
+    .form-label .required { color: var(--coral); margin-left: 2px; }
+    .form-input, .form-textarea {
+      border: 1.5px solid #CBD5E8;
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      color: var(--navy);
+      background: var(--white);
+      transition: border-color 0.2s, box-shadow 0.2s, border-left-width 0.1s;
+      outline: none;
+      width: 100%;
+    }
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--blue);
+      border-left: 3px solid var(--blue);
+      box-shadow: 0 0 0 3px rgba(26,107,255,0.10);
+    }
+    .form-textarea { resize: vertical; min-height: 90px; line-height: 1.55; }
+
+    /* ── Fit Analysis Card ───────────────────────────── */
+    .fit-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 28px 36px;
+      margin-bottom: 24px;
+      border-top: 3px solid var(--blue);
+    }
+    .fit-card-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 6px;
+    }
+    .fit-card-icon {
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, rgba(26,107,255,0.12), rgba(0,200,255,0.10));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .fit-card-title { font-size: 15px; font-weight: 700; color: var(--navy); }
+    .fit-card-subtitle { font-size: 12px; color: var(--gray); margin-bottom: 0; }
+    .fit-badge {
+      margin-left: auto;
+      background: rgba(26,107,255,0.08);
+      color: var(--blue);
+      border: 1px solid rgba(26,107,255,0.18);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* ── Email toggle section ────────────────────────── */
+    .toggle-section {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 20px 36px 24px;
+      margin-bottom: 24px;
+      border-left: 3px solid rgba(107,122,153,0.25);
+      transition: border-color 0.25s;
+    }
+    .toggle-section.active { border-left-color: var(--blue); }
+    .toggle-row {
+      display: flex; align-items: center; gap: 14px;
+    }
+    .toggle-icon {
+      width: 36px; height: 36px;
+      background: rgba(107,122,153,0.08);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+    .toggle-section.active .toggle-icon { background: rgba(26,107,255,0.10); }
+    .toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; margin-left: auto; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; inset: 0;
+      background: #CBD5E8;
+      border-radius: 22px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 16px; height: 16px;
+      left: 3px; top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+    }
+    .toggle input:checked + .toggle-slider { background: var(--blue); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+    .toggle-label { font-size: 14px; font-weight: 600; color: var(--navy); }
+    .toggle-desc { font-size: 12px; color: var(--gray); margin-top: 2px; }
+
+    /* Email fields (hidden by default) */
+    .email-fields { display: none; margin-top: 20px; }
+    .email-fields.visible { display: block; }
+    .email-fields-inner {
+      border-top: 1px solid #EBF0FA;
+      padding-top: 20px;
+    }
+
+    /* ── Submit Button ───────────────────────────────── */
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      background: var(--grad-accent);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: var(--shadow-blue);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      margin-top: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-submit::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      transform: skewX(-15deg);
+      transition: none;
+    }
+    .btn-submit:hover::after {
+      animation: shimmer 0.7s ease forwards;
+    }
+    @keyframes shimmer {
+      0%   { left: -100%; }
+      100% { left: 160%; }
+    }
+    .btn-submit:hover  { opacity: 0.93; box-shadow: 0 12px 40px rgba(26,107,255,0.35); }
+    .btn-submit:active { transform: scale(0.99); }
+    .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* ── Progress Steps ──────────────────────────────── */
+    .progress-steps {
+      display: none;
+      margin-top: 20px;
+      gap: 0;
+    }
+    .progress-steps.visible { display: flex; }
+    .step {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center;
+      position: relative;
+    }
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 12px; left: 50%; right: -50%;
+      height: 2px;
+      background: #DDE4F5;
+      z-index: 0;
+      transition: background 0.4s;
+    }
+    .step.done:not(:last-child)::after { background: var(--blue); }
+    .step-dot {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: #DDE4F5;
+      border: 2px solid #DDE4F5;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; z-index: 1;
+      transition: background 0.3s, border-color 0.3s;
+      font-size: 10px; font-weight: 700; color: #A0AECB;
+    }
+    .step.active .step-dot { background: var(--blue); border-color: var(--blue); color: white; animation: spin-dot 1.2s ease-in-out infinite; }
+    .step.done .step-dot   { background: var(--emerald); border-color: var(--emerald); color: white; animation: none; }
+    @keyframes spin-dot { 0%,100%{box-shadow:0 0 0 0 rgba(26,107,255,0.5)} 50%{box-shadow:0 0 0 5px rgba(26,107,255,0)} }
+    .step-label { font-size: 10px; color: var(--gray); margin-top: 6px; text-align: center; font-weight: 500; }
+    .step.active .step-label { color: var(--blue); font-weight: 600; }
+    .step.done .step-label   { color: var(--emerald); }
+
+    /* legacy bar kept hidden for JS compat */
+    .progress-bar { display: none !important; height: 0; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 4px; width: 0%; transition: width 0.3s; }
+
+    .status-msg {
+      font-size: 12px; color: var(--gray);
+      text-align: center; margin-top: 10px;
+      display: none;
+    }
+
+    /* ── Results ─────────────────────────────────────── */
+    #results-section { display: none; }
+    .results-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px; flex-wrap: wrap; gap: 12px;
+    }
+    .results-title { font-size: 19px; font-weight: 700; color: var(--navy); }
+    .stats-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .stat-chip {
+      padding: 4px 13px; border-radius: 20px;
+      font-size: 12px; font-weight: 600;
+    }
+    .stat-success { background: rgba(0,214,143,0.12); color: #007A4C; }
+    .stat-error   { background: rgba(255,87,87,0.12);  color: #CC2200; }
+    .stat-time    { background: rgba(26,107,255,0.10); color: #0047B3; }
+
+    /* ── Result Card ─────────────────────────────────── */
+    .result-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .result-card-header {
+      background: var(--grad-primary);
+      padding: 20px 28px;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+    }
+    .result-header-left { flex: 1; min-width: 0; }
+    .result-name { font-size: 18px; font-weight: 700; color: var(--white); }
+    .result-role { font-size: 12px; color: rgba(255,255,255,0.50); margin-top: 2px; }
+    .result-file { font-size: 11px; color: rgba(255,255,255,0.30); margin-top: 4px; display:flex; align-items:center; gap:5px; }
+    .result-header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+    .result-score-big {
+      font-size: 38px; font-weight: 800; line-height: 1;
+      background: var(--grad-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .result-score-label { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.6px; text-align:right; }
+    .result-badge {
+      padding: 5px 14px; border-radius: 20px;
+      font-size: 11px; font-weight: 700;
+      white-space: nowrap;
+    }
+    .result-body { padding: 22px 28px; }
+
+    /* contact pills */
+    .contact-pills { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
+    .contact-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #F0F4FF;
+      border: 1px solid #DDE4F5;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 12px; font-weight: 500; color: var(--navy);
+      text-decoration: none;
+    }
+    .contact-pill svg { flex-shrink: 0; }
+    .contact-pill:hover { border-color: var(--blue); color: var(--blue); }
+
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .info-item .info-label { font-size: 10px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px; }
+    .info-item .info-value { font-size: 14px; font-weight: 500; color: var(--navy); }
+
+    .section-title { font-size: 10px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.9px; margin-bottom: 10px; margin-top: 18px; }
+
+    .skills-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+    .skill-tag { background: #EEF2FF; color: #2D4A9A; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 500; }
+    .skill-tag.soft  { background: #F0FFF4; color: #1A6B45; }
+    .skill-tag.lang  { background: #FFF8E8; color: #8B5E00; }
+    .skill-tag.tool  { background: #F5F0FF; color: #5B3DB5; }
+
+    .score-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 8px; }
+    .score-item .score-label { font-size: 11px; color: var(--gray); margin-bottom: 5px; display: flex; justify-content: space-between; }
+    .score-bar-bg { height: 5px; background: #E2E8F8; border-radius: 6px; overflow: hidden; }
+    .score-bar-fill { height: 100%; border-radius: 6px; transition: width 1s ease; }
+
+    .exp-item { padding: 11px 0; border-bottom: 1px solid #F0F4FF; }
+    .exp-item:last-child { border-bottom: none; }
+    .exp-cargo   { font-size: 14px; font-weight: 600; color: var(--navy); }
+    .exp-empresa { font-size: 13px; color: var(--blue); }
+    .exp-periodo { font-size: 11px; color: var(--gray); margin-top: 2px; }
+    .exp-desc    { font-size: 13px; color: #3A4563; margin-top: 5px; line-height: 1.5; }
+
+    .form-item { padding: 10px 0; border-bottom: 1px solid #F0F4FF; }
+    .form-item:last-child { border-bottom: none; }
+    .form-curso { font-size: 14px; font-weight: 600; color: var(--navy); }
+    .form-inst  { font-size: 13px; color: var(--blue); }
+    .form-period{ font-size: 11px; color: var(--gray); margin-top: 2px; }
+
+    .cert-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #FFFBEE;
+      border: 1px solid #FFE0A0;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 12px; font-weight: 500; color: #7A4800;
+      margin: 3px;
+    }
+
+    /* Fit box */
+    .fit-box {
+      background: linear-gradient(135deg, #0D1B2A 0%, #112240 100%);
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-top: 16px;
+      border: 1px solid rgba(0,200,255,0.12);
+    }
+    .fit-box-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .fit-box-label {
+      font-size: 10px; font-weight: 700; color: var(--cyan);
+      letter-spacing: 1.2px; text-transform: uppercase;
+    }
+    .fit-rec-badge {
+      display: inline-block; padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 11px; font-weight: 700;
+    }
+    .fit-score-area { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+    .fit-score-num  { font-size: 40px; font-weight: 800; color: white; line-height: 1; }
+    .fit-score-num span { font-size: 14px; opacity: 0.4; }
+    .fit-score-bar-wrap { flex: 1; }
+    .fit-score-bar-bg { height: 8px; background: rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden; }
+    .fit-score-bar-fill { height: 100%; border-radius: 8px; transition: width 1.2s ease; }
+    .fit-points { margin-top: 8px; }
+    .fit-point { font-size: 12px; color: rgba(255,255,255,0.68); margin-bottom: 3px; display: flex; gap: 6px; }
+    .fit-point.bad { color: rgba(255,130,130,0.75); }
+
+    /* Copy JSON button */
+    .btn-copy {
+      background: none; border: 1.5px solid #E2E8F8;
+      border-radius: var(--radius-sm); padding: 6px 14px;
+      font-size: 12px; font-weight: 600; color: var(--gray);
+      cursor: pointer; transition: all 0.15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .btn-copy:hover { border-color: var(--blue); color: var(--blue); }
+
+    /* JSON viewer */
+    .json-viewer {
+      background: #0D1B2A; border-radius: var(--radius-sm);
+      padding: 16px; margin-top: 12px; overflow-x: auto; display: none;
+    }
+    .json-viewer pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: #A8C8FF;
+      white-space: pre-wrap; word-break: break-all;
+    }
+
+    /* ── Footer ──────────────────────────────────────── */
+    .footer {
+      text-align: center;
+      padding: 28px 24px 40px;
+      font-size: 12px;
+      color: #A0AECB;
+    }
+    .footer span { color: var(--blue); font-weight: 600; }
+
+    /* ── Botão settings na navbar ───────────────────── */
+    .btn-settings {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      padding: 7px 9px;
+      display: flex; align-items: center;
+      transition: all 0.2s;
+      margin-left: 10px;
+    }
+    .btn-settings:hover { background: rgba(26,107,255,0.25); color: #fff; border-color: rgba(26,107,255,0.5); }
+
+    /* ── Modal overlay ───────────────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(10,18,30,0.6);
+      backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 18px;
+      width: 100%; max-width: 540px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 80px rgba(13,27,42,0.35);
+      animation: slideUp 0.25s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 28px 16px;
+      border-bottom: 1px solid #EEF2FF;
+    }
+    .modal-title { display: flex; align-items: center; gap: 9px; font-size: 16px; font-weight: 700; color: var(--navy); }
+    .modal-close {
+      background: none; border: none; cursor: pointer;
+      font-size: 22px; color: #A0AECB; line-height: 1;
+      padding: 2px 6px; border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .modal-close:hover { background: #FFF0F0; color: var(--coral); }
+    .modal-body { padding: 22px 28px; }
+    .modal-footer {
+      display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+      padding: 16px 28px 22px;
+      border-top: 1px solid #EEF2FF;
+    }
+
+    /* Settings status badge */
+    .settings-status-badge {
+      padding: 10px 16px; border-radius: 10px;
+      font-size: 13px; font-weight: 500;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .settings-status-badge.ok   { display: flex; gap: 8px; background: #EDFFF7; color: #007A4C; border: 1px solid #B2F2D8; }
+    .settings-status-badge.warn { display: flex; gap: 8px; background: #FFF9ED; color: #7A4F00; border: 1px solid #FFE5A0; }
+
+    /* Settings sections */
+    .settings-section { margin-bottom: 4px; }
+    .settings-section-title {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 13px; font-weight: 700; color: var(--navy);
+      margin-bottom: 6px;
+    }
+    .settings-section-desc { font-size: 12px; color: var(--gray); line-height: 1.6; margin-bottom: 16px; }
+    .settings-field { margin-bottom: 14px; }
+    .settings-label {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 11px; font-weight: 700; color: var(--navy);
+      text-transform: uppercase; letter-spacing: 0.6px;
+      margin-bottom: 6px;
+    }
+    .settings-help-link { font-size: 11px; font-weight: 600; color: var(--blue); text-decoration: none; text-transform: none; letter-spacing: 0; }
+    .settings-help-link:hover { text-decoration: underline; }
+    .settings-input {
+      width: 100%; padding: 10px 14px;
+      border: 1.5px solid #CBD5E8; border-radius: 8px;
+      font-size: 14px; font-family: 'Inter', sans-serif; color: var(--navy);
+      transition: border-color 0.15s, box-shadow 0.15s; outline: none;
+    }
+    .settings-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,107,255,0.12); }
+    .settings-pwd-row { display: flex; gap: 8px; }
+    .settings-pwd-row .settings-input { flex: 1; }
+    .btn-eye {
+      background: #F4F7FF; border: 1.5px solid #CBD5E8; border-radius: 8px;
+      padding: 0 12px; cursor: pointer; color: var(--gray);
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .btn-eye:hover { border-color: var(--blue); color: var(--blue); }
+
+    /* Test email row */
+    .settings-actions-row { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+    .btn-test-email {
+      display: flex; align-items: center; gap: 6px;
+      background: #F4F7FF; border: 1.5px solid #CBD5E8; border-radius: 8px;
+      padding: 8px 16px; font-size: 12px; font-weight: 600; color: var(--navy);
+      cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .btn-test-email:hover { border-color: var(--blue); color: var(--blue); background: #EEF4FF; }
+    .btn-test-email:disabled { opacity: 0.5; cursor: not-allowed; }
+    .test-result { font-size: 12px; font-weight: 500; }
+    .test-result.ok   { color: #007A4C; }
+    .test-result.fail { color: var(--coral); }
+
+    /* Divider */
+    .settings-divider { height: 1px; background: #EEF2FF; margin: 18px 0; }
+
+    /* How-to steps */
+    .settings-how-to {
+      background: #F8FAFF; border: 1px solid #E2E8F8;
+      border-radius: 10px; padding: 14px 18px;
+    }
+    .how-to-title { font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+    .how-to-steps { padding-left: 18px; margin: 0; }
+    .how-to-steps li { font-size: 12px; color: #3A4563; line-height: 1.7; }
+    .how-to-steps a { color: var(--blue); }
+
+    /* Modal footer buttons */
+    .btn-modal-cancel {
+      background: none; border: 1.5px solid #CBD5E8; border-radius: 8px;
+      padding: 9px 20px; font-size: 13px; font-weight: 600; color: var(--gray);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .btn-modal-cancel:hover { border-color: #A0AECB; color: var(--navy); }
+    .btn-modal-save {
+      display: flex; align-items: center; gap: 7px;
+      background: var(--blue); border: none; border-radius: 8px;
+      padding: 10px 22px; font-size: 13px; font-weight: 700; color: #fff;
+      cursor: pointer; transition: all 0.15s; box-shadow: 0 4px 14px rgba(26,107,255,0.3);
+    }
+    .btn-modal-save:hover { background: #1558E0; box-shadow: 0 6px 20px rgba(26,107,255,0.4); }
+
+    /* ── Toast ───────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 999;
+      background: var(--navy); color: var(--white);
+      padding: 11px 18px; border-radius: var(--radius-sm);
+      font-size: 13px; font-weight: 500;
+      box-shadow: 0 8px 32px rgba(13,27,42,0.4);
+      transform: translateY(80px); opacity: 0;
+      transition: all 0.3s;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-left: 3px solid var(--emerald); }
+    .toast.error   { border-left: 3px solid var(--coral); }
+    .toast.info    { border-left: 3px solid var(--blue); }
+  </style>
+</head>
+<body>
+
+<!-- ═══ NAVBAR ═══════════════════════════════════════════════════ -->
+<nav class="navbar">
+  <a class="nav-brand" href="#">
+    <div class="nav-logo-icon">
+      <svg width="20" height="20" viewBox="0 0 64 64" fill="none">
+        <polygon points="32,6 54,19 54,45 32,58 10,45 10,19" fill="#1A6BFF" opacity="0.3" stroke="#1A6BFF" stroke-width="1.5"/>
+        <line x1="18" y1="20" x2="32" y2="32" stroke="#00C8FF" stroke-width="3" stroke-linecap="round"/>
+        <polygon points="32,32 24,28 27,37" fill="#00C8FF"/>
+        <line x1="46" y1="44" x2="32" y2="32" stroke="#00D68F" stroke-width="3" stroke-linecap="round"/>
+        <polygon points="32,32 40,36 37,27" fill="#00D68F"/>
+        <circle cx="32" cy="32" r="5" fill="#1A6BFF"/>
+        <circle cx="32" cy="32" r="2.5" fill="white"/>
+      </svg>
+    </div>
+    <span class="nav-wordmark">Core<span>Extract</span></span>
+  </a>
+  <div class="nav-right">
+    <div class="nav-online">
+      <span class="online-dot"></span>
+      API Online
+    </div>
+    <span class="nav-badge">⚡ Powered by Gemini 2.5 Flash Lite</span>
+    <button class="btn-settings" id="btnOpenSettings" title="Configurações" onclick="openSettings()">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══ MODAL CONFIGURAÇÕES ══════════════════════════════════════ -->
+<div class="modal-overlay" id="settingsModal" onclick="if(event.target===this)closeSettings()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Configurações
+      </div>
+      <button class="modal-close" onclick="closeSettings()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Status badge -->
+      <div id="emailStatusBadge" class="settings-status-badge"></div>
+
+      <!-- Seção Gmail -->
+      <div class="settings-section">
+        <div class="settings-section-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Envio de E-mail (Gmail SMTP)
+        </div>
+        <p class="settings-section-desc">Configure uma conta Gmail para enviar relatórios de triagem. Use uma <b>Senha de App</b> — não sua senha normal.</p>
+
+        <div class="settings-field">
+          <label class="settings-label">Conta Gmail</label>
+          <input type="email" id="sGmailUser" class="settings-input" placeholder="seuemail@gmail.com">
+        </div>
+        <div class="settings-field">
+          <label class="settings-label">
+            Senha de App
+            <a href="https://myaccount.google.com/apppasswords" target="_blank" class="settings-help-link">Como obter →</a>
+          </label>
+          <div class="settings-pwd-row">
+            <input type="password" id="sGmailPwd" class="settings-input" placeholder="xxxx xxxx xxxx xxxx">
+            <button class="btn-eye" onclick="togglePwd()" id="btnEye" title="Mostrar/ocultar">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" id="eyeIcon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="settings-field">
+          <label class="settings-label">Nome do Remetente</label>
+          <input type="text" id="sFromName" class="settings-input" placeholder="CoreExtract · RH Inteligente">
+        </div>
+
+        <div class="settings-actions-row">
+          <button class="btn-test-email" id="btnTestEmail" onclick="testEmail()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Enviar e-mail de teste
+          </button>
+          <span class="test-result" id="testResult"></span>
+        </div>
+      </div>
+
+      <!-- Separador -->
+      <div class="settings-divider"></div>
+
+      <!-- Como obter senha de app -->
+      <div class="settings-how-to">
+        <div class="how-to-title">📋 Como configurar a Senha de App em 1 minuto</div>
+        <ol class="how-to-steps">
+          <li>Acesse <a href="https://myaccount.google.com/security" target="_blank">myaccount.google.com/security</a></li>
+          <li>Ative a <b>Verificação em 2 etapas</b> (se ainda não ativou)</li>
+          <li>Volte em Segurança → <b>Senhas de app</b></li>
+          <li>Selecione "Outro" → digite <b>CoreExtract</b> → clique em Gerar</li>
+          <li>Copie os 16 caracteres e cole no campo acima</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-modal-cancel" onclick="closeSettings()">Cancelar</button>
+      <button class="btn-modal-save" id="btnSaveSettings" onclick="saveSettings()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Salvar configurações
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HERO ══════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#00C8FF"/></svg>
+      Motor Inteligente de RH
+    </div>
+    <h1 class="hero-title">
+      Extraia o essencial de<br>
+      <span class="accent">qualquer currículo</span>
+    </h1>
+    <p class="hero-subtitle">
+      Envie PDF, DOCX, XLSX ou TXT. O CoreExtract usa IA generativa para entregar
+      um resumo estruturado, scores de perfil e análise de fit — em segundos.
+    </p>
+    <div class="hero-formats">
+      <span class="format-pill">.pdf</span>
+      <span class="format-pill">.docx</span>
+      <span class="format-pill">.xlsx</span>
+      <span class="format-pill">.txt</span>
+      <span class="format-pill">até 10 arquivos</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MAIN ════════════════════════════════════════════════════════ -->
+<main class="main">
+
+  <!-- ── Upload Card ───────────────────────────────────────────── -->
+  <div class="card" id="upload-card">
+    <div class="card-title">
+      <div class="icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      </div>
+      Upload de Currículos
+    </div>
+    <p class="card-desc">Arraste e solte os arquivos ou clique para selecionar. Múltiplos arquivos são processados em paralelo.</p>
+
+    <!-- Drop zone -->
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" multiple accept=".pdf,.docx,.xlsx,.xls,.txt">
+      <div class="drop-icon-wrap">
+        <svg width="48" height="48" viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="32" r="28" fill="rgba(26,107,255,0.06)" stroke="rgba(26,107,255,0.12)" stroke-width="1.5"/>
+          <path d="M22 38 C18 38 14 35 14 30 C14 25 18 22 22 22 C22.5 17 27 13 32 13 C37 13 41.5 17 42 22 C46 22 50 25 50 30 C50 35 46 38 42 38" stroke="#1A6BFF" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <line x1="32" y1="28" x2="32" y2="50" stroke="#1A6BFF" stroke-width="2.5" stroke-linecap="round"/>
+          <polyline points="25,35 32,28 39,35" stroke="#1A6BFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="drop-title">Arraste os arquivos aqui</div>
+      <div class="drop-subtitle">ou <b>clique para selecionar</b></div>
+      <div class="drop-hint" id="dropHint">Comece fazendo o upload de um currículo</div>
+    </div>
+    <div class="file-list" id="fileList"></div>
+
+    <!-- Submit -->
+    <button class="btn-submit" id="btnSubmit" disabled>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Processar Currículos com IA
+    </button>
+
+    <!-- Progress steps -->
+    <div class="progress-steps" id="progressSteps">
+      <div class="step" id="step1"><div class="step-dot">1</div><div class="step-label">Extraindo texto</div></div>
+      <div class="step" id="step2"><div class="step-dot">2</div><div class="step-label">Enviando para IA</div></div>
+      <div class="step" id="step3"><div class="step-dot">3</div><div class="step-label">Analisando perfis</div></div>
+      <div class="step" id="step4"><div class="step-dot">4</div><div class="step-label">Finalizando</div></div>
+    </div>
+
+    <!-- Hidden bar kept for JS compat -->
+    <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="status-msg" id="statusMsg"></div>
+  </div>
+
+  <!-- ── Fit Analysis Card (always visible) ─────────────────────── -->
+  <div class="fit-card">
+    <div class="fit-card-header">
+      <div class="fit-card-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <div style="flex:1">
+        <div class="fit-card-title">Análise de Fit</div>
+        <div class="fit-card-subtitle" style="margin-top:2px">Opcional — preencha para calcular o score de aderência dos candidatos</div>
+      </div>
+      <span class="fit-badge">Opcional</span>
+    </div>
+    <div class="form-grid" style="margin-top:16px;">
+      <div class="form-group full">
+        <label class="form-label">Descrição da Vaga</label>
+        <textarea class="form-textarea" id="fJD" placeholder="Cole aqui a descrição da vaga para que o CoreExtract calcule o score de aderência de cada candidato..."></textarea>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Instruções Adicionais</label>
+        <textarea class="form-textarea" id="fContexto" placeholder="Ex: Priorize candidatos com experiência em cloud e que falem inglês avançado..." style="min-height:70px;"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Email Toggle Card ───────────────────────────────────────── -->
+  <div class="toggle-section" id="toggleSection">
+    <div class="toggle-row">
+      <div class="toggle-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7A99" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="toggleSvg">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
+      <div>
+        <div class="toggle-label">Enviar e-mail de triagem</div>
+        <div class="toggle-desc">Gera e envia um relatório profissional por e-mail após o processamento</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="toggleEmail">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <!-- Email fields (only visible when toggle on) -->
+    <div class="email-fields" id="emailFields">
+      <div class="email-fields-inner">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Destinatário <span class="required">*</span></label>
+            <input type="email" class="form-input" id="fEmail" placeholder="recrutador@empresa.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Seu Nome</label>
+            <input type="text" class="form-input" id="fRecrutador" placeholder="Ex: Ana Souza">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Empresa</label>
+            <input type="text" class="form-input" id="fEmpresa" placeholder="Ex: TechCorp">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tema / Vaga</label>
+            <input type="text" class="form-input" id="fTema" placeholder="Ex: Engenheiro de Dados Sênior">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Results Section ────────────────────────────────────────── -->
+  <section id="results-section">
+    <div class="results-header">
+      <div class="results-title">Resultados da Análise</div>
+      <div class="stats-row" id="statsRow"></div>
+    </div>
+    <div id="resultsList"></div>
+  </section>
+
+</main>
+
+<!-- ── Footer ─────────────────────────────────────────────────── -->
+<footer class="footer">
+  CoreExtract v2.0 · <span>Bertoi Informática</span>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────
+const API_URL = '/extract';
+
+// ── State ─────────────────────────────────────────────────────
+let selectedFiles = [];
+
+// ── Elements ──────────────────────────────────────────────────
+const dropZone     = document.getElementById('dropZone');
+const fileInput    = document.getElementById('fileInput');
+const fileList     = document.getElementById('fileList');
+const btnSubmit    = document.getElementById('btnSubmit');
+const progressBar  = document.getElementById('progressBar');
+const progressFill = document.getElementById('progressFill');
+const statusMsg    = document.getElementById('statusMsg');
+const toggleEmail  = document.getElementById('toggleEmail');
+const emailFields  = document.getElementById('emailFields');
+const resultsSection = document.getElementById('results-section');
+const resultsList  = document.getElementById('resultsList');
+const statsRow     = document.getElementById('statsRow');
+const dropHint     = document.getElementById('dropHint');
+const progressSteps= document.getElementById('progressSteps');
+const toggleSection= document.getElementById('toggleSection');
+
+// ── Drag & Drop ───────────────────────────────────────────────
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  addFiles([...e.dataTransfer.files]);
+});
+fileInput.addEventListener('change', () => addFiles([...fileInput.files]));
+
+function addFiles(files) {
+  const allowed = ['.pdf','.docx','.xlsx','.xls','.txt'];
+  files.forEach(f => {
+    const ext = '.' + f.name.split('.').pop().toLowerCase();
+    if (!allowed.includes(ext)) { showToast(`Formato ${ext} não suportado.`, 'error'); return; }
+    if (selectedFiles.length >= 10) { showToast('Limite de 10 arquivos.', 'error'); return; }
+    if (!selectedFiles.find(x => x.name === f.name && x.size === f.size)) selectedFiles.push(f);
+  });
+  renderFileList();
+  btnSubmit.disabled = selectedFiles.length === 0;
+  dropHint.style.display = selectedFiles.length > 0 ? 'none' : '';
+}
+
+function renderFileList() {
+  fileList.innerHTML = '';
+  selectedFiles.forEach((f, i) => {
+    const ext = f.name.split('.').pop().toLowerCase();
+    const extClass = ['pdf','docx','xlsx','xls','txt'].includes(ext) ? `ext-${ext === 'xls' ? 'xlsx' : ext}` : 'ext-txt';
+    const size = f.size < 1024*1024 ? `${(f.size/1024).toFixed(1)} KB` : `${(f.size/1024/1024).toFixed(1)} MB`;
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    item.innerHTML = `
+      <div class="file-ext ${extClass}">.${ext}</div>
+      <div class="file-info">
+        <div class="file-name">${f.name}</div>
+        <div class="file-size">${size}</div>
+      </div>
+      <button class="file-remove" onclick="removeFile(${i})" title="Remover">×</button>`;
+    fileList.appendChild(item);
+  });
+}
+
+function removeFile(i) {
+  selectedFiles.splice(i, 1);
+  renderFileList();
+  btnSubmit.disabled = selectedFiles.length === 0;
+  dropHint.style.display = selectedFiles.length > 0 ? 'none' : '';
+}
+
+// ── Toggle Email ──────────────────────────────────────────────
+toggleEmail.addEventListener('change', () => {
+  const on = toggleEmail.checked;
+  emailFields.classList.toggle('visible', on);
+  toggleSection.classList.toggle('active', on);
+  const svg = document.getElementById('toggleSvg');
+  if (on) {
+    svg.innerHTML = '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>';
+    svg.setAttribute('stroke', '#1A6BFF');
+  } else {
+    svg.innerHTML = '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>';
+    svg.setAttribute('stroke', '#6B7A99');
+  }
+});
+
+// ── Progress Steps helpers ────────────────────────────────────
+function setStep(n) {
+  // n = 1..4, mark previous as done, current as active
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('step' + i);
+    el.classList.remove('active', 'done');
+    if (i < n) el.classList.add('done');
+    else if (i === n) el.classList.add('active');
+  }
+}
+
+// ── Submit ────────────────────────────────────────────────────
+btnSubmit.addEventListener('click', async () => {
+  if (!selectedFiles.length) return;
+
+  if (toggleEmail.checked && !document.getElementById('fEmail').value.trim()) {
+    showToast('Informe o e-mail do destinatário.', 'error'); return;
+  }
+
+  const formData = new FormData();
+  selectedFiles.forEach(f => formData.append('files', f, f.name));
+
+  // Always append fit fields
+  formData.append('job_description', document.getElementById('fJD').value.trim());
+  formData.append('contexto_adicional', document.getElementById('fContexto').value.trim());
+
+  if (toggleEmail.checked) {
+    formData.append('send_email',           'true');
+    formData.append('destinatario',         document.getElementById('fEmail').value.trim());
+    formData.append('nome_recrutador',      document.getElementById('fRecrutador').value.trim());
+    formData.append('empresa_recrutadora',  document.getElementById('fEmpresa').value.trim());
+    formData.append('tema',                 document.getElementById('fTema').value.trim() || 'Triagem Geral');
+  }
+
+  // UI loading
+  btnSubmit.disabled = true;
+  progressSteps.classList.add('visible');
+  statusMsg.style.display = 'none';
+  resultsSection.style.display = 'none';
+  setStep(1);
+
+  const stepTimers = [
+    setTimeout(() => setStep(2), 800),
+    setTimeout(() => setStep(3), 2800),
+    setTimeout(() => setStep(4), 5500),
+  ];
+  // Keep legacy fill for any external code that checks it
+  progressFill.style.width = '10%';
+
+  try {
+    const t0 = Date.now();
+    const resp = await fetch(API_URL, { method: 'POST', body: formData });
+    stepTimers.forEach(clearTimeout);
+    const data = await resp.json();
+    const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
+
+    // mark all done
+    for (let i = 1; i <= 4; i++) {
+      const el = document.getElementById('step' + i);
+      el.classList.remove('active'); el.classList.add('done');
+    }
+    progressFill.style.width = '100%';
+
+    setTimeout(() => {
+      progressSteps.classList.remove('visible');
+      renderResults(data, elapsed);
+      btnSubmit.disabled = false;
+      if (data.email_sent) showToast('E-mail enviado com sucesso!', 'success');
+    }, 700);
+
+  } catch (err) {
+    stepTimers.forEach(clearTimeout);
+    progressSteps.classList.remove('visible');
+    btnSubmit.disabled = false;
+    showToast('Erro ao processar. Verifique a conexão.', 'error');
+    console.error(err);
+  }
+});
+
+// ── Render Results ────────────────────────────────────────────
+function renderResults(data, elapsed) {
+  resultsSection.style.display = 'block';
+  resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  statsRow.innerHTML = `
+    <span class="stat-chip stat-success">✓ ${data.success} processados</span>
+    ${data.errors > 0 ? `<span class="stat-chip stat-error">✗ ${data.errors} erros</span>` : ''}
+    <span class="stat-chip stat-time">⏱ ${elapsed}s</span>`;
+
+  resultsList.innerHTML = '';
+  (data.results || []).forEach((r, i) => {
+    if (r.status === 'error') {
+      resultsList.innerHTML += `
+        <div class="result-card">
+          <div class="result-card-header">
+            <div class="result-header-left">
+              <div class="result-name" style="color:#FF8888">${r.filename}</div>
+              <div class="result-role" style="color:#FF6666">Erro no processamento</div>
+            </div>
+          </div>
+          <div class="result-body">
+            <p style="color:#884444;font-size:14px;">${r.error || 'Erro desconhecido'}</p>
+          </div>
+        </div>`;
+      return;
+    }
+
+    const resume = r.resume;
+    const nivel  = resume.nivel_senioridade || 'Indefinido';
+    const badgeColors = {
+      'Júnior':      '#FFB830,#3D2900',
+      'Pleno':       '#1A6BFF,#FFFFFF',
+      'Sênior':      '#00D68F,#002B1C',
+      'Especialista':'#00C8FF,#001A26',
+      'Indefinido':  '#6B7A99,#FFFFFF'
+    };
+    const [bgColor, txColor] = (badgeColors[nivel] || badgeColors['Indefinido']).split(',');
+
+    const cargo = resume.experiencias?.[0]
+      ? `${resume.experiencias[0].cargo || ''}${resume.experiencias[0].empresa ? ' · ' + resume.experiencias[0].empresa : ''}`
+      : '';
+
+    const scores    = resume.scores || {};
+    const scoreGeral = scores.score_geral || 0;
+    const scoreColor = v => v >= 70 ? '#00D68F' : v >= 40 ? '#FFB830' : '#FF5757';
+
+    // Contact pills
+    const contacto = resume.contato || {};
+    let contactHtml = '';
+    if (contacto.email) contactHtml += `<a class="contact-pill" href="mailto:${contacto.email}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>${contacto.email}</a>`;
+    if (contacto.telefone) contactHtml += `<span class="contact-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.72 3.37a2 2 0 0 1 1.998-2.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${contacto.telefone}</span>`;
+    if (contacto.linkedin) contactHtml += `<a class="contact-pill" href="${contacto.linkedin}" target="_blank"><svg width="12" height="12" viewBox="0 0 24 24" fill="#1A6BFF"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>LinkedIn</a>`;
+    const contactSection = contactHtml ? `<div class="contact-pills">${contactHtml}</div>` : '';
+
+    // Skills
+    const skillsHtml = [
+      ...(resume.habilidades?.tecnicas || []).slice(0,6).map(s=>`<span class="skill-tag">${s}</span>`),
+      ...(resume.habilidades?.comportamentais || []).slice(0,3).map(s=>`<span class="skill-tag soft">${s}</span>`),
+      ...(resume.habilidades?.idiomas || []).slice(0,3).map(s=>`<span class="skill-tag lang">${s}</span>`),
+    ].join('');
+
+    // Experiences
+    const expsHtml = (resume.experiencias || []).slice(0,3).map(e => `
+      <div class="exp-item">
+        <div class="exp-cargo">${e.cargo || '—'}</div>
+        <div class="exp-empresa">${e.empresa || ''}</div>
+        <div class="exp-periodo">${e.periodo || ''}</div>
+        ${e.descricao ? `<div class="exp-desc">${e.descricao}</div>` : ''}
+      </div>`).join('');
+
+    // Formações
+    const formacoesHtml = (resume.formacoes || resume.formacao || []).slice(0,3).map(f => `
+      <div class="form-item">
+        <div class="form-curso">${f.curso || f.grau || '—'}</div>
+        <div class="form-inst">${f.instituicao || ''}</div>
+        <div class="form-period">${f.periodo || f.ano || ''}</div>
+      </div>`).join('');
+
+    // Certificações
+    const certs = resume.certificacoes || resume.certifications || [];
+    const certsHtml = certs.slice(0,6).map(c => `<span class="cert-tag">🏅 ${typeof c === 'string' ? c : (c.nome || c.name || '')}</span>`).join('');
+
+    // Fit box
+    const fitHtml = resume.fit ? (() => {
+      const fit = resume.fit;
+      const recColor = {
+        'Avançar':         '#00D68F',
+        'Em análise':      '#FFB830',
+        'Não recomendado': '#FF5757'
+      }[fit.recomendacao] || '#6B7A99';
+      const fitScore = fit.score_fit || 0;
+      const fitBarColor = fitScore >= 70 ? '#00D68F' : fitScore >= 40 ? '#FFB830' : '#FF5757';
+      return `
+        <div class="fit-box">
+          <div class="fit-box-header">
+            <span class="fit-box-label">Análise de Fit com a Vaga</span>
+            <span class="fit-rec-badge" style="background:${recColor};color:${recColor==='#FFB830'?'#3D2900':'#000'}">${fit.recomendacao || 'Em análise'}</span>
+          </div>
+          <div class="fit-score-area">
+            <div class="fit-score-num">${fitScore}<span>/100</span></div>
+            <div class="fit-score-bar-wrap">
+              <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px">Score de Aderência</div>
+              <div class="fit-score-bar-bg"><div class="fit-score-bar-fill" style="width:${fitScore}%;background:${fitBarColor}"></div></div>
+            </div>
+          </div>
+          <div class="fit-points">
+            ${(fit.pontos_fortes||[]).slice(0,3).map(p=>`<div class="fit-point">✓ ${p}</div>`).join('')}
+            ${(fit.lacunas||[]).slice(0,3).map(l=>`<div class="fit-point bad">✗ ${l}</div>`).join('')}
+          </div>
+        </div>`;
+    })() : '';
+
+    const jsonId = `json-${i}`;
+    resultsList.innerHTML += `
+      <div class="result-card">
+        <div class="result-card-header">
+          <div class="result-header-left">
+            <div class="result-name">${resume.nome || 'Nome não identificado'}</div>
+            <div class="result-role">${cargo}</div>
+            <div class="result-file">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              ${r.filename}
+            </div>
+          </div>
+          <div class="result-header-right">
+            <div class="result-score-label">Score Geral</div>
+            <div class="result-score-big">${scoreGeral}</div>
+            <span class="result-badge" style="background:${bgColor};color:${txColor}">${nivel}</span>
+          </div>
+        </div>
+        <div class="result-body">
+          ${contactSection}
+
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">Área</div>
+              <div class="info-value">${resume.area_atuacao || '—'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Experiência</div>
+              <div class="info-value">${resume.anos_experiencia_estimados != null ? resume.anos_experiencia_estimados + ' anos' : '—'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Confiança</div>
+              <div class="info-value">${resume.confianca_extracao || '—'}</div>
+            </div>
+          </div>
+
+          ${resume.resumo_profissional ? `<p style="font-size:14px;color:#3A4563;line-height:1.7;margin-bottom:16px;padding:14px 16px;background:#F6F9FF;border-radius:8px;border-left:3px solid var(--blue)">${resume.resumo_profissional}</p>` : ''}
+
+          <div class="section-title">Scores Detalhados</div>
+          <div class="score-row">
+            ${[['Experiência', scores.experiencia_relevante||0],['Técnico',scores.habilidades_tecnicas||0],['Formação',scores.formacao_academica||0],['Comunicação',scores.clareza_comunicacao||0]].map(([l,v])=>`
+            <div class="score-item">
+              <div class="score-label"><span>${l}</span><span style="font-weight:700;color:${scoreColor(v)}">${v}</span></div>
+              <div class="score-bar-bg"><div class="score-bar-fill" style="width:${v}%;background:${scoreColor(v)}"></div></div>
+            </div>`).join('')}
+          </div>
+
+          ${skillsHtml ? `<div class="section-title">Habilidades</div><div class="skills-wrap">${skillsHtml}</div>` : ''}
+
+          ${expsHtml ? `<div class="section-title">Experiências</div>${expsHtml}` : ''}
+
+          ${formacoesHtml ? `<div class="section-title">Formações</div>${formacoesHtml}` : ''}
+
+          ${certsHtml ? `<div class="section-title">Certificações</div><div style="display:flex;flex-wrap:wrap;margin-top:4px;">${certsHtml}</div>` : ''}
+
+          ${fitHtml}
+
+          <div style="margin-top:16px;display:flex;justify-content:flex-end;">
+            <button class="btn-copy" onclick="toggleJson('${jsonId}',${i})">{ } Ver JSON completo</button>
+          </div>
+          <div class="json-viewer" id="${jsonId}">
+            <pre>${JSON.stringify(r.resume, null, 2)}</pre>
+          </div>
+        </div>
+      </div>`;
+  });
+}
+
+function toggleJson(id, i) {
+  const el = document.getElementById(id);
+  el.style.display = el.style.display === 'block' ? 'none' : 'block';
+}
+
+// ── Settings Modal ───────────────────────────────────────────
+async function openSettings() {
+  document.getElementById('settingsModal').classList.add('open');
+  document.getElementById('testResult').textContent = '';
+  try {
+    const res = await fetch('/settings');
+    const cfg = await res.json();
+    document.getElementById('sGmailUser').value  = cfg.gmail_user || '';
+    // If password is saved, show placeholder text, don't fill the field
+    const pwdField = document.getElementById('sGmailPwd');
+    if (cfg.gmail_app_password === '__SAVED__') {
+      pwdField.value = '';
+      pwdField.placeholder = '••••••••  (salva — deixe em branco para manter)';
+    } else {
+      pwdField.value = '';
+      pwdField.placeholder = 'xxxx xxxx xxxx xxxx';
+    }
+    document.getElementById('sFromName').value   = cfg.email_from_name || '';
+    const badge = document.getElementById('emailStatusBadge');
+    if (cfg.gmail_configured) {
+      badge.className = 'settings-status-badge ok';
+      badge.innerHTML = '✅ E-mail configurado e pronto para envio.';
+    } else {
+      badge.className = 'settings-status-badge warn';
+      badge.innerHTML = '⚠️ E-mail ainda não configurado — preencha os campos abaixo para ativar o envio.';
+    }
+  } catch(e) { console.error('Erro ao carregar configurações:', e); }
+}
+
+function closeSettings() {
+  document.getElementById('settingsModal').classList.remove('open');
+}
+
+function togglePwd() {
+  const inp = document.getElementById('sGmailPwd');
+  const icon = document.getElementById('eyeIcon');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    inp.type = 'password';
+    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+
+async function saveSettings() {
+  const btn = document.getElementById('btnSaveSettings');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Salvando...';
+  try {
+    const res = await fetch('/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        gmail_user:         document.getElementById('sGmailUser').value.trim(),
+        gmail_app_password: document.getElementById('sGmailPwd').value.trim(),  // empty = keep existing
+        email_from_name:    document.getElementById('sFromName').value.trim(),
+      }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast('Configurações salvas com sucesso!', 'success');
+      closeSettings();
+    } else {
+      showToast('Erro ao salvar: ' + (data.detail || 'tente novamente'), 'error');
+    }
+  } catch(e) {
+    showToast('Erro ao conectar com o servidor.', 'error');
+  } finally {
+    btn.disabled = false; btn.innerHTML = orig;
+  }
+}
+
+async function testEmail() {
+  const btn = document.getElementById('btnTestEmail');
+  const result = document.getElementById('testResult');
+  btn.disabled = true;
+  result.textContent = 'Enviando...';
+  result.className = 'test-result';
+  try {
+    const res = await fetch('/settings/test-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        gmail_user:         document.getElementById('sGmailUser').value.trim(),
+        gmail_app_password: document.getElementById('sGmailPwd').value.trim() || '__SAVED__',  // empty = use stored
+      }),
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      result.textContent = '✅ E-mail enviado! Verifique sua caixa.';
+      result.className = 'test-result ok';
+    } else {
+      result.textContent = '✗ ' + (data.detail || 'Falhou');
+      result.className = 'test-result fail';
+    }
+  } catch(e) {
+    result.textContent = '✗ Erro de conexão';
+    result.className = 'test-result fail';
+  } finally { btn.disabled = false; }
+}
+
+// ── Toast ─────────────────────────────────────────────────────
+function showToast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  const icons = { success: '✓', error: '✗', info: 'ℹ' };
+  t.textContent = `${icons[type]} ${msg}`;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>

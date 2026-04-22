@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{EMAIL_SUBJECT}}</title>
+  <!--[if mso]>
+  <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+  <![endif]-->
+  <style>
+    /* Reset */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background-color: #F0F4FF; font-family: 'Segoe UI', Arial, sans-serif; }
+    a { color: #1A6BFF; text-decoration: none; }
+    img { border: 0; display: block; }
+
+    /* ── Layout ─────────────────────────────────────────── */
+    .wrapper   { width: 100%; background: #F0F4FF; padding: 32px 16px; }
+    .container { max-width: 680px; margin: 0 auto; }
+
+    /* ── Header ─────────────────────────────────────────── */
+    .header {
+      background: linear-gradient(135deg, #0D1B2A 0%, #1A3A6B 60%, #1A6BFF 100%);
+      border-radius: 16px 16px 0 0;
+      padding: 32px 40px 28px;
+    }
+    .header-logo { display: flex; align-items: center; gap: 12px; }
+    .header-logo-icon {
+      width: 44px; height: 44px;
+      background: rgba(255,255,255,0.08);
+      border: 1.5px solid rgba(0,200,255,0.4);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .header-wordmark { font-size: 20px; font-weight: 700; color: #FFFFFF; letter-spacing: -0.3px; }
+    .header-wordmark span { color: #00C8FF; }
+    .header-tagline { font-size: 11px; color: rgba(255,255,255,0.45); letter-spacing: 1.2px; text-transform: uppercase; margin-top: 2px; }
+    .header-divider { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0; }
+    .header-title { font-size: 22px; font-weight: 700; color: #FFFFFF; line-height: 1.3; }
+    .header-subtitle { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 6px; }
+
+    /* ── Body ────────────────────────────────────────────── */
+    .body {
+      background: #FFFFFF;
+      padding: 36px 40px;
+    }
+    .greeting { font-size: 15px; color: #1A1A2E; margin-bottom: 20px; line-height: 1.6; }
+
+    /* ── Candidate Card ──────────────────────────────────── */
+    .card {
+      background: #F8FAFF;
+      border: 1px solid #E2E8F8;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      background: linear-gradient(180deg, #1A6BFF, #00C8FF);
+      border-radius: 4px 0 0 4px;
+    }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .card-name { font-size: 17px; font-weight: 700; color: #0D1B2A; }
+    .card-role { font-size: 12px; color: #6B7A99; margin-top: 2px; }
+    .card-file { font-size: 11px; color: #9AAABF; margin-top: 2px; }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .badge-junior     { background: #FFF3CD; color: #9A6600; }
+    .badge-pleno      { background: #D6E8FF; color: #0047B3; }
+    .badge-senior     { background: #D0F5E8; color: #007A4C; }
+    .badge-especialista { background: #D6F4FF; color: #006B99; }
+    .badge-indefinido { background: #EAEEF5; color: #6B7A99; }
+
+    /* Score bar */
+    .score-section { margin: 14px 0 10px; }
+    .score-label { font-size: 11px; color: #6B7A99; margin-bottom: 4px; }
+    .score-bar-bg { background: #E2E8F8; border-radius: 6px; height: 7px; overflow: hidden; }
+    .score-bar-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, #1A6BFF, #00C8FF); }
+
+    /* Skills chips */
+    .skills-section { margin-top: 14px; }
+    .skills-label { font-size: 11px; color: #6B7A99; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+    .skills-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+    .skill-chip {
+      background: #EEF2FF;
+      color: #2D4A9A;
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    /* Contact row */
+    .contact-row { margin-top: 14px; font-size: 12px; color: #6B7A99; }
+    .contact-row a { color: #1A6BFF; }
+    .contact-sep { margin: 0 6px; color: #CBD5E8; }
+
+    /* Fit section */
+    .fit-box {
+      background: linear-gradient(135deg, #0D1B2A, #1A3A6B);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-top: 14px;
+    }
+    .fit-title { font-size: 11px; font-weight: 700; color: #00C8FF; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .fit-score-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .fit-score-num { font-size: 28px; font-weight: 700; color: #FFFFFF; }
+    .fit-score-label { font-size: 11px; color: rgba(255,255,255,0.5); }
+    .fit-rec {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .fit-rec-avancar    { background: #00D68F; color: #002B1C; }
+    .fit-rec-analise    { background: #FFB830; color: #3D2900; }
+    .fit-rec-nao        { background: #FF5757; color: #3D0000; }
+    .fit-list { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 8px; padding-left: 14px; }
+    .fit-list li { margin-bottom: 3px; }
+
+    /* Divider */
+    .section-divider { border: none; border-top: 1px solid #E8EDF5; margin: 28px 0; }
+
+    /* Body text */
+    .body-text { font-size: 14px; color: #3A4563; line-height: 1.7; margin-bottom: 16px; }
+    .body-text b { color: #0D1B2A; }
+
+    /* ── Footer ─────────────────────────────────────────── */
+    .footer {
+      background: #0D1B2A;
+      border-radius: 0 0 16px 16px;
+      padding: 24px 40px;
+      text-align: center;
+    }
+    .footer-brand { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.6); }
+    .footer-brand span { color: #00C8FF; }
+    .footer-tagline { font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
+    .footer-links { margin-top: 12px; font-size: 11px; }
+    .footer-links a { color: rgba(255,255,255,0.35); margin: 0 8px; }
+    .footer-links a:hover { color: #1A6BFF; }
+    .footer-disclaimer { font-size: 10px; color: rgba(255,255,255,0.2); margin-top: 14px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="container">
+
+    <!-- ═══ HEADER ═══════════════════════════════════════════ -->
+    <div class="header">
+      <div class="header-logo">
+        <!-- Ícone SVG inline compacto -->
+        <div class="header-logo-icon">
+          <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="32,6 54,19 54,45 32,58 10,45 10,19" fill="#1A6BFF" opacity="0.25" stroke="#1A6BFF" stroke-width="1.5"/>
+            <line x1="18" y1="20" x2="32" y2="32" stroke="#00C8FF" stroke-width="3" stroke-linecap="round"/>
+            <polygon points="32,32 24,28 27,37" fill="#00C8FF"/>
+            <line x1="46" y1="44" x2="32" y2="32" stroke="#00D68F" stroke-width="3" stroke-linecap="round"/>
+            <polygon points="32,32 40,36 37,27" fill="#00D68F"/>
+            <circle cx="32" cy="32" r="5" fill="#1A6BFF"/>
+            <circle cx="32" cy="32" r="2.5" fill="white"/>
+          </svg>
+        </div>
+        <div>
+          <div class="header-wordmark">Core<span>Extract</span></div>
+          <div class="header-tagline">Inteligência em cada currículo</div>
+        </div>
+      </div>
+      <hr class="header-divider">
+      <div class="header-title">{{EMAIL_TITLE}}</div>
+      <div class="header-subtitle">{{EMAIL_SUBTITLE}}</div>
+    </div>
+
+    <!-- ═══ BODY ══════════════════════════════════════════════ -->
+    <div class="body">
+
+      <!-- Saudação e texto introdutório -->
+      <div class="greeting">{{GREETING_HTML}}</div>
+
+      <!-- ── CARDS DOS CANDIDATOS (repetir para cada um) ── -->
+      {{CANDIDATE_CARDS_HTML}}
+
+      <hr class="section-divider">
+
+      <!-- Texto de encerramento -->
+      <div class="body-text">{{CLOSING_HTML}}</div>
+
+    </div>
+
+    <!-- ═══ FOOTER ════════════════════════════════════════════ -->
+    <div class="footer">
+      <div class="footer-brand">Core<span>Extract</span></div>
+      <div class="footer-tagline">Motor Inteligente de Extração e Análise de Currículos</div>
+      <div class="footer-links">
+        <a href="#">Suporte</a>
+        <a href="#">Política de Privacidade</a>
+        <a href="#">Cancelar notificações</a>
+      </div>
+      <div class="footer-disclaimer">
+        Este e-mail foi gerado automaticamente pelo CoreExtract com assistência de IA (Gemini 1.5 Pro via Vertex AI).<br>
+        As análises são orientativas e não substituem a avaliação humana criteriosa de um recrutador.
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

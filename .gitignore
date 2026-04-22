@@ -1,0 +1,24 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+env/
+
+# Env & secrets
+.env
+*.env
+
+# Database (has credentials)
+coreextract.db
+
+# Logs
+*.log
+
+# Test files
+curriculos_teste/
+
+# OS
+.DS_Store
+Thumbs.db
