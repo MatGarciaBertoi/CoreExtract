@@ -80,9 +80,6 @@
 [data-theme="dark"] .exp-desc { color: #A0B8D8; }
 [data-theme="dark"] .form-item { border-color: rgba(255,255,255,0.06); }
 [data-theme="dark"] .cert-tag { background: #1A1500; border-color: rgba(255,200,0,0.2); color: #FFD580; }
-[data-theme="dark"] .json-viewer { background: #060D18; }
-[data-theme="dark"] .btn-copy { border-color: rgba(255,255,255,0.15); color: #8A9BC0; }
-[data-theme="dark"] .btn-copy:hover { border-color: var(--blue); color: var(--blue); }
 [data-theme="dark"] .settings-how-to { background: #0D1F3C; border-color: rgba(255,255,255,0.08); }
 [data-theme="dark"] .how-to-steps li { color: #A0B8D8; }
 [data-theme="dark"] .footer { color: #4A6080; }
@@ -696,26 +693,49 @@
     .fit-point { font-size: 12px; color: rgba(255,255,255,0.68); margin-bottom: 3px; display: flex; gap: 6px; }
     .fit-point.bad { color: rgba(255,130,130,0.75); }
 
-    /* Copy JSON button */
-    .btn-copy {
-      background: none; border: 1.5px solid #E2E8F8;
-      border-radius: var(--radius-sm); padding: 6px 14px;
-      font-size: 12px; font-weight: 600; color: var(--gray);
-      cursor: pointer; transition: all 0.15s;
-      display: flex; align-items: center; gap: 6px;
+    /* ── Post-Results Email Send Section ───────────────── */
+    .email-send-card {
+      background: var(--white);
+      border: 1.5px solid #DDE4F5;
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      margin-top: 24px;
     }
-    .btn-copy:hover { border-color: var(--blue); color: var(--blue); }
-
-    /* JSON viewer */
-    .json-viewer {
-      background: #0D1B2A; border-radius: var(--radius-sm);
-      padding: 16px; margin-top: 12px; overflow-x: auto; display: none;
+    [data-theme="dark"] .email-send-card {
+      background: #0A1628;
+      border-color: rgba(255,255,255,0.08);
     }
-    .json-viewer pre {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px; color: #A8C8FF;
-      white-space: pre-wrap; word-break: break-all;
+    .email-send-header {
+      display: flex; align-items: center; gap: 14px;
     }
+    .email-send-icon {
+      width: 42px; height: 42px; border-radius: 10px;
+      background: rgba(26,107,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .email-send-title {
+      font-size: 15px; font-weight: 700; color: var(--navy);
+    }
+    [data-theme="dark"] .email-send-title { color: #E8F0FF; }
+    .email-send-desc {
+      font-size: 13px; color: var(--gray); margin-top: 3px;
+    }
+    .btn-send-email {
+      margin-top: 22px;
+      background: var(--blue);
+      border: none; border-radius: var(--radius-sm);
+      padding: 12px 28px;
+      font-size: 14px; font-weight: 700; color: #fff;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 9px;
+      transition: all 0.2s; box-shadow: 0 4px 14px rgba(26,107,255,0.3);
+    }
+    .btn-send-email:hover {
+      background: #1558E0;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(26,107,255,0.45);
+    }
+    .btn-send-email:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
     /* ── File Progress ───────────────────────────────────── */
 .file-progress {
@@ -1012,10 +1032,9 @@
 
 @media print {
   .navbar, .hero, #upload-card, .fit-card,
-  .toggle-section, footer, .toast,
+  .email-send-card, footer, .toast,
   .modal-overlay, #results-section .results-header,
-  .btn-copy, .btn-print, .json-viewer,
-  .comment-save-btn { display: none !important; }
+  .btn-print, .comment-save-btn { display: none !important; }
 
   .result-card { display: none !important; box-shadow: none !important; margin: 0 !important; }
   .result-card.print-target { display: block !important; break-inside: avoid; }
@@ -1262,53 +1281,6 @@
         <label class="form-label">Descrição da Vaga</label>
         <textarea class="form-textarea" id="fJD" placeholder="Cole aqui a descrição da vaga para que o CoreExtract calcule o score de aderência de cada candidato..."></textarea>
       </div>
-      <div class="form-group full">
-        <label class="form-label">Instruções Adicionais</label>
-        <textarea class="form-textarea" id="fContexto" placeholder="Ex: Priorize candidatos com experiência em cloud e que falem inglês avançado..." style="min-height:70px;"></textarea>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Email Toggle Card ───────────────────────────────────────── -->
-  <div class="toggle-section" id="toggleSection">
-    <div class="toggle-row">
-      <div class="toggle-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7A99" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="toggleSvg">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-        </svg>
-      </div>
-      <div>
-        <div class="toggle-label">Enviar e-mail de triagem</div>
-        <div class="toggle-desc">Gera e envia um relatório profissional por e-mail após o processamento</div>
-      </div>
-      <label class="toggle">
-        <input type="checkbox" id="toggleEmail">
-        <span class="toggle-slider"></span>
-      </label>
-    </div>
-
-    <!-- Email fields (only visible when toggle on) -->
-    <div class="email-fields" id="emailFields">
-      <div class="email-fields-inner">
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">Destinatário <span class="required">*</span></label>
-            <input type="email" class="form-input" id="fEmail" placeholder="recrutador@empresa.com">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Seu Nome</label>
-            <input type="text" class="form-input" id="fRecrutador" placeholder="Ex: Ana Souza">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Empresa</label>
-            <input type="text" class="form-input" id="fEmpresa" placeholder="Ex: TechCorp">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Tema / Vaga</label>
-            <input type="text" class="form-input" id="fTema" placeholder="Ex: Engenheiro de Dados Sênior">
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -1333,6 +1305,46 @@
       <div class="filter-count" id="filterCount"></div>
     </div>
     <div id="resultsList"></div>
+
+    <!-- ── Enviar Relatório por E-mail (aparece após análise) ── -->
+    <div id="emailSendSection" class="email-send-card" style="display:none;">
+      <div class="email-send-header">
+        <div class="email-send-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <div style="flex:1">
+          <div class="email-send-title">Enviar Relatório por E-mail</div>
+          <div class="email-send-desc">Envia o relatório de triagem com o Excel (gráficos incluídos) como anexo — opcional</div>
+        </div>
+        <span class="fit-badge">Opcional</span>
+      </div>
+      <div class="form-grid" style="margin-top:18px;">
+        <div class="form-group">
+          <label class="form-label">Destinatário <span class="required">*</span></label>
+          <input type="email" class="form-input" id="eSendEmail" placeholder="recrutador@empresa.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Seu Nome</label>
+          <input type="text" class="form-input" id="eSendRecrutador" placeholder="Ex: Ana Souza">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Empresa</label>
+          <input type="text" class="form-input" id="eSendEmpresa" placeholder="Ex: TechCorp">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tema / Vaga</label>
+          <input type="text" class="form-input" id="eSendTema" placeholder="Ex: Engenheiro de Dados Sênior">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Instruções Adicionais <span style="color:var(--gray);font-weight:400;font-size:11px;">(opcional — incluídas no corpo do e-mail)</span></label>
+          <textarea class="form-textarea" id="eSendContexto" placeholder="Ex: Priorize candidatos com experiência em cloud e inglês avançado..." style="min-height:68px;"></textarea>
+        </div>
+      </div>
+      <button class="btn-send-email" id="btnSendEmail" onclick="triggerEmailPreview()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Pré-visualizar e Enviar
+      </button>
+    </div>
   </section>
 
 </main>
@@ -1360,14 +1372,11 @@ const btnSubmit    = document.getElementById('btnSubmit');
 const progressBar  = document.getElementById('progressBar');
 const progressFill = document.getElementById('progressFill');
 const statusMsg    = document.getElementById('statusMsg');
-const toggleEmail  = document.getElementById('toggleEmail');
-const emailFields  = document.getElementById('emailFields');
 const resultsSection = document.getElementById('results-section');
 const resultsList  = document.getElementById('resultsList');
 const statsRow     = document.getElementById('statsRow');
 const dropHint     = document.getElementById('dropHint');
 const progressSteps= document.getElementById('progressSteps');
-const toggleSection= document.getElementById('toggleSection');
 
 // ── Drag & Drop ───────────────────────────────────────────────
 dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
@@ -1418,21 +1427,6 @@ function removeFile(i) {
   dropHint.style.display = selectedFiles.length > 0 ? 'none' : '';
 }
 
-// ── Toggle Email ──────────────────────────────────────────────
-toggleEmail.addEventListener('change', () => {
-  const on = toggleEmail.checked;
-  emailFields.classList.toggle('visible', on);
-  toggleSection.classList.toggle('active', on);
-  const svg = document.getElementById('toggleSvg');
-  if (on) {
-    svg.innerHTML = '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>';
-    svg.setAttribute('stroke', '#1A6BFF');
-  } else {
-    svg.innerHTML = '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>';
-    svg.setAttribute('stroke', '#6B7A99');
-  }
-});
-
 // ── Progress Steps helpers ────────────────────────────────────
 function setStep(n) {
   // n = 1..4, mark previous as done, current as active
@@ -1450,30 +1444,18 @@ let _pendingFormData = null;
 btnSubmit.addEventListener('click', async () => {
   if (!selectedFiles.length) return;
 
-  if (toggleEmail.checked && !document.getElementById('fEmail').value.trim()) {
-    showToast('Informe o e-mail do destinatário.', 'error'); return;
-  }
-
   const formData = new FormData();
   selectedFiles.forEach(f => formData.append('files', f, f.name));
-
-  // Always append fit fields
   formData.append('job_description', document.getElementById('fJD').value.trim());
-  formData.append('contexto_adicional', document.getElementById('fContexto').value.trim());
-
-  if (toggleEmail.checked) {
-    formData.append('send_email',           'true');
-    formData.append('destinatario',         document.getElementById('fEmail').value.trim());
-    formData.append('nome_recrutador',      document.getElementById('fRecrutador').value.trim());
-    formData.append('empresa_recrutadora',  document.getElementById('fEmpresa').value.trim());
-    formData.append('tema',                 document.getElementById('fTema').value.trim() || 'Triagem Geral');
-  }
 
   // UI loading
   btnSubmit.disabled = true;
   progressSteps.classList.add('visible');
   statusMsg.style.display = 'none';
   resultsSection.style.display = 'none';
+  // Hide email section while reprocessing
+  const emailSendSection = document.getElementById('emailSendSection');
+  if (emailSendSection) emailSendSection.style.display = 'none';
   setStep(1);
 
   const stepTimers = [
@@ -1481,80 +1463,36 @@ btnSubmit.addEventListener('click', async () => {
     setTimeout(() => setStep(3), 2800),
     setTimeout(() => setStep(4), 5500),
   ];
-  // Keep legacy fill for any external code that checks it
   progressFill.style.width = '10%';
   startFileProgress(selectedFiles);
 
-  // If email enabled, process without sending first, then show preview
-  const sendEmail = toggleEmail.checked;
-  if (sendEmail) {
-    // Process without sending email — we'll confirm via preview
-    const previewForm = new FormData();
-    selectedFiles.forEach(f => previewForm.append('files', f, f.name));
-    previewForm.append('job_description', document.getElementById('fJD').value.trim());
-    previewForm.append('contexto_adicional', document.getElementById('fContexto').value.trim());
-    // Don't append send_email yet
+  try {
+    const t0 = Date.now();
+    const resp = await fetch(API_URL, { method: 'POST', body: formData });
+    stepTimers.forEach(clearTimeout);
+    let data = await resp.json();
+    const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
 
-    try {
-      const t0 = Date.now();
-      const resp = await fetch(API_URL, { method: 'POST', body: previewForm });
-      stepTimers.forEach(clearTimeout);
-      let data = await resp.json();
-      const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
+    for (let i = 1; i <= 4; i++) {
+      const el = document.getElementById('step' + i);
+      el.classList.remove('active'); el.classList.add('done');
+    }
+    progressFill.style.width = '100%';
 
-      for (let i = 1; i <= 4; i++) {
-        const el = document.getElementById('step' + i);
-        el.classList.remove('active'); el.classList.add('done');
-      }
-      progressFill.style.width = '100%';
-
-      setTimeout(() => {
-        progressSteps.classList.remove('visible');
-        stopFileProgress();
-        renderResults(data, elapsed);
-        btnSubmit.disabled = false;
-        // Show email preview modal
-        _pendingFormData = formData;
-        showEmailPreview(data, formData);
-      }, 700);
-
-    } catch (err) {
-      stepTimers.forEach(clearTimeout);
+    setTimeout(() => {
       progressSteps.classList.remove('visible');
       stopFileProgress();
+      renderResults(data, elapsed);
       btnSubmit.disabled = false;
-      showToast('Erro ao processar. Verifique a conexão.', 'error');
-      console.error(err);
-    }
-  } else {
-    try {
-      const t0 = Date.now();
-      const resp = await fetch(API_URL, { method: 'POST', body: formData });
-      stepTimers.forEach(clearTimeout);
-      let data = await resp.json();
-      const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
+    }, 700);
 
-      for (let i = 1; i <= 4; i++) {
-        const el = document.getElementById('step' + i);
-        el.classList.remove('active'); el.classList.add('done');
-      }
-      progressFill.style.width = '100%';
-
-      setTimeout(() => {
-        progressSteps.classList.remove('visible');
-        stopFileProgress();
-        renderResults(data, elapsed);
-        btnSubmit.disabled = false;
-      }, 700);
-
-    } catch (err) {
-      stepTimers.forEach(clearTimeout);
-      progressSteps.classList.remove('visible');
-      stopFileProgress();
-      btnSubmit.disabled = false;
-      showToast('Erro ao processar. Verifique a conexão.', 'error');
-      console.error(err);
-    }
+  } catch (err) {
+    stepTimers.forEach(clearTimeout);
+    progressSteps.classList.remove('visible');
+    stopFileProgress();
+    btnSubmit.disabled = false;
+    showToast('Erro ao processar. Verifique a conexão.', 'error');
+    console.error(err);
   }
 });
 
@@ -1715,7 +1653,6 @@ function renderResults(data, elapsed) {
         </div>`;
     })() : '';
 
-    const jsonId = `json-${i}`;
     const rankBadge = i < 3 ? `<div class="rank-badge rank-${i+1}">${['🥇','🥈','🥉'][i]}</div>` : `<div class="rank-badge rank-other">#${i+1}</div>`;
     const searchKey = [
       resume.nome || '',
@@ -1803,21 +1740,24 @@ function renderResults(data, elapsed) {
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
               Imprimir
             </button>
-            <button class="btn-copy" onclick="toggleJson('${jsonId}',${i})">{ } Ver JSON completo</button>
-          </div>
-          <div class="json-viewer" id="${jsonId}">
-            <pre>${JSON.stringify(r.resume, null, 2)}</pre>
           </div>
         </div>
       </div>`;
   });
   // Load saved comments after cards are rendered
   setTimeout(() => loadComments(data.results || []), 50);
-}
 
-function toggleJson(id, i) {
-  const el = document.getElementById(id);
-  el.style.display = el.style.display === 'block' ? 'none' : 'block';
+  // Show email send section when there are successful results
+  const emailSendSec = document.getElementById('emailSendSection');
+  if (emailSendSec) {
+    emailSendSec.style.display = okCount > 0 ? 'block' : 'none';
+    // Pre-fill Tema if job description was provided
+    const jd = document.getElementById('fJD')?.value.trim();
+    const eSendTema = document.getElementById('eSendTema');
+    if (jd && eSendTema && !eSendTema.value) {
+      eSendTema.value = jd.split('\n')[0].slice(0, 60);
+    }
+  }
 }
 
 // ── Settings Modal ───────────────────────────────────────────
@@ -2053,15 +1993,21 @@ function clearFilter() {
   filterResults();
 }
 
-// ── Email Preview ─────────────────────────────────────
-function showEmailPreview(data, formData) {
-  const destinatario = document.getElementById('fEmail').value.trim();
-  const tema = document.getElementById('fTema').value.trim() || 'Triagem Geral';
-  const recrutador = document.getElementById('fRecrutador').value.trim();
-  const empresa = document.getElementById('fEmpresa').value.trim();
-  const okResults = (data.results || []).filter(r => r.status === 'ok');
+// ── Email Preview (triggered from post-results form) ──────────
+function triggerEmailPreview() {
+  if (!_lastResults || !_lastResults.length) {
+    showToast('Nenhum resultado disponível.', 'error'); return;
+  }
+  const destinatario = (document.getElementById('eSendEmail')?.value || '').trim();
+  if (!destinatario) { showToast('Informe o e-mail do destinatário.', 'error'); return; }
 
-  const subject = `[CoreExtract] Triagem de Currículos${tema !== 'Triagem Geral' ? ' - ' + tema : ''}`;
+  const tema       = (document.getElementById('eSendTema')?.value || '').trim() || 'Triagem Geral';
+  const recrutador = (document.getElementById('eSendRecrutador')?.value || '').trim();
+  const empresa    = (document.getElementById('eSendEmpresa')?.value || '').trim();
+  const contexto   = (document.getElementById('eSendContexto')?.value || '').trim();
+
+  const okResults = _lastResults.filter(r => r.status === 'ok');
+  const subject = `[CoreExtract] Triagem de Currículos${tema !== 'Triagem Geral' ? ' — ' + tema : ''}`;
 
   const candidatesHtml = okResults.map(r => {
     const score = r.resume?.scores?.score_geral || 0;
@@ -2091,6 +2037,17 @@ function showEmailPreview(data, formData) {
     <div class="preview-section-title">Candidatos incluídos no relatório</div>
     <div class="preview-candidates">${candidatesHtml}</div>
   `;
+
+  // Store payload for confirmSendEmail
+  _pendingFormData = {
+    destinatario,
+    tema,
+    nome_recrutador:     recrutador || null,
+    empresa_recrutadora: empresa    || null,
+    contexto_adicional:  contexto   || null,
+    results:             _lastResults,
+  };
+
   document.getElementById('emailPreviewModal').classList.add('open');
 }
 
@@ -2106,10 +2063,18 @@ async function confirmSendEmail() {
   btn.innerHTML = '⏳ Enviando...';
   closeEmailPreview();
   try {
-    await fetch(API_URL, { method: 'POST', body: _pendingFormData });
-    showToast('E-mail enviado com sucesso!', 'success');
+    const resp = await fetch('/email/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(_pendingFormData),
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({ detail: resp.statusText }));
+      throw new Error(err.detail || 'Erro ao enviar e-mail');
+    }
+    showToast('E-mail enviado com sucesso! 📧', 'success');
   } catch(e) {
-    showToast('Erro ao enviar e-mail.', 'error');
+    showToast('Erro ao enviar: ' + e.message, 'error');
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg> Confirmar e Enviar';
@@ -2163,10 +2128,10 @@ async function exportToExcel() {
   if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Gerando...'; }
 
   try {
-    // Collect metadata from the same form fields used on submit
-    const tema       = (document.getElementById('fTema')?.value || '').trim() || 'Triagem Geral';
-    const recrutador = (document.getElementById('fRecrutador')?.value || '').trim() || null;
-    const empresa    = (document.getElementById('fEmpresa')?.value || '').trim() || null;
+    // Read from the post-results email form (filled by recruiter after analysis)
+    const tema       = (document.getElementById('eSendTema')?.value || '').trim() || 'Triagem Geral';
+    const recrutador = (document.getElementById('eSendRecrutador')?.value || '').trim() || null;
+    const empresa    = (document.getElementById('eSendEmpresa')?.value || '').trim() || null;
 
     const resp = await fetch('/export/excel', {
       method: 'POST',
