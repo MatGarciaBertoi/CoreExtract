@@ -2163,10 +2163,10 @@ async function exportToExcel() {
   if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Gerando...'; }
 
   try {
-    // Collect optional metadata from the form so the Excel report is complete
-    const tema      = (document.getElementById('tema')?.value || '').trim() || 'Triagem Geral';
-    const recrutador = (document.getElementById('nomeRecrutador')?.value || '').trim() || null;
-    const empresa    = (document.getElementById('empresaRecrutadora')?.value || '').trim() || null;
+    // Collect metadata from the same form fields used on submit
+    const tema       = (document.getElementById('fTema')?.value || '').trim() || 'Triagem Geral';
+    const recrutador = (document.getElementById('fRecrutador')?.value || '').trim() || null;
+    const empresa    = (document.getElementById('fEmpresa')?.value || '').trim() || null;
 
     const resp = await fetch('/export/excel', {
       method: 'POST',

@@ -18,8 +18,10 @@ from __future__ import annotations
 
 import hashlib
 import importlib
+import io
 import re
 import time
+from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Optional
 
@@ -414,7 +416,6 @@ async def extract(
                 )
 
                 # Gera o relatório Excel para anexar ao e-mail
-                from datetime import datetime as _dt
                 results_dicts = [r.model_dump() for r in results]
                 xlsx_bytes = generate_excel_report(
                     results=results_dicts,
@@ -422,7 +423,7 @@ async def extract(
                     nome_recrutador=nome_recrutador,
                     empresa_recrutadora=empresa_recrutadora,
                 )
-                ts = _dt.now().strftime("%Y%m%d_%H%M")
+                ts = datetime.now().strftime("%Y%m%d_%H%M")
                 attachments = [
                     {
                         "filename": f"CoreExtract_Triagem_{ts}.xlsx",
@@ -474,7 +475,6 @@ async def export_excel(payload: ExcelExportPayload):
     if not payload.results:
         raise HTTPException(status_code=400, detail="Lista de resultados vazia.")
 
-    from datetime import datetime
     xlsx_bytes = generate_excel_report(
         results=payload.results,
         tema=payload.tema or "Triagem Geral",
@@ -484,7 +484,6 @@ async def export_excel(payload: ExcelExportPayload):
     ts       = datetime.now().strftime("%Y%m%d_%H%M")
     filename = f"CoreExtract_Triagem_{ts}.xlsx"
 
-    import io
     return StreamingResponse(
         io.BytesIO(xlsx_bytes),
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
