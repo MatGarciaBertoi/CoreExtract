@@ -11,8 +11,11 @@ A senha de app é diferente da sua senha normal do Gmail.
 """
 import smtplib
 import ssl
+from email import encoders
+from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from typing import Optional
 
 import config
 import settings_db
@@ -24,15 +27,29 @@ _SMTP_HOST = "smtp.gmail.com"
 _SMTP_PORT = 587
 
 
-def send_email(to_email: str, subject: str, html_body: str) -> dict:
+def send_email(
+    to_email: str,
+    subject: str,
+    html_body: str,
+    attachments: Optional[list[dict]] = None,
+) -> dict:
     """
     Envia o e-mail via Gmail SMTP com TLS.
 
     Credentials are read from settings_db at call time so that changes made
     via the /settings endpoint take effect immediately without a server restart.
 
+    Args:
+        to_email:    Destinatário.
+        subject:     Assunto do e-mail.
+        html_body:   Corpo HTML.
+        attachments: Lista opcional de dicts com chaves:
+                       - filename (str)  — nome do arquivo anexo
+                       - data    (bytes) — conteúdo binário
+                       - mimetype (str)  — ex: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
     Returns:
-        dict com "status" e "to".
+        dict com "status", "to" e "attachments" (número de anexos).
 
     Raises:
         ValueError: se GMAIL_USER ou GMAIL_APP_PASSWORD não estiverem configurados.
@@ -50,20 +67,52 @@ def send_email(to_email: str, subject: str, html_body: str) -> dict:
             "Veja as instruções no topo de mailer.py."
         )
 
-    # Monta a mensagem
-    msg = MIMEMultipart("alternative")
+    has_attachments = bool(attachments)
+
+    # Outer container: "mixed" when there are attachments, "alternative" otherwise
+    msg = MIMEMultipart("mixed" if has_attachments else "alternative")
     msg["Subject"] = subject
     msg["From"]    = f"{from_name} <{gmail_user}>"
     msg["To"]      = to_email
 
-    # Parte HTML (principal) + fallback texto puro
+    # HTML + plain-text block (always wrapped in "alternative" when there are attachments)
     plain_fallback = "Este e-mail requer um cliente que suporte HTML."
-    msg.attach(MIMEText(plain_fallback, "plain", "utf-8"))
-    msg.attach(MIMEText(html_body,      "html",  "utf-8"))
+    if has_attachments:
+        alt = MIMEMultipart("alternative")
+        alt.attach(MIMEText(plain_fallback, "plain", "utf-8"))
+        alt.attach(MIMEText(html_body,      "html",  "utf-8"))
+        msg.attach(alt)
+    else:
+        msg.attach(MIMEText(plain_fallback, "plain", "utf-8"))
+        msg.attach(MIMEText(html_body,      "html",  "utf-8"))
+
+    # Attach files
+    n_attachments = 0
+    if has_attachments:
+        for att in attachments:
+            filename = att.get("filename", "attachment")
+            data     = att.get("data", b"")
+            mimetype = att.get("mimetype", "application/octet-stream")
+            main_type, _, sub_type = mimetype.partition("/")
+
+            part = MIMEBase(main_type, sub_type)
+            part.set_payload(data)
+            encoders.encode_base64(part)
+            part.add_header(
+                "Content-Disposition",
+                "attachment",
+                filename=filename,
+            )
+            msg.attach(part)
+            n_attachments += 1
+            logger.info("Anexo adicionado: %s (%d bytes)", filename, len(data))
 
     context = ssl.create_default_context()
 
-    logger.info("Enviando e-mail para %s | assunto: '%s'", to_email, subject)
+    logger.info(
+        "Enviando e-mail para %s | assunto: '%s' | anexos: %d",
+        to_email, subject, n_attachments,
+    )
 
     with smtplib.SMTP(_SMTP_HOST, _SMTP_PORT) as server:
         server.ehlo()
@@ -73,4 +122,4 @@ def send_email(to_email: str, subject: str, html_body: str) -> dict:
         server.sendmail(gmail_user, to_email, msg.as_string())
 
     logger.info("E-mail enviado com sucesso para %s", to_email)
-    return {"status": "sent", "to": to_email}
+    return {"status": "sent", "to": to_email, "attachments": n_attachments}

@@ -26,13 +26,14 @@ from typing import Annotated, Optional
 import uvicorn
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
 import config
 import settings_db
 from ai_processor import analyze_resume
 from email_builder import build_email_content
+from excel_exporter import generate_excel_report
 from extractors import extract_text
 from mailer import send_email
 from models import EmailRequest, ProcessingResult, ResumeOutput
@@ -103,6 +104,13 @@ class SettingsPayload(BaseModel):
 class CommentPayload(BaseModel):
     filename: str
     comment: str
+
+
+class ExcelExportPayload(BaseModel):
+    results:             list[dict]
+    tema:                Optional[str] = "Triagem Geral"
+    nome_recrutador:     Optional[str] = None
+    empresa_recrutadora: Optional[str] = None
 
 
 # =========================================================================== #
@@ -404,16 +412,38 @@ async def extract(
                     empresa_recrutadora=empresa_recrutadora,
                     contexto_adicional=contexto_adicional,
                 )
+
+                # Gera o relatório Excel para anexar ao e-mail
+                from datetime import datetime as _dt
+                results_dicts = [r.model_dump() for r in results]
+                xlsx_bytes = generate_excel_report(
+                    results=results_dicts,
+                    tema=tema or "Triagem Geral",
+                    nome_recrutador=nome_recrutador,
+                    empresa_recrutadora=empresa_recrutadora,
+                )
+                ts = _dt.now().strftime("%Y%m%d_%H%M")
+                attachments = [
+                    {
+                        "filename": f"CoreExtract_Triagem_{ts}.xlsx",
+                        "data":     xlsx_bytes,
+                        "mimetype": (
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        ),
+                    }
+                ]
+
                 mail_result = send_email(
                     to_email=destinatario,
                     subject=email_content["subject"],
                     html_body=email_content["html_body"],
+                    attachments=attachments,
                 )
                 response_body["email_sent"]    = True
                 response_body["email_status"]  = mail_result
                 response_body["email_subject"] = email_content["subject"]
 
-                logger.info("E-mail enviado para %s", destinatario,
+                logger.info("E-mail enviado para %s (com anexo Excel)", destinatario,
                             extra={"ce_request_id": req_id})
 
             except Exception as exc:
@@ -428,6 +458,38 @@ async def extract(
     )
 
     return JSONResponse(content=response_body)
+
+
+@app.post("/export/excel")
+async def export_excel(payload: ExcelExportPayload):
+    """
+    Gera e retorna um relatório Excel (.xlsx) com gráficos a partir dos resultados.
+
+    Body JSON:
+      - results             (list)  — lista de ProcessingResult serializados
+      - tema                (str)   — título da triagem (opcional)
+      - nome_recrutador     (str)   — nome do recrutador (opcional)
+      - empresa_recrutadora (str)   — empresa (opcional)
+    """
+    if not payload.results:
+        raise HTTPException(status_code=400, detail="Lista de resultados vazia.")
+
+    from datetime import datetime
+    xlsx_bytes = generate_excel_report(
+        results=payload.results,
+        tema=payload.tema or "Triagem Geral",
+        nome_recrutador=payload.nome_recrutador,
+        empresa_recrutadora=payload.empresa_recrutadora,
+    )
+    ts       = datetime.now().strftime("%Y%m%d_%H%M")
+    filename = f"CoreExtract_Triagem_{ts}.xlsx"
+
+    import io
+    return StreamingResponse(
+        io.BytesIO(xlsx_bytes),
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 @app.get("/comments")

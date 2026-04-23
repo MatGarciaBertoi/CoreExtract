@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CoreExtract — Motor Inteligente de Currículos</title>
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
@@ -2088,6 +2086,7 @@ function showEmailPreview(data, formData) {
       <span>📨 Para: <b>${destinatario}</b></span>
       ${recrutador ? `<span>👤 De: <b>${recrutador}${empresa ? ' · ' + empresa : ''}</b></span>` : ''}
       <span>📄 <b>${okResults.length}</b> candidato${okResults.length !== 1 ? 's' : ''}</span>
+      <span style="color:#007A4C;font-weight:600;">📎 Relatório Excel (com gráficos) será anexado</span>
     </div>
     <div class="preview-section-title">Candidatos incluídos no relatório</div>
     <div class="preview-candidates">${candidatesHtml}</div>
@@ -2152,65 +2151,57 @@ function stopFileProgress() {
   if (lbl) lbl.textContent = '';
 }
 
-// ── Export to Excel ───────────────────────────────────
-function exportToExcel() {
-  if (!_lastResults || !_lastResults.length) return;
-  const rows = _lastResults
-    .filter(r => r.status === 'ok')
-    .map((r, i) => {
-      const resume = r.resume || {};
-      const contato = resume.contato || {};
-      const scores  = resume.scores  || {};
-      const fit     = resume.fit     || null;
-      const exps    = resume.experiencias || [];
-      const habs    = resume.habilidades  || {};
-      return {
-        'Rank':                    i + 1,
-        'Nome':                    resume.nome || '',
-        'E-mail':                  contato.email || '',
-        'Telefone':                contato.telefone || '',
-        'LinkedIn':                contato.linkedin || '',
-        'GitHub':                  contato.github || '',
-        'Cidade':                  contato.cidade || '',
-        'Nível':                   resume.nivel_senioridade || '',
-        'Área':                    resume.area_atuacao || '',
-        'Exp. (anos)':             resume.anos_experiencia_estimados ?? '',
-        'Score Geral':             scores.score_geral || 0,
-        'Score Experiência':       scores.experiencia_relevante || 0,
-        'Score Técnico':           scores.habilidades_tecnicas || 0,
-        'Score Formação':          scores.formacao_academica || 0,
-        'Score Comunicação':       scores.clareza_comunicacao || 0,
-        'Fit Score':               fit?.score_fit ?? '',
-        'Fit Recomendação':        fit?.recomendacao || '',
-        'Habilidades Técnicas':    (habs.tecnicas || []).join(', '),
-        'Idiomas':                 (habs.idiomas  || []).join(', '),
-        'Empresa Atual':           exps[0]?.empresa || '',
-        'Cargo Atual':             exps[0]?.cargo   || '',
-        'Confiança IA':            resume.confianca_extracao || '',
-        'Observações IA':          resume.observacoes_ia || '',
-        'Arquivo':                 r.filename,
-      };
+// ── Export to Excel (server-side — charts + formatting) ──────────
+async function exportToExcel() {
+  if (!_lastResults || !_lastResults.length) {
+    showToast('Nenhum resultado para exportar.', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btnExportXlsx');
+  const originalHtml = btn ? btn.innerHTML : '';
+  if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Gerando...'; }
+
+  try {
+    // Collect optional metadata from the form so the Excel report is complete
+    const tema      = (document.getElementById('tema')?.value || '').trim() || 'Triagem Geral';
+    const recrutador = (document.getElementById('nomeRecrutador')?.value || '').trim() || null;
+    const empresa    = (document.getElementById('empresaRecrutadora')?.value || '').trim() || null;
+
+    const resp = await fetch('/export/excel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        results:             _lastResults,
+        tema:                tema,
+        nome_recrutador:     recrutador,
+        empresa_recrutadora: empresa,
+      }),
     });
 
-  if (!rows.length) { showToast('Nenhum resultado para exportar.', 'error'); return; }
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({ detail: resp.statusText }));
+      throw new Error(err.detail || 'Erro ao gerar Excel');
+    }
 
-  const ws = XLSX.utils.json_to_sheet(rows);
+    const blob     = await resp.blob();
+    const url      = URL.createObjectURL(blob);
+    const a        = document.createElement('a');
+    const cd       = resp.headers.get('Content-Disposition') || '';
+    const fnMatch  = cd.match(/filename="([^"]+)"/);
+    a.href         = url;
+    a.download     = fnMatch ? fnMatch[1] : 'CoreExtract_Triagem.xlsx';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 
-  // Column widths
-  const colWidths = [
-    {wch:6},{wch:28},{wch:30},{wch:16},{wch:36},{wch:28},{wch:18},
-    {wch:12},{wch:22},{wch:12},{wch:12},{wch:16},{wch:14},{wch:14},{wch:16},
-    {wch:10},{wch:16},{wch:40},{wch:24},{wch:22},{wch:24},{wch:12},{wch:32},{wch:32},
-  ];
-  ws['!cols'] = colWidths;
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Candidatos');
-
-  const now = new Date();
-  const ts = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
-  XLSX.writeFile(wb, `CoreExtract_Triagem_${ts}.xlsx`);
-  showToast('Excel exportado com sucesso!', 'success');
+    showToast('Relatório Excel gerado com sucesso! 📊', 'success');
+  } catch (err) {
+    showToast('Erro ao exportar: ' + err.message, 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = originalHtml; }
+  }
 }
 
 // ── Toast ─────────────────────────────────────────────────────
