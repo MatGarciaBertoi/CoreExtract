@@ -948,6 +948,66 @@
     /* Divider */
     .settings-divider { height: 1px; background: #EEF2FF; margin: 18px 0; }
 
+    /* Model selector cards */
+    .model-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; margin-top: 12px;
+    }
+    .model-card {
+      border: 2px solid #E2E8F0; border-radius: 10px;
+      padding: 13px 14px; cursor: pointer;
+      transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+      background: var(--white); position: relative;
+    }
+    .model-card:hover { border-color: var(--blue); background: rgba(26,107,255,0.03); }
+    .model-card.active {
+      border-color: var(--blue);
+      background: rgba(26,107,255,0.06);
+      box-shadow: 0 0 0 1px rgba(26,107,255,0.2);
+    }
+    [data-theme="dark"] .model-card { background: #0D1F3C; border-color: rgba(255,255,255,0.1); }
+    [data-theme="dark"] .model-card:hover { border-color: var(--blue); background: rgba(26,107,255,0.08); }
+    [data-theme="dark"] .model-card.active { background: rgba(26,107,255,0.14); }
+    .model-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; margin-bottom: 7px; }
+    .model-card-name { font-size: 12px; font-weight: 700; color: var(--navy); line-height: 1.3; }
+    [data-theme="dark"] .model-card-name { color: #E8F0FF; }
+    .model-card-check {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid #CBD5E0; flex-shrink: 0; margin-top: 1px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .model-card.active .model-card-check {
+      background: var(--blue); border-color: var(--blue);
+    }
+    .model-card.active .model-card-check::after {
+      content: ''; display: block;
+      width: 5px; height: 5px; border-radius: 50%; background: #fff;
+    }
+    .model-quota {
+      display: inline-block; font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 20px; letter-spacing: 0.2px;
+    }
+    .quota-low  { background: #FFE8E8; color: #CC2200; }
+    .quota-high { background: #D6FAE8; color: #007A4C; }
+    [data-theme="dark"] .quota-low  { background: rgba(204,34,0,0.2);  color: #FF8C8C; }
+    [data-theme="dark"] .quota-high { background: rgba(0,122,76,0.2);  color: #5DD498; }
+    .model-card-desc {
+      font-size: 11px; color: var(--gray); line-height: 1.45; margin-bottom: 7px;
+    }
+    .model-card-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+    .model-tag {
+      font-size: 10px; font-weight: 600; color: var(--gray);
+      background: #F0F4FF; border-radius: 4px; padding: 2px 6px;
+    }
+    [data-theme="dark"] .model-tag { background: #1A2E4A; color: #8AABCC; }
+    .model-current-badge {
+      position: absolute; top: -8px; left: 12px;
+      font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px;
+      background: var(--blue); color: #fff;
+      padding: 2px 8px; border-radius: 20px;
+    }
+
     /* How-to steps */
     .settings-how-to {
       background: #F8FAFF; border: 1px solid #E2E8F8;
@@ -1071,7 +1131,7 @@
       <span class="online-dot"></span>
       API Online
     </div>
-    <span class="nav-badge">⚡ Powered by Gemini 2.5 Flash Lite</span>
+    <span class="nav-badge" id="navModelBadge">⚡ Powered by Gemini 2.5 Flash Lite</span>
     <button class="btn-settings" id="btnTheme" title="Alternar tema" onclick="toggleTheme()">
       <svg id="themeIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
     </button>
@@ -1133,6 +1193,73 @@
             Enviar e-mail de teste
           </button>
           <span class="test-result" id="testResult"></span>
+        </div>
+      </div>
+
+      <!-- Separador -->
+      <div class="settings-divider"></div>
+
+      <!-- Seção Modelo de IA -->
+      <div class="settings-section">
+        <div class="settings-section-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          Modelo de IA (Gemini)
+        </div>
+        <p class="settings-section-desc">Troque o modelo quando atingir o limite diário. Modelos com <span style="color:#007A4C;font-weight:700;">cota alta</span> têm 1.500 req/dia grátis — ideal para uso intenso.</p>
+        <div class="model-grid" id="modelGrid">
+
+          <div class="model-card" data-model="models/gemini-2.5-flash-lite" onclick="selectModel(this)">
+            <div class="model-card-header">
+              <div class="model-card-name">Gemini 2.5<br>Flash Lite</div>
+              <div class="model-card-check"></div>
+            </div>
+            <span class="model-quota quota-low">20 req/dia</span>
+            <div class="model-card-desc" style="margin-top:7px;">Mais rápido e leve. Ótima qualidade de extração.</div>
+            <div class="model-card-tags">
+              <span class="model-tag">⚡ Ultra rápido</span>
+              <span class="model-tag">★★★★ Qualidade</span>
+            </div>
+          </div>
+
+          <div class="model-card" data-model="models/gemini-2.5-flash" onclick="selectModel(this)">
+            <div class="model-card-header">
+              <div class="model-card-name">Gemini 2.5<br>Flash</div>
+              <div class="model-card-check"></div>
+            </div>
+            <span class="model-quota quota-low">20 req/dia</span>
+            <div class="model-card-desc" style="margin-top:7px;">Máxima precisão. Melhor para currículos complexos.</div>
+            <div class="model-card-tags">
+              <span class="model-tag">🎯 Mais preciso</span>
+              <span class="model-tag">★★★★★ Qualidade</span>
+            </div>
+          </div>
+
+          <div class="model-card" data-model="models/gemini-1.5-flash" onclick="selectModel(this)">
+            <div class="model-card-header">
+              <div class="model-card-name">Gemini 1.5<br>Flash</div>
+              <div class="model-card-check"></div>
+            </div>
+            <span class="model-quota quota-high">1.500 req/dia</span>
+            <div class="model-card-desc" style="margin-top:7px;">Cota alta no free tier. Ideal quando o 2.5 esgotar.</div>
+            <div class="model-card-tags">
+              <span class="model-tag">🔋 Alta cota</span>
+              <span class="model-tag">★★★★ Qualidade</span>
+            </div>
+          </div>
+
+          <div class="model-card" data-model="models/gemini-1.5-flash-8b" onclick="selectModel(this)">
+            <div class="model-card-header">
+              <div class="model-card-name">Gemini 1.5<br>Flash 8B</div>
+              <div class="model-card-check"></div>
+            </div>
+            <span class="model-quota quota-high">1.500 req/dia</span>
+            <div class="model-card-desc" style="margin-top:7px;">Mais leve e rápido. Bom para triagens em lote.</div>
+            <div class="model-card-tags">
+              <span class="model-tag">🔋 Alta cota</span>
+              <span class="model-tag">★★★ Qualidade</span>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -1363,6 +1490,20 @@ const API_URL = '/extract';
 
 // ── State ─────────────────────────────────────────────────────
 let selectedFiles = [];
+let _selectedModel = 'models/gemini-2.5-flash-lite';
+
+// ── Init: load current model from API and update navbar ───────
+(async () => {
+  try {
+    const res = await fetch('/settings');
+    if (res.ok) {
+      const cfg = await res.json();
+      const model = cfg.gemini_model || 'models/gemini-2.5-flash-lite';
+      _updateNavbarBadge(model);
+      _selectedModel = model;
+    }
+  } catch(e) { /* silently ignore on startup */ }
+})();
 
 // ── Elements ──────────────────────────────────────────────────
 const dropZone     = document.getElementById('dropZone');
@@ -1760,6 +1901,50 @@ function renderResults(data, elapsed) {
   }
 }
 
+// ── Model selector ────────────────────────────────────────────
+function selectModel(card) {
+  document.querySelectorAll('#modelGrid .model-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  _selectedModel = card.dataset.model;
+}
+
+function _setActiveModelCard(modelId) {
+  _selectedModel = modelId || 'models/gemini-2.5-flash-lite';
+  const cards = document.querySelectorAll('#modelGrid .model-card');
+  let matched = false;
+  cards.forEach(c => {
+    const isMatch = c.dataset.model === _selectedModel;
+    c.classList.toggle('active', isMatch);
+    // Mark/unmark "em uso" badge
+    let badge = c.querySelector('.model-current-badge');
+    if (isMatch) {
+      matched = true;
+      if (!badge) {
+        badge = document.createElement('div');
+        badge.className = 'model-current-badge';
+        badge.textContent = 'Em uso';
+        c.appendChild(badge);
+      }
+    } else if (badge) {
+      badge.remove();
+    }
+  });
+  // If no card matched (custom model), don't select any
+  if (!matched) cards[0]?.classList.add('active');
+}
+
+function _updateNavbarBadge(modelId) {
+  const badge = document.getElementById('navModelBadge');
+  if (!badge) return;
+  const labels = {
+    'models/gemini-2.5-flash-lite': 'Gemini 2.5 Flash Lite',
+    'models/gemini-2.5-flash':      'Gemini 2.5 Flash',
+    'models/gemini-1.5-flash':      'Gemini 1.5 Flash',
+    'models/gemini-1.5-flash-8b':   'Gemini 1.5 Flash 8B',
+  };
+  badge.textContent = '⚡ ' + (labels[modelId] || modelId.replace('models/', ''));
+}
+
 // ── Settings Modal ───────────────────────────────────────────
 async function openSettings() {
   document.getElementById('settingsModal').classList.add('open');
@@ -1768,7 +1953,6 @@ async function openSettings() {
     const res = await fetch('/settings');
     const cfg = await res.json();
     document.getElementById('sGmailUser').value  = cfg.gmail_user || '';
-    // If password is saved, show placeholder text, don't fill the field
     const pwdField = document.getElementById('sGmailPwd');
     if (cfg.gmail_app_password === '__SAVED__') {
       pwdField.value = '';
@@ -1777,7 +1961,11 @@ async function openSettings() {
       pwdField.value = '';
       pwdField.placeholder = 'xxxx xxxx xxxx xxxx';
     }
-    document.getElementById('sFromName').value   = cfg.email_from_name || '';
+    document.getElementById('sFromName').value = cfg.email_from_name || '';
+
+    // Set active model card
+    _setActiveModelCard(cfg.gemini_model || 'models/gemini-2.5-flash-lite');
+
     const badge = document.getElementById('emailStatusBadge');
     if (cfg.gmail_configured) {
       badge.className = 'settings-status-badge ok';
@@ -1816,12 +2004,15 @@ async function saveSettings() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         gmail_user:         document.getElementById('sGmailUser').value.trim(),
-        gmail_app_password: document.getElementById('sGmailPwd').value.trim(),  // empty = keep existing
+        gmail_app_password: document.getElementById('sGmailPwd').value.trim(),
         email_from_name:    document.getElementById('sFromName').value.trim(),
+        gemini_model:       _selectedModel,
       }),
     });
     const data = await res.json();
     if (res.ok) {
+      _updateNavbarBadge(_selectedModel);
+      _setActiveModelCard(_selectedModel);
       showToast('Configurações salvas com sucesso!', 'success');
       closeSettings();
     } else {
