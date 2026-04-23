@@ -481,80 +481,85 @@ async def send_triagem_email(payload: EmailSendPayload):
     if not payload.destinatario:
         raise HTTPException(status_code=400, detail="Campo 'destinatario' é obrigatório.")
 
-    # Convert dicts → ProcessingResult Pydantic objects (needed by email_builder)
-    from models import ProcessingResult as PR
-    pr_results = [PR.model_validate(r) for r in payload.results]
+    try:
+        from models import ProcessingResult as PR
+        pr_results = [PR.model_validate(r) for r in payload.results]
 
-    dest_nome = (
-        payload.destinatario.split("@")[0]
-        .replace(".", " ").replace("_", " ").title()
-    )
-    email_content = build_email_content(
-        results=pr_results,
-        tema=payload.tema or "Triagem Geral",
-        destinatario_nome=dest_nome,
-        nome_recrutador=payload.nome_recrutador,
-        empresa_recrutadora=payload.empresa_recrutadora,
-        contexto_adicional=payload.contexto_adicional,
-    )
+        dest_nome = (
+            payload.destinatario.split("@")[0]
+            .replace(".", " ").replace("_", " ").title()
+        )
+        email_content = build_email_content(
+            results=pr_results,
+            tema=payload.tema or "Triagem Geral",
+            destinatario_nome=dest_nome,
+            nome_recrutador=payload.nome_recrutador,
+            empresa_recrutadora=payload.empresa_recrutadora,
+            contexto_adicional=payload.contexto_adicional,
+        )
 
-    # Generate Excel report to attach
-    xlsx_bytes = generate_excel_report(
-        results=payload.results,
-        tema=payload.tema or "Triagem Geral",
-        nome_recrutador=payload.nome_recrutador,
-        empresa_recrutadora=payload.empresa_recrutadora,
-    )
-    ts = datetime.now().strftime("%Y%m%d_%H%M")
-    attachments = [
-        {
-            "filename": f"CoreExtract_Triagem_{ts}.xlsx",
-            "data":     xlsx_bytes,
-            "mimetype": (
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            ),
-        }
-    ]
+        xlsx_bytes = generate_excel_report(
+            results=payload.results,
+            tema=payload.tema or "Triagem Geral",
+            nome_recrutador=payload.nome_recrutador,
+            empresa_recrutadora=payload.empresa_recrutadora,
+        )
+        ts = datetime.now().strftime("%Y%m%d_%H%M")
+        attachments = [
+            {
+                "filename": f"CoreExtract_Triagem_{ts}.xlsx",
+                "data":     xlsx_bytes,
+                "mimetype": (
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                ),
+            }
+        ]
 
-    mail_result = send_email(
-        to_email=payload.destinatario,
-        subject=email_content["subject"],
-        html_body=email_content["html_body"],
-        attachments=attachments,
-    )
+        mail_result = send_email(
+            to_email=payload.destinatario,
+            subject=email_content["subject"],
+            html_body=email_content["html_body"],
+            attachments=attachments,
+        )
 
-    logger.info("E-mail de triagem enviado para %s", payload.destinatario)
-    return {"sent": True, "status": mail_result, "subject": email_content["subject"]}
+        logger.info("E-mail de triagem enviado para %s", payload.destinatario)
+        return {"sent": True, "status": mail_result, "subject": email_content["subject"]}
+
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error("Erro ao enviar e-mail de triagem: %s", exc)
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
 @app.post("/export/excel")
 async def export_excel(payload: ExcelExportPayload):
     """
     Gera e retorna um relatório Excel (.xlsx) com gráficos a partir dos resultados.
-
-    Body JSON:
-      - results             (list)  — lista de ProcessingResult serializados
-      - tema                (str)   — título da triagem (opcional)
-      - nome_recrutador     (str)   — nome do recrutador (opcional)
-      - empresa_recrutadora (str)   — empresa (opcional)
     """
     if not payload.results:
         raise HTTPException(status_code=400, detail="Lista de resultados vazia.")
 
-    xlsx_bytes = generate_excel_report(
-        results=payload.results,
-        tema=payload.tema or "Triagem Geral",
-        nome_recrutador=payload.nome_recrutador,
-        empresa_recrutadora=payload.empresa_recrutadora,
-    )
-    ts       = datetime.now().strftime("%Y%m%d_%H%M")
-    filename = f"CoreExtract_Triagem_{ts}.xlsx"
+    try:
+        xlsx_bytes = generate_excel_report(
+            results=payload.results,
+            tema=payload.tema or "Triagem Geral",
+            nome_recrutador=payload.nome_recrutador,
+            empresa_recrutadora=payload.empresa_recrutadora,
+        )
+        ts       = datetime.now().strftime("%Y%m%d_%H%M")
+        filename = f"CoreExtract_Triagem_{ts}.xlsx"
 
-    return StreamingResponse(
-        io.BytesIO(xlsx_bytes),
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
-    )
+        return StreamingResponse(
+            io.BytesIO(xlsx_bytes),
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error("Erro ao gerar Excel: %s", exc)
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
 @app.get("/comments")

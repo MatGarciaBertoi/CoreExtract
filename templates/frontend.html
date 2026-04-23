@@ -2247,6 +2247,15 @@ function closeEmailPreview() {
   _pendingFormData = null;
 }
 
+// Converte qualquer formato de erro do FastAPI em string legível
+function _apiError(err, fallback) {
+  const d = err?.detail;
+  if (!d) return fallback;
+  if (typeof d === 'string') return d;
+  if (Array.isArray(d)) return d.map(e => e.msg || JSON.stringify(e)).join(' | ');
+  return JSON.stringify(d);
+}
+
 async function confirmSendEmail() {
   if (!_pendingFormData) return;
   const btn = document.getElementById('btnConfirmSend');
@@ -2260,8 +2269,8 @@ async function confirmSendEmail() {
       body: JSON.stringify(_pendingFormData),
     });
     if (!resp.ok) {
-      const err = await resp.json().catch(() => ({ detail: resp.statusText }));
-      throw new Error(err.detail || 'Erro ao enviar e-mail');
+      const err = await resp.json().catch(() => ({ detail: `HTTP ${resp.status}` }));
+      throw new Error(_apiError(err, 'Erro ao enviar e-mail'));
     }
     showToast('E-mail enviado com sucesso! 📧', 'success');
   } catch(e) {
@@ -2336,8 +2345,8 @@ async function exportToExcel() {
     });
 
     if (!resp.ok) {
-      const err = await resp.json().catch(() => ({ detail: resp.statusText }));
-      throw new Error(err.detail || 'Erro ao gerar Excel');
+      const err = await resp.json().catch(() => ({ detail: `HTTP ${resp.status}` }));
+      throw new Error(_apiError(err, 'Erro ao gerar Excel'));
     }
 
     const blob     = await resp.blob();
