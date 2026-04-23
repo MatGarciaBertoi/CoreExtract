@@ -100,6 +100,11 @@ class SettingsPayload(BaseModel):
     gemini_model:      Optional[str] = None
 
 
+class CommentPayload(BaseModel):
+    filename: str
+    comment: str
+
+
 # =========================================================================== #
 #  MIDDLEWARE — request ID em todas as respostas                                #
 # =========================================================================== #
@@ -423,6 +428,22 @@ async def extract(
     )
 
     return JSONResponse(content=response_body)
+
+
+@app.get("/comments")
+async def get_comments(filenames: str = ""):
+    """Return comments for a comma-separated list of filenames."""
+    if not filenames:
+        return JSONResponse(content={})
+    names = [f.strip() for f in filenames.split(",") if f.strip()]
+    return JSONResponse(content=settings_db.get_comments_for_files(names))
+
+
+@app.post("/comments")
+async def save_comment(payload: CommentPayload):
+    """Save or update a recruiter comment for a file."""
+    settings_db.save_comment(payload.filename, payload.comment)
+    return JSONResponse(content={"ok": True})
 
 
 # =========================================================================== #

@@ -158,3 +158,84 @@ def set_many(data: dict[str, str]) -> None:
             conn.commit()
         finally:
             conn.close()
+
+
+# ── Comments ─────────────────────────────────────────────────────────────────
+
+def _ensure_comments_table(conn: sqlite3.Connection) -> None:
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS comments (
+            filename   TEXT PRIMARY KEY,
+            comment    TEXT NOT NULL DEFAULT '',
+            updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+        )
+        """
+    )
+    conn.commit()
+
+
+def _init_comments() -> None:
+    with _lock:
+        conn = _connect()
+        try:
+            _ensure_comments_table(conn)
+        finally:
+            conn.close()
+
+
+_init_comments()
+
+
+def save_comment(filename: str, comment: str) -> None:
+    """Insert or update a recruiter comment for the given filename."""
+    with _lock:
+        conn = _connect()
+        try:
+            conn.execute(
+                """
+                INSERT INTO comments (filename, comment, updated_at)
+                VALUES (?, ?, datetime('now'))
+                ON CONFLICT(filename) DO UPDATE
+                  SET comment = excluded.comment,
+                      updated_at = excluded.updated_at
+                """,
+                (filename, comment),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+
+def get_comment(filename: str) -> str:
+    """Return the stored comment for *filename*, or empty string if none."""
+    with _lock:
+        conn = _connect()
+        try:
+            row = conn.execute(
+                "SELECT comment FROM comments WHERE filename = ?", (filename,)
+            ).fetchone()
+            return row["comment"] if row else ""
+        finally:
+            conn.close()
+
+
+def get_comments_for_files(filenames: list[str]) -> dict[str, str]:
+    """Return {filename: comment} for all given filenames."""
+    if not filenames:
+        return {}
+    with _lock:
+        conn = _connect()
+        try:
+            placeholders = ",".join("?" * len(filenames))
+            rows = conn.execute(
+                f"SELECT filename, comment FROM comments WHERE filename IN ({placeholders})",
+                filenames,
+            ).fetchall()
+            result = {row["filename"]: row["comment"] for row in rows}
+            # Fill in empty string for files with no comment
+            for f in filenames:
+                result.setdefault(f, "")
+            return result
+        finally:
+            conn.close()
