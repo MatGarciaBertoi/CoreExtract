@@ -23,8 +23,11 @@ from utils.logger import get_logger
 
 logger = get_logger("mailer")
 
-_SMTP_HOST = "smtp.gmail.com"
 _SMTP_PORT = 587
+_SMTP_HOSTS = {
+    "gmail":   "smtp.gmail.com",
+    "outlook": "smtp.office365.com",
+}
 
 
 def send_email(
@@ -32,6 +35,7 @@ def send_email(
     subject: str,
     html_body: str,
     attachments: Optional[list[dict]] = None,
+    cc: Optional[str] = None,
 ) -> dict:
     """
     Envia o e-mail via Gmail SMTP com TLS.
@@ -57,14 +61,22 @@ def send_email(
     """
     # Read credentials at call time (not from module-level config) so live
     # settings changes are respected immediately.
-    gmail_user     = settings_db.get("GMAIL_USER") or config.GMAIL_USER
-    gmail_password = settings_db.get("GMAIL_APP_PASSWORD") or config.GMAIL_APP_PASSWORD
-    from_name      = settings_db.get("EMAIL_FROM_NAME") or config.EMAIL_FROM_NAME
+    provider  = settings_db.get("EMAIL_PROVIDER") or "gmail"
+    smtp_host = _SMTP_HOSTS.get(provider, _SMTP_HOSTS["gmail"])
+    from_name = settings_db.get("EMAIL_FROM_NAME") or config.EMAIL_FROM_NAME
+
+    # Credenciais separadas por provedor
+    if provider == "outlook":
+        gmail_user     = settings_db.get("OUTLOOK_USER") or ""
+        gmail_password = settings_db.get("OUTLOOK_APP_PASSWORD") or ""
+    else:
+        gmail_user     = settings_db.get("GMAIL_USER") or config.GMAIL_USER
+        gmail_password = settings_db.get("GMAIL_APP_PASSWORD") or config.GMAIL_APP_PASSWORD
 
     if not gmail_user or not gmail_password:
         raise ValueError(
-            "GMAIL_USER e GMAIL_APP_PASSWORD precisam estar configurados nas Configurações. "
-            "Veja as instruções no topo de mailer.py."
+            "Credenciais de e-mail não configuradas. "
+            "Acesse Configurações ⚙️ e preencha a conta e a senha."
         )
 
     has_attachments = bool(attachments)
@@ -74,6 +86,13 @@ def send_email(
     msg["Subject"] = subject
     msg["From"]    = f"{from_name} <{gmail_user}>"
     msg["To"]      = to_email
+
+    # CC — lista de e-mails separados por vírgula
+    cc_list: list[str] = []
+    if cc:
+        cc_list = [e.strip() for e in cc.split(",") if e.strip()]
+        if cc_list:
+            msg["Cc"] = ", ".join(cc_list)
 
     # HTML + plain-text block (always wrapped in "alternative" when there are attachments)
     plain_fallback = "Este e-mail requer um cliente que suporte HTML."
@@ -114,12 +133,13 @@ def send_email(
         to_email, subject, n_attachments,
     )
 
-    with smtplib.SMTP(_SMTP_HOST, _SMTP_PORT) as server:
+    with smtplib.SMTP(smtp_host, _SMTP_PORT) as server:
         server.ehlo()
         server.starttls(context=context)
         server.ehlo()
         server.login(gmail_user, gmail_password)
-        server.sendmail(gmail_user, to_email, msg.as_string())
+        all_recipients = [to_email] + cc_list
+        server.sendmail(gmail_user, all_recipients, msg.as_string())
 
     logger.info("E-mail enviado com sucesso para %s", to_email)
-    return {"status": "sent", "to": to_email, "attachments": n_attachments}
+    return {"status": "sent", "to": to_email, "cc": cc_list, "attachments": n_attachments}

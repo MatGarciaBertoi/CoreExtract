@@ -50,15 +50,21 @@ def _build_email_texts(
     top    = max(scores) if scores else 0
     avg    = int(sum(scores) / len(scores)) if scores else 0
 
-    intro_extra = ""
-    if contexto_adicional:
-        intro_extra = f" Observação adicional considerada na análise: <b>{contexto_adicional}</b>."
+    # Parágrafo de observação adicional — linha separada quando preenchido
+    obs_extra = (
+        f"<p><b>Observação adicional:</b> {contexto_adicional}</p>"
+        if contexto_adicional else ""
+    )
 
     greeting_html = (
         f"<p>Olá, <b>{destinatario_nome}</b>!</p>"
         f"<p>Segue abaixo o relatório de triagem inteligente para a vaga <b>{tema}</b>. "
         f"Foram analisados <b>{total_candidatos}</b> currículo{'s' if total_candidatos != 1 else ''}, "
-        f"com score médio de <b>{avg}/100</b> e melhor score de <b>{top}/100</b>.{intro_extra}</p>"
+        f"com score médio de <b>{avg}/100</b> e melhor score de <b>{top}/100</b>.</p>"
+        f"{obs_extra}"
+        f"<p>Em anexo você encontra a <b>planilha Excel completa</b> com a análise detalhada "
+        f"de cada candidato, incluindo scores individuais, gráficos comparativos e "
+        f"distribuição por nível de senioridade.</p>"
     )
 
     closing_html = (
@@ -128,7 +134,24 @@ def _fit_html(fit: Optional[FitAnalise]) -> str:
     </div>"""
 
 
-def _candidate_card(result: ProcessingResult, index: int) -> str:
+def _recruiter_note_html(comment: str) -> str:
+    """Bloco de anotação do recrutador — visualmente distinto das obs. da IA."""
+    if not comment or not comment.strip():
+        return ""
+    safe = comment.strip().replace("<", "&lt;").replace(">", "&gt;")
+    return f"""
+    <div style="margin-top:12px;padding:10px 14px;background:#F4EEFF;
+                border-left:3px solid #8B5CF6;border-radius:6px;">
+      <div style="font-size:10px;font-weight:700;color:#6D28D9;
+                  text-transform:uppercase;letter-spacing:0.8px;margin-bottom:5px;">
+        ✏ Anotação do Recrutador
+      </div>
+      <div style="font-size:12px;color:#3B1F6E;line-height:1.55;">{safe}</div>
+    </div>"""
+
+
+def _candidate_card(result: ProcessingResult, index: int,
+                    recruiter_comment: str = "") -> str:
     r: ResumeOutput = result.resume  # type: ignore
     nome  = r.nome or "Candidato sem nome"
     cargo = ""
@@ -176,7 +199,8 @@ def _candidate_card(result: ProcessingResult, index: int) -> str:
       {'<div style="margin-top:10px;font-size:12px;color:#6B7A99;">🏅 ' + certs + '</div>' if certs else ''}
       {'<div class="contact-row">' + contato_html + '</div>' if contato_html else ''}
       {_fit_html(r.fit)}
-      {'<div style="margin-top:10px;font-size:11px;color:#9AAABF;font-style:italic;">ℹ ' + r.observacoes_ia + '</div>' if r.observacoes_ia else ''}
+      {_recruiter_note_html(recruiter_comment)}
+      {'<div style="margin-top:8px;font-size:11px;color:#9AAABF;font-style:italic;">ℹ ' + r.observacoes_ia + '</div>' if r.observacoes_ia else ''}
     </div>"""
 
 
@@ -202,6 +226,7 @@ def build_email_content(
     nome_recrutador: Optional[str] = None,
     empresa_recrutadora: Optional[str] = None,
     contexto_adicional: Optional[str] = None,
+    recruiter_comments: Optional[dict[str, str]] = None,
 ) -> dict[str, str]:
     """Retorna {"subject": str, "html_body": str} com o e-mail completo."""
     ok_results    = [r for r in results if r.status == "ok" and r.resume]
@@ -222,9 +247,11 @@ def build_email_content(
         ok_results=ok_results,
     )
 
+    comments = recruiter_comments or {}
     cards_html = ""
     for i, r in enumerate(ok_results, start=1):
-        cards_html += _candidate_card(r, i)
+        comment = comments.get(r.filename, "")
+        cards_html += _candidate_card(r, i, recruiter_comment=comment)
     for i, r in enumerate(error_results, start=len(ok_results) + 1):
         cards_html += _error_card(r, i)
 

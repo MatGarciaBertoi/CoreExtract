@@ -326,41 +326,72 @@ def _build_dashboard_sheet(
     r0  = data_row_start + 1
     r1  = data_row_start + n_chart
 
-    # ── Chart 1: Score Geral (bar) ──
+    # Palette por candidato (Chart 1 e Chart 2 usam as mesmas cores para consistência)
+    _CANDIDATE_PALETTE = [
+        _BLUE, _EMERALD, _AMBER, _CYAN, _CORAL,
+        "9B59B6", "E67E22", "1ABC9C", "E74C3C", "2ECC71", "F1C40F", "3498DB",
+    ]
+
+    # ── Chart 1: Score Geral — uma série por candidato, cor distinta ──
     chart1 = BarChart()
-    chart1.type     = "col"
-    chart1.grouping = "clustered"
-    chart1.title    = "Score Geral por Candidato"
+    chart1.type        = "col"
+    chart1.grouping    = "clustered"
+    chart1.title       = "Score Geral por Candidato"
     chart1.y_axis.title = "Score"
     chart1.x_axis.title = "Candidato"
-    chart1.style    = 10
-    chart1.width    = 18
-    chart1.height   = 10
+    chart1.style       = 10
+    chart1.width       = 18
+    chart1.height      = 10
+    chart1.varyColors  = True   # cor diferente por barra dentro de uma única série
 
-    data_ref1  = Reference(ws, min_col=3, max_col=3, min_row=data_row_start, max_row=r1)
-    cats1      = Reference(ws, min_col=2, max_col=2, min_row=r0, max_row=r1)
+    data_ref1 = Reference(ws, min_col=3, max_col=3, min_row=data_row_start, max_row=r1)
+    cats1     = Reference(ws, min_col=2, max_col=2, min_row=r0, max_row=r1)
     chart1.add_data(data_ref1, titles_from_data=True)
     chart1.set_categories(cats1)
-    chart1.series[0].graphicalProperties.solidFill = _BLUE
-    chart1.series[0].graphicalProperties.line.solidFill = _BLUE
+    # Não definir solidFill: deixa varyColors escolher as cores automaticamente
     ws.add_chart(chart1, "B14")
 
-    # ── Chart 2: Score breakdown (grouped bar) ──
-    chart2 = BarChart()
-    chart2.type     = "col"
-    chart2.grouping = "clustered"
-    chart2.title    = "Breakdown de Scores por Candidato"
-    chart2.y_axis.title = "Score"
-    chart2.style    = 10
-    chart2.width    = 18
-    chart2.height   = 10
+    # ── Chart 2: Breakdown — transposto (série por candidato, eixo X = métricas) ──
+    # Bloco transposto: col B = Métrica, col C+ = candidatos
+    _METRIC_KEYS   = ["experiencia_relevante", "habilidades_tecnicas",
+                      "formacao_academica", "clareza_comunicacao"]
+    _METRIC_LABELS = ["Experiência", "Técnico", "Formação", "Comunicação"]
+    n_cands   = min(n_chart, 8)          # máx. 8 candidatos no breakdown
+    trans_row = r1 + 2                   # começa após os dados horizontais
 
-    data_ref2 = Reference(ws, min_col=4, max_col=7, min_row=data_row_start, max_row=r1)
-    cats2     = Reference(ws, min_col=2, max_col=2, min_row=r0, max_row=r1)
+    # Cabeçalho: "Métrica" + nomes dos candidatos
+    ws.cell(row=trans_row, column=2, value="Métrica").font = _font(bold=True, size=9, color=_GRAY)
+    for j in range(n_cands):
+        resume = ok_results[j].get("resume") or {}
+        nome   = (resume.get("nome") or ok_results[j].get("filename", ""))[:18]
+        ws.cell(row=trans_row, column=3 + j, value=nome).font = _font(bold=True, size=9, color=_GRAY)
+
+    # Linhas de dados: uma por métrica
+    for i, (key, label) in enumerate(zip(_METRIC_KEYS, _METRIC_LABELS)):
+        row_t = trans_row + 1 + i
+        ws.cell(row=row_t, column=2, value=label).font = _font(size=9)
+        for j in range(n_cands):
+            scores = (ok_results[j].get("resume") or {}).get("scores") or {}
+            ws.cell(row=row_t, column=3 + j, value=scores.get(key, 0)).font = _font(size=9)
+
+    chart2 = BarChart()
+    chart2.type        = "col"
+    chart2.grouping    = "clustered"
+    chart2.title       = "Breakdown de Scores por Candidato"
+    chart2.y_axis.title = "Score"
+    chart2.style       = 10
+    chart2.width       = 18
+    chart2.height      = 10
+
+    # Uma série por candidato (colunas C até C+n_cands), categorias = 4 métricas
+    data_ref2 = Reference(ws, min_col=3, max_col=3 + n_cands - 1,
+                          min_row=trans_row, max_row=trans_row + 4)
+    cats2     = Reference(ws, min_col=2, max_col=2,
+                          min_row=trans_row + 1, max_row=trans_row + 4)
     chart2.add_data(data_ref2, titles_from_data=True)
     chart2.set_categories(cats2)
-    colors2 = [_EMERALD, _BLUE, _AMBER, _CYAN]
-    for s, c in zip(chart2.series, colors2):
+
+    for s, c in zip(chart2.series, _CANDIDATE_PALETTE[:n_cands]):
         s.graphicalProperties.solidFill      = c
         s.graphicalProperties.line.solidFill = c
     ws.add_chart(chart2, "J14")
@@ -371,7 +402,7 @@ def _build_dashboard_sheet(
         n = r.get("resume", {}).get("nivel_senioridade", "Indefinido") or "Indefinido"
         nivel_counts[n] = nivel_counts.get(n, 0) + 1
 
-    pie_row_start = r1 + 2
+    pie_row_start = trans_row + 6     # após bloco transposto (1 header + 4 dados + 1 gap)
     ws.cell(row=pie_row_start,     column=2, value="Nível")
     ws.cell(row=pie_row_start,     column=3, value="Qtd")
     ws.cell(row=pie_row_start,     column=2).font = _font(bold=True, size=9, color=_GRAY)
@@ -415,21 +446,21 @@ def _build_dashboard_sheet(
 
         if fit_rows > 0:
             chart4 = BarChart()
-            chart4.type     = "bar"
-            chart4.grouping = "clustered"
-            chart4.title    = "Score de Fit por Candidato"
+            chart4.type        = "bar"
+            chart4.grouping    = "clustered"
+            chart4.title       = "Score de Fit por Candidato"
             chart4.x_axis.title = "Score Fit"
-            chart4.style    = 10
-            chart4.width    = 12
-            chart4.height   = 10
+            chart4.style       = 10
+            chart4.width       = 12
+            chart4.height      = 10
+            chart4.varyColors  = True   # cor distinta por candidato
             data_ref4 = Reference(ws, min_col=3, max_col=3,
                                   min_row=fit_row_start, max_row=fit_row_start + fit_rows)
             cats4     = Reference(ws, min_col=2, max_col=2,
                                   min_row=fit_row_start + 1, max_row=fit_row_start + fit_rows)
             chart4.add_data(data_ref4, titles_from_data=True)
             chart4.set_categories(cats4)
-            chart4.series[0].graphicalProperties.solidFill      = _EMERALD
-            chart4.series[0].graphicalProperties.line.solidFill = _EMERALD
+            # Não força solidFill — varyColors escolhe paleta automática
             ws.add_chart(chart4, "J30")
 
 

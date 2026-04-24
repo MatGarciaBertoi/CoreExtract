@@ -24,9 +24,12 @@ _ENV_PATH = Path(__file__).parent / ".env"
 _MANAGED_KEYS: tuple[str, ...] = (
     "GMAIL_USER",
     "GMAIL_APP_PASSWORD",
+    "OUTLOOK_USER",
+    "OUTLOOK_APP_PASSWORD",
     "EMAIL_FROM_NAME",
     "GEMINI_MODEL",
     "GEMINI_API_KEY",
+    "EMAIL_PROVIDER",   # "gmail" | "outlook"
 )
 
 # Thread safety
@@ -216,6 +219,23 @@ def get_comment(filename: str) -> str:
                 "SELECT comment FROM comments WHERE filename = ?", (filename,)
             ).fetchone()
             return row["comment"] if row else ""
+        finally:
+            conn.close()
+
+
+def delete_comments_for_files(filenames: list[str]) -> None:
+    """Remove all stored comments for the given filenames (called on new analysis)."""
+    if not filenames:
+        return
+    with _lock:
+        conn = _connect()
+        try:
+            placeholders = ",".join("?" * len(filenames))
+            conn.execute(
+                f"DELETE FROM comments WHERE filename IN ({placeholders})",
+                filenames,
+            )
+            conn.commit()
         finally:
             conn.close()
 

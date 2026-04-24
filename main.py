@@ -97,10 +97,16 @@ def _write_env_key(key: str, value: str) -> None:
 
 
 class SettingsPayload(BaseModel):
-    gmail_user:        Optional[str] = None
-    gmail_app_password: Optional[str] = None
-    email_from_name:   Optional[str] = None
-    gemini_model:      Optional[str] = None
+    # Credenciais Gmail
+    gmail_user:           Optional[str] = None
+    gmail_app_password:   Optional[str] = None
+    # Credenciais Outlook (armazenadas separadamente)
+    outlook_user:         Optional[str] = None
+    outlook_app_password: Optional[str] = None
+    # Compartilhados
+    email_from_name:      Optional[str] = None
+    gemini_model:         Optional[str] = None
+    email_provider:       Optional[str] = None   # "gmail" | "outlook"
 
 
 class CommentPayload(BaseModel):
@@ -118,6 +124,8 @@ class ExcelExportPayload(BaseModel):
 class EmailSendPayload(BaseModel):
     results:             list[dict]
     destinatario:        str
+    destinatario_nome:   Optional[str] = None   # nome legível p/ saudação no e-mail
+    cc:                  Optional[str] = None   # e-mails em cópia, separados por vírgula
     tema:                Optional[str] = "Triagem Geral"
     nome_recrutador:     Optional[str] = None
     empresa_recrutadora: Optional[str] = None
@@ -230,12 +238,21 @@ async def get_settings():
     db = settings_db.get_all()
     user = db.get("GMAIL_USER", "")
     pwd  = db.get("GMAIL_APP_PASSWORD", "")
+    out_user = db.get("OUTLOOK_USER", "")
+    out_pwd  = db.get("OUTLOOK_APP_PASSWORD", "")
     return {
+        # Gmail
         "gmail_user":         user,
         "gmail_app_password": "__SAVED__" if pwd else "",
         "gmail_configured":   bool(user and pwd),
+        # Outlook
+        "outlook_user":         out_user,
+        "outlook_app_password": "__SAVED__" if out_pwd else "",
+        "outlook_configured":   bool(out_user and out_pwd),
+        # Compartilhados
         "email_from_name":    db.get("EMAIL_FROM_NAME", "CoreExtract · RH Inteligente"),
         "gemini_model":       db.get("GEMINI_MODEL", config.GEMINI_MODEL),
+        "email_provider":     db.get("EMAIL_PROVIDER", "gmail"),
     }
 
 
@@ -252,15 +269,23 @@ async def save_settings(payload: SettingsPayload):
     updated: list[str] = []
     old_model = settings_db.get("GEMINI_MODEL", config.GEMINI_MODEL)
 
+    # ── Credenciais Gmail ──
     if payload.gmail_user is not None:
         to_save["GMAIL_USER"] = payload.gmail_user.strip()
         updated.append("GMAIL_USER")
-
-    # Skip password update when the sentinel value or bullet-masked value is sent
-    pwd = payload.gmail_app_password or ""
-    if pwd and pwd != "__SAVED__" and pwd.strip("•").strip():
-        to_save["GMAIL_APP_PASSWORD"] = pwd.strip()
+    pwd_gmail = payload.gmail_app_password or ""
+    if pwd_gmail and pwd_gmail != "__SAVED__" and pwd_gmail.strip("•").strip():
+        to_save["GMAIL_APP_PASSWORD"] = pwd_gmail.strip()
         updated.append("GMAIL_APP_PASSWORD")
+
+    # ── Credenciais Outlook (armazenadas separadamente) ──
+    if payload.outlook_user is not None:
+        to_save["OUTLOOK_USER"] = payload.outlook_user.strip()
+        updated.append("OUTLOOK_USER")
+    pwd_out = payload.outlook_app_password or ""
+    if pwd_out and pwd_out != "__SAVED__" and pwd_out.strip("•").strip():
+        to_save["OUTLOOK_APP_PASSWORD"] = pwd_out.strip()
+        updated.append("OUTLOOK_APP_PASSWORD")
 
     if payload.email_from_name is not None:
         to_save["EMAIL_FROM_NAME"] = payload.email_from_name.strip()
@@ -269,6 +294,10 @@ async def save_settings(payload: SettingsPayload):
     if payload.gemini_model and payload.gemini_model.strip():
         to_save["GEMINI_MODEL"] = payload.gemini_model.strip()
         updated.append("GEMINI_MODEL")
+
+    if payload.email_provider and payload.email_provider.strip() in ("gmail", "outlook"):
+        to_save["EMAIL_PROVIDER"] = payload.email_provider.strip()
+        updated.append("EMAIL_PROVIDER")
 
     if to_save:
         settings_db.set_many(to_save)
@@ -292,20 +321,27 @@ async def save_settings(payload: SettingsPayload):
 
 @app.post("/settings/test-email")
 async def test_email(payload: SettingsPayload):
-    """Testa o envio de e-mail com as credenciais fornecidas."""
-    # Resolve gmail_user: use payload value if provided, otherwise fall back to stored
-    raw_user = (payload.gmail_user or "").strip()
-    test_user = raw_user or settings_db.get("GMAIL_USER", "")
+    """Testa o envio de e-mail com as credenciais do provedor selecionado."""
+    provider = (payload.email_provider or settings_db.get("EMAIL_PROVIDER") or "gmail").strip()
 
-    # Resolve password: if sentinel / bullet-masked / empty, use stored password
-    raw_pwd = (payload.gmail_app_password or "").strip()
+    if provider == "outlook":
+        raw_user = (payload.outlook_user or "").strip()
+        test_user = raw_user or settings_db.get("OUTLOOK_USER", "")
+        raw_pwd   = (payload.outlook_app_password or "").strip()
+        db_pwd_key = "OUTLOOK_APP_PASSWORD"
+    else:
+        raw_user = (payload.gmail_user or "").strip()
+        test_user = raw_user or settings_db.get("GMAIL_USER", "")
+        raw_pwd   = (payload.gmail_app_password or "").strip()
+        db_pwd_key = "GMAIL_APP_PASSWORD"
+
     if not raw_pwd or raw_pwd == "__SAVED__" or not raw_pwd.strip("•").strip():
-        test_pwd = settings_db.get("GMAIL_APP_PASSWORD", "")
+        test_pwd = settings_db.get(db_pwd_key, "")
     else:
         test_pwd = raw_pwd
 
     if not test_user or not test_pwd:
-        raise HTTPException(400, "Informe usuário e senha de app antes de testar.")
+        raise HTTPException(400, "Informe usuário e senha antes de testar.")
 
     try:
         import smtplib
@@ -326,8 +362,12 @@ async def test_email(payload: SettingsPayload):
         msg.attach(MIMEText("Este e-mail requer um cliente que suporte HTML.", "plain", "utf-8"))
         msg.attach(MIMEText(html_body, "html", "utf-8"))
 
+        _SMTP_MAP = {"gmail": "smtp.gmail.com", "outlook": "smtp.office365.com"}
+        provider  = (payload.email_provider or settings_db.get("EMAIL_PROVIDER") or "gmail")
+        smtp_host = _SMTP_MAP.get(provider, "smtp.gmail.com")
+
         ctx = ssl.create_default_context()
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        with smtplib.SMTP(smtp_host, 587) as server:
             server.ehlo()
             server.starttls(context=ctx)
             server.ehlo()
@@ -378,6 +418,11 @@ async def extract(
         )
 
     t_start = time.monotonic()
+
+    # Limpa comentários anteriores para estes arquivos — cada análise começa zerada
+    uploaded_names = [f.filename for f in files if f.filename]
+    if uploaded_names:
+        settings_db.delete_comments_for_files(uploaded_names)
 
     # Processa todos os arquivos
     results: list[ProcessingResult] = []
@@ -483,12 +528,36 @@ async def send_triagem_email(payload: EmailSendPayload):
 
     try:
         from models import ProcessingResult as PR
-        pr_results = [PR.model_validate(r) for r in payload.results]
+        pr_results = []
+        for r in payload.results:
+            if not isinstance(r, dict):
+                continue
+            try:
+                pr_results.append(PR.model_validate(r))
+            except Exception as ve:
+                fname = r.get("filename", "arquivo")
+                logger.warning(
+                    "Validação parcial ignorada para '%s': %s", fname, ve
+                )
+                # Cria resultado mínimo de erro para manter o arquivo no e-mail
+                pr_results.append(
+                    PR(filename=fname, status="error",
+                       error=f"Dados incompletos: {str(ve)[:120]}")
+                )
 
-        dest_nome = (
+        if not pr_results:
+            raise HTTPException(status_code=400, detail="Nenhum resultado válido na lista.")
+
+        # Usa nome explícito se informado; caso contrário, deriva do e-mail
+        dest_nome = payload.destinatario_nome or (
             payload.destinatario.split("@")[0]
             .replace(".", " ").replace("_", " ").title()
         )
+
+        # Busca anotações do recrutador salvas no SQLite para cada arquivo
+        filenames = [r.filename for r in pr_results]
+        recruiter_comments = settings_db.get_comments_for_files(filenames)
+
         email_content = build_email_content(
             results=pr_results,
             tema=payload.tema or "Triagem Geral",
@@ -496,6 +565,7 @@ async def send_triagem_email(payload: EmailSendPayload):
             nome_recrutador=payload.nome_recrutador,
             empresa_recrutadora=payload.empresa_recrutadora,
             contexto_adicional=payload.contexto_adicional,
+            recruiter_comments=recruiter_comments,
         )
 
         xlsx_bytes = generate_excel_report(
@@ -520,6 +590,7 @@ async def send_triagem_email(payload: EmailSendPayload):
             subject=email_content["subject"],
             html_body=email_content["html_body"],
             attachments=attachments,
+            cc=payload.cc or None,
         )
 
         logger.info("E-mail de triagem enviado para %s", payload.destinatario)
