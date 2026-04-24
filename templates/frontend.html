@@ -1227,12 +1227,17 @@
       <div class="settings-divider"></div>
 
       <!-- Seção Modelo de IA -->
-      <div class="settings-section">
+      <div class="settings-section" id="sModelSection">
         <div class="settings-section-title">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
           Modelo de IA (Gemini)
         </div>
-        <p class="settings-section-desc">Troque o modelo quando atingir o limite diário. Modelos com <span style="color:#007A4C;font-weight:700;">cota alta</span> têm 1.500 req/dia grátis — ideal para uso intenso.</p>
+        <!-- Modo gerenciado: badge no lugar da descrição técnica -->
+        <div id="sModelManagedBadge" style="display:none;margin-bottom:14px;padding:10px 14px;background:#EDFFF7;border:1px solid #B2F2D8;border-radius:8px;font-size:12px;color:#007A4C;display:flex;align-items:center;gap:8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#007A4C" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>IA configurada e gerenciada pela <strong>Bertoi Informática</strong>. Nenhuma configuração necessária.</span>
+        </div>
+        <p class="settings-section-desc" id="sModelDesc">Troque o modelo quando atingir o limite diário. Modelos com <span style="color:#007A4C;font-weight:700;">cota alta</span> têm 1.500 req/dia grátis — ideal para uso intenso.</p>
         <div class="model-grid" id="modelGrid">
 
           <div class="model-card" data-model="models/gemini-2.5-flash-lite" onclick="selectModel(this)">
@@ -2074,8 +2079,20 @@ async function openSettings() {
     // Set active model card
     _setActiveModelCard(cfg.gemini_model || 'models/gemini-2.5-flash-lite');
 
+    // ── Modo gerenciado: oculta desc técnica, mostra badge verde ──────────
+    const managed = cfg.gemini_managed === true;
+    const modelDesc    = document.getElementById('sModelDesc');
+    const managedBadge = document.getElementById('sModelManagedBadge');
+    if (modelDesc)    modelDesc.style.display    = managed ? 'none'  : '';
+    if (managedBadge) managedBadge.style.display = managed ? 'flex'  : 'none';
+    // No modo gerenciado os cards de modelo ficam visíveis mas sem necessidade de
+    // o usuário se preocupar com API Key (a seleção de modelo ainda é útil pois
+    // afeta velocidade e qualidade da extração)
+
+    // ── Badge de status do e-mail ──────────────────────────────────────────
+    const emailOk = cfg.gmail_configured || cfg.outlook_configured;
     const badge = document.getElementById('emailStatusBadge');
-    if (cfg.gmail_configured) {
+    if (emailOk) {
       badge.className = 'settings-status-badge ok';
       badge.innerHTML = '✅ E-mail configurado e pronto para envio.';
     } else {

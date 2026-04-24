@@ -7,18 +7,24 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv(Path(__file__).parent / ".env")
+from utils.paths import ENV_PATH as _env_path_for_dotenv
+load_dotenv(_env_path_for_dotenv)
 
 import settings_db  # noqa: E402 — must come after load_dotenv
+from utils.key_manager import get_managed_key, is_managed  # noqa: E402
 
-# ── Google AI Studio — Gemini API (gratuita) ──────────────────
-# Obtenha em: https://aistudio.google.com/apikey  (1 clique com conta Google)
-GEMINI_API_KEY: str = settings_db.get("GEMINI_API_KEY", os.environ.get("GEMINI_API_KEY", ""))
+# ── Google AI Studio — Gemini API ────────────────────────────
+# Prioridade: 1) chave gerenciada (embutida no build)
+#             2) chave do usuário (settings_db / .env)
+_managed = get_managed_key()
+GEMINI_API_KEY: str = (
+    _managed
+    if _managed
+    else settings_db.get("GEMINI_API_KEY", os.environ.get("GEMINI_API_KEY", ""))
+)
+GEMINI_MANAGED: bool = is_managed()   # exposto para o frontend ocultar o campo
 
-# Modelos disponíveis gratuitamente:
-#   gemini-1.5-flash-latest  → rápido, gratuito, excelente para extração
-#   gemini-1.5-pro-latest    → mais poderoso, gratuito com limite menor
-GEMINI_MODEL: str = settings_db.get("GEMINI_MODEL", os.environ.get("GEMINI_MODEL", "gemini-2.5-flash"))
+GEMINI_MODEL: str = settings_db.get("GEMINI_MODEL", os.environ.get("GEMINI_MODEL", "gemini-2.5-flash-lite"))
 
 # ── Servidor ──────────────────────────────────────────────────
 HOST: str = os.environ.get("HOST", "0.0.0.0")

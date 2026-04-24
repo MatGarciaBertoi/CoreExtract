@@ -39,3 +39,6 @@ build_manual.py
 
 # PDF do manual (commitado separado se quiser distribuir)
 Manual_CoreExtract.pdf
+
+# Chave Gemini gerenciada — gerada pelo prepare_build.py, NUNCA commitar
+utils/managed_key.py

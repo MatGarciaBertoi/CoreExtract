@@ -1,8 +1,14 @@
 @echo off
 :: ============================================================
 ::  CoreExtract — Build Completo do Instalador Windows
-::  Executa: pyinstaller + inno setup
+::  Executa: prepare_build + pyinstaller + inno setup
 ::  Resultado: dist\installer\CoreExtract_Setup_v2.0.exe
+::
+::  Uso com chave gerenciada:
+::    build_installer.bat AIzaSyXXXXXXXXXXXXXXXXXXXXXXXX
+::
+::  Uso sem chave (usuario configura a propria):
+::    build_installer.bat
 :: ============================================================
 title CoreExtract Build
 
@@ -20,7 +26,7 @@ if not exist "main.py" (
 )
 
 :: Ativa o ambiente virtual
-echo [1/4] Ativando ambiente virtual...
+echo [1/5] Ativando ambiente virtual...
 call venv\Scripts\activate.bat
 if errorlevel 1 (
     echo [ERRO] Ambiente virtual nao encontrado. Execute: python -m venv venv
@@ -28,13 +34,28 @@ if errorlevel 1 (
     exit /b 1
 )
 
+:: Incorpora a chave Gemini no build (se fornecida como argumento)
+if not "%~1"=="" (
+    echo [2/5] Incorporando chave Gemini gerenciada...
+    python prepare_build.py %~1
+    if errorlevel 1 (
+        echo [ERRO] Falha ao incorporar chave Gemini.
+        pause
+        exit /b 1
+    )
+) else (
+    echo [2/5] Sem chave gerenciada - usuarios configuraram a propria chave.
+    :: Remove managed_key.py se existir de build anterior
+    if exist "utils\managed_key.py" del "utils\managed_key.py"
+)
+
 :: Instala/atualiza pyinstaller
-echo [2/4] Verificando PyInstaller...
+echo [3/5] Verificando PyInstaller...
 pip install pyinstaller --quiet --upgrade
 pip install pystray pillow --quiet
 
 :: Limpa builds anteriores
-echo [3/4] Limpando builds anteriores...
+echo [4/5] Limpando builds anteriores...
 if exist "dist\CoreExtract" rmdir /s /q "dist\CoreExtract"
 if exist "build" rmdir /s /q "build"
 
@@ -45,7 +66,7 @@ if not exist "assets\icon.ico" (
 )
 
 :: Executa o PyInstaller
-echo [4/4] Compilando com PyInstaller...
+echo [5/5] Compilando com PyInstaller...
 echo.
 pyinstaller CoreExtract.spec --noconfirm
 if errorlevel 1 (

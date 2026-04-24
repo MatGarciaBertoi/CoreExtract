@@ -252,6 +252,9 @@ async def get_settings():
         "email_from_name":    db.get("EMAIL_FROM_NAME", "CoreExtract · RH Inteligente"),
         "gemini_model":       db.get("GEMINI_MODEL", config.GEMINI_MODEL),
         "email_provider":     db.get("EMAIL_PROVIDER", "gmail"),
+        # Chave Gemini gerenciada pelo distribuidor (oculta campo na UI)
+        "gemini_managed":     config.GEMINI_MANAGED,
+        "gemini_configured":  bool(config.GEMINI_API_KEY),
     }
 
 
