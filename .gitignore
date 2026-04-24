@@ -22,3 +22,20 @@ curriculos_teste/
 # OS
 .DS_Store
 Thumbs.db
+
+# Build / dist
+build/
+dist/
+*.spec.bak
+
+# Manual de uso (gerado automaticamente)
+manual_coreextract.html
+manual_prints/
+take_screenshots.py
+take_missing_shots.py
+take_results_shots.py
+preview_pdf.py
+build_manual.py
+
+# PDF do manual (commitado separado se quiser distribuir)
+Manual_CoreExtract.pdf

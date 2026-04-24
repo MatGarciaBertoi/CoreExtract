@@ -5,7 +5,6 @@ e montagem direta dos cards HTML pelo código.
 Removida a chamada Gemini para textos do e-mail: a extração do currículo já consome
 a cota diária do free tier; os textos de boilerplate do e-mail não precisam de IA.
 """
-from pathlib import Path
 from typing import Optional
 
 import config
@@ -15,7 +14,7 @@ from utils.logger import get_logger
 
 logger = get_logger("email_builder")
 
-_TEMPLATE_PATH = Path(__file__).parent / "templates" / "email_base.html"
+from utils.paths import EMAIL_TPL_PATH as _TEMPLATE_PATH
 
 
 # =========================================================================== #

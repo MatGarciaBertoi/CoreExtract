@@ -1,11 +1,13 @@
 """
 SQLite-based key-value store for CoreExtract application settings.
 
-Database location: C:/CoreExtract/coreextract.db
+Database location (distributed): %APPDATA%\\CoreExtract\\coreextract.db
+Database location (dev):         <project_root>/coreextract.db
 Thread-safe: yes (module-level lock).
 
 Keys managed:
     GMAIL_USER, GMAIL_APP_PASSWORD, EMAIL_FROM_NAME, GEMINI_MODEL, GEMINI_API_KEY
+    OUTLOOK_USER, OUTLOOK_APP_PASSWORD, EMAIL_PROVIDER
 
 On first run, migrates existing values from the .env file so the user's current
 configuration is not lost.
@@ -16,9 +18,8 @@ import sqlite3
 import threading
 from pathlib import Path
 
-# ── Paths ────────────────────────────────────────────────────────────────────
-_DB_PATH  = Path(__file__).parent / "coreextract.db"
-_ENV_PATH = Path(__file__).parent / ".env"
+# ── Paths — resolvidos via utils.paths para suportar PyInstaller ─────────────
+from utils.paths import DB_PATH as _DB_PATH, ENV_PATH as _ENV_PATH
 
 # Keys that this module manages (all others remain .env-only)
 _MANAGED_KEYS: tuple[str, ...] = (

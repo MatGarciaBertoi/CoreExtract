@@ -63,8 +63,7 @@ app.add_middleware(
     allow_headers=["Content-Type", "Authorization", "X-Request-ID"],
 )
 
-_FRONTEND = Path(__file__).parent / "templates" / "frontend.html"
-_ENV_PATH = Path(__file__).parent / ".env"
+from utils.paths import FRONTEND_PATH as _FRONTEND, ENV_PATH as _ENV_PATH
 
 
 # =========================================================================== #
@@ -654,10 +653,11 @@ async def save_comment(payload: CommentPayload):
 # =========================================================================== #
 
 if __name__ == "__main__":
+    from utils.paths import is_frozen
     uvicorn.run(
         "main:app",
         host=config.HOST,
         port=config.PORT,
-        reload=True,
+        reload=not is_frozen(),   # reload=False no executável distribuído
         log_level="info",
     )
