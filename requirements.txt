@@ -24,7 +24,9 @@ python-jose[cryptography]==3.3.*
 passlib[bcrypt]==1.7.*
 bcrypt==3.2.2          # passlib 1.7.x é incompatível com bcrypt 4.x
 
-# ── Dashboard (local only — em produção o dashboard roda no Streamlit Cloud) ──
-# Descomente abaixo apenas para rodar o dashboard localmente:
+# ── Dashboard (Streamlit Cloud lê este requirements.txt) ──────────────────────
+plotly>=5.22,<6.0
+
+# Streamlit é instalado automaticamente pelo Streamlit Cloud — não adicione aqui
+# Para rodar localmente: descomente a linha abaixo
 # streamlit>=1.44,<2.0
-# plotly>=5.22,<6.0
