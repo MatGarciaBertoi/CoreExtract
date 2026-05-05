@@ -2,6 +2,7 @@
 Modelos Pydantic do CoreExtract.
 Versão enriquecida com todos os campos que o Gemini pode extrair
 e campos de metadados de processamento.
+Inclui modelos de autenticação multi-tenant (JWT, empresas, usuários).
 """
 from typing import Literal, Optional
 from pydantic import BaseModel, field_validator, model_validator
@@ -55,18 +56,15 @@ class Certificacao(BaseModel):
 
 class ScoreAnalise(BaseModel):
     """
-    Scores estimados pelo Gemini (0–100).
-    Útil para ranqueamento automático de candidatos.
+    Scores base extraídos do currículo (0–100).
+    Quando há análise de fit, o score_geral é substituído pelo fit.score_fit.
     """
-    experiencia_relevante: int = 0    # profundidade e relevância das exp.
+    experiencia_relevante: int = 0    # profundidade e volume de experiência
     formacao_academica:    int = 0    # nível e qualidade da formação
-    habilidades_tecnicas:  int = 0    # densidade e modernidade das skills
-    clareza_comunicacao:   int = 0    # quão bem redigido está o currículo
-    score_geral:           int = 0    # média ponderada
+    score_geral:           int = 0    # calculado (ver compute_score_geral)
 
     @field_validator(
-        "experiencia_relevante", "formacao_academica",
-        "habilidades_tecnicas", "clareza_comunicacao", "score_geral",
+        "experiencia_relevante", "formacao_academica", "score_geral",
         mode="before",
     )
     @classmethod
@@ -81,11 +79,23 @@ class FitAnalise(BaseModel):
     """
     Análise de aderência quando uma descrição de vaga é fornecida.
     Só é preenchida se o campo job_description for enviado na requisição.
+    Todos os scores derivam da comparação candidato × vaga.
     """
-    score_fit:        int = 0          # 0–100
-    pontos_fortes:    list[str] = []   # por que o candidato se encaixa
-    lacunas:          list[str] = []   # o que está faltando
-    recomendacao:     Optional[Literal["Avançar", "Em análise", "Não recomendado"]] = None
+    score_fit:         int = 0          # 0–100 aderência geral à vaga
+    score_experiencia: int = 0          # 0–100 match da experiência com a vaga
+    score_formacao:    int = 0          # 0–100 match da formação com a vaga
+    score_tecnico:     int = 0          # 0–100 match das habilidades técnicas com a vaga
+    pontos_fortes:     list[str] = []   # por que o candidato se encaixa
+    lacunas:           list[str] = []   # o que está faltando
+    recomendacao:      Optional[Literal["Avançar", "Em análise", "Não recomendado"]] = None
+
+    @field_validator("score_fit", "score_experiencia", "score_formacao", "score_tecnico", mode="before")
+    @classmethod
+    def clamp_fit_score(cls, v) -> int:
+        try:
+            return max(0, min(100, int(v)))
+        except (TypeError, ValueError):
+            return 0
 
 
 # =========================================================================== #
@@ -128,13 +138,14 @@ class ResumeOutput(BaseModel):
     @model_validator(mode="after")
     def compute_score_geral(self) -> "ResumeOutput":
         s = self.scores
-        # Ponderação: experiência (40%) + técnicas (30%) + formação (20%) + clareza (10%)
-        if s.score_geral == 0:
+        # Quando há fit, score_geral = fit.score_fit (análise real contra a vaga)
+        if self.fit and self.fit.score_fit > 0:
+            s.score_geral = self.fit.score_fit
+        elif s.score_geral == 0:
+            # Sem vaga: ponderação experiência (70%) + formação (30%)
             s.score_geral = int(
-                s.experiencia_relevante * 0.40
-                + s.habilidades_tecnicas  * 0.30
-                + s.formacao_academica    * 0.20
-                + s.clareza_comunicacao   * 0.10
+                s.experiencia_relevante * 0.70
+                + s.formacao_academica   * 0.30
             )
         return self
 
@@ -162,3 +173,72 @@ class ProcessingResult(BaseModel):
     resume:        Optional[ResumeOutput] = None
     error:         Optional[str] = None
     meta:          Optional[dict] = None   # RequestContext.to_response_meta()
+
+
+# =========================================================================== #
+#  MODELOS DE AUTENTICAÇÃO                                                      #
+# =========================================================================== #
+
+class LoginPayload(BaseModel):
+    """Payload do endpoint POST /auth/login."""
+    email: str
+    senha: str
+
+
+class Token(BaseModel):
+    """Resposta do login bem-sucedido."""
+    access_token: str
+    token_type:   str = "bearer"
+    role:         str
+    nome:         str
+    empresa_id:   str
+    empresa_nome: Optional[str] = None
+
+
+class EmpresaCreate(BaseModel):
+    """
+    Payload para criação de empresa (superadmin only).
+    Cria a empresa + o admin dela em uma única operação.
+    """
+    razao_social: str
+    cnpj:         Optional[str] = None
+    email_admin:  str           # e-mail corporativo do primeiro admin
+    nome_admin:   str           # nome do admin
+    senha_admin:  str           # senha temporária (admin deve trocar depois)
+
+
+class UserCreate(BaseModel):
+    """Payload para criação de usuário (empresa admin only)."""
+    nome:  str
+    email: str
+    senha: str
+    role:  Literal["admin", "user"] = "user"
+
+
+class UserResponse(BaseModel):
+    """Resposta segura de usuário (sem senha_hash)."""
+    id:             str
+    empresa_id:     str
+    nome:           str
+    email:          str
+    role:           str
+    ativo:          bool
+    lgpd_consent_at: Optional[str] = None
+    created_at:     Optional[str] = None
+
+
+class EmpresaResponse(BaseModel):
+    """Resposta de empresa (para listagem no painel admin)."""
+    id:           str
+    razao_social: str
+    cnpj:         Optional[str] = None
+    email_admin:  str
+    ativo:        bool
+    created_at:   Optional[str] = None
+    total_usuarios: Optional[int] = None
+
+
+class AlterarSenhaPayload(BaseModel):
+    """Payload para alteração de senha do próprio usuário."""
+    senha_atual: str
+    nova_senha:  str

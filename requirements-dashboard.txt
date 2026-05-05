@@ -1,0 +1,8 @@
+# requirements-dashboard.txt
+# Dependências do dashboard.py para o Streamlit Community Cloud.
+# Este arquivo é usado pelo Streamlit Cloud no deploy — NÃO pelo FastAPI/Fly.io.
+
+streamlit>=1.44,<2.0
+plotly>=5.22,<6.0
+requests>=2.31,<3.0
+pandas>=2.2,<3.0

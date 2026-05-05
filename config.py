@@ -40,3 +40,11 @@ EMAIL_FROM_NAME: str    = settings_db.get("EMAIL_FROM_NAME", os.environ.get("EMA
 MAX_FILE_SIZE_MB: int      = int(os.environ.get("MAX_FILE_SIZE_MB", "10"))
 MAX_FILES_PER_REQUEST: int = int(os.environ.get("MAX_FILES_PER_REQUEST", "10"))
 SUPPORTED_EXTENSIONS: set[str] = {".pdf", ".docx", ".xlsx", ".xls", ".txt"}
+
+# ── Autenticação JWT ───────────────────────────────────────────
+JWT_SECRET: str       = os.environ.get("JWT_SECRET", "CHANGE_ME_IN_PRODUCTION_PLEASE")
+JWT_EXPIRE_HOURS: int = int(os.environ.get("JWT_EXPIRE_HOURS", "8"))
+
+# ── Superadmin (dono do sistema) ───────────────────────────────
+SUPERADMIN_EMAIL: str = os.environ.get("SUPERADMIN_EMAIL", "")
+SUPERADMIN_SENHA: str = os.environ.get("SUPERADMIN_SENHA", "")

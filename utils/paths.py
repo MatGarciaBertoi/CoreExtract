@@ -47,6 +47,22 @@ def get_data_dir() -> Path:
     return get_app_dir()
 
 
+def get_install_dir() -> Path:
+    """
+    Diretório onde o executável está instalado (ou raiz do projeto em dev).
+
+    Diferente de get_app_dir():
+      - get_app_dir()     → sys._MEIPASS  (pasta temporária, recriada a cada launch)
+      - get_install_dir() → Path(sys.executable).parent  (pasta real e estável do .exe)
+
+    Usar para arquivos que precisam ser COMPARTILHADOS entre processos filhos
+    (ex: last_session.json escrito pelo FastAPI e lido pelo Streamlit).
+    """
+    if is_frozen():
+        return Path(sys.executable).parent
+    return get_app_dir()
+
+
 def get_resource(relative_path: str) -> Path:
     """
     Retorna o caminho completo de um arquivo de recurso (template, ícone, etc.)
@@ -59,7 +75,10 @@ def get_resource(relative_path: str) -> Path:
 
 
 # Atalhos para caminhos frequentes
-DB_PATH       = get_data_dir() / "coreextract.db"
-ENV_PATH      = get_data_dir() / ".env"
-FRONTEND_PATH = get_resource("templates/frontend.html")
+# CE_DB_PATH pode ser definido via env var para deploy Docker/cloud (ex: /data/coreextract.db)
+_db_override = os.environ.get("CE_DB_PATH")
+DB_PATH        = Path(_db_override) if _db_override else get_data_dir() / "coreextract.db"
+ENV_PATH       = get_data_dir()    / ".env"
+SESSION_PATH   = get_install_dir() / "last_session.json"   # compartilhado com Streamlit
+FRONTEND_PATH  = get_resource("templates/frontend.html")
 EMAIL_TPL_PATH = get_resource("templates/email_base.html")

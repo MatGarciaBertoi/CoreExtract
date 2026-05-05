@@ -1,0 +1,16 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+coreextract.db
+last_session.json
+curriculos_teste/
+*.log
+.git/
+.gitignore
+dashboard-env/
+dist/
+build/
+*.spec

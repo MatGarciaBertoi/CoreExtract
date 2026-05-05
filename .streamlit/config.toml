@@ -1,0 +1,11 @@
+[server]
+# Porta local do dashboard
+port = 8081
+headless = true
+
+[theme]
+base = "dark"
+backgroundColor    = "#0D1B2A"
+secondaryBackgroundColor = "#162032"
+primaryColor       = "#1A6BFF"
+textColor          = "#E0E8FF"

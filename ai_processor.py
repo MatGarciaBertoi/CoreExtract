@@ -1,6 +1,6 @@
 """
 Integração com Google AI Studio — Gemini API gratuita.
-Modelo padrão: gemini-1.5-flash-latest (rápido, sem custo).
+Modelo padrão: gemini-2.5-flash (rápido, sem custo).
 """
 import json
 from typing import Optional
@@ -38,13 +38,19 @@ def _build_system_prompt(job_description: Optional[str] = None) -> str:
         fit_schema = """
   "fit": {
     "score_fit": 0,
+    "score_experiencia": 0,
+    "score_formacao": 0,
+    "score_tecnico": 0,
     "pontos_fortes": [],
     "lacunas": [],
     "recomendacao": "Avançar|Em análise|Não recomendado"
   },"""
         fit_rule = (
-            '- fit.score_fit: 0-100, grau de aderência à vaga abaixo.\n'
-            '- fit.recomendacao: "Avançar" (score>=70), "Em análise" (40-69), '
+            '- fit.score_fit: 0-100, aderência geral candidato × vaga.\n'
+            '- fit.score_experiencia: 0-100, quanto a experiência do candidato corresponde à vaga.\n'
+            '- fit.score_formacao: 0-100, quanto a formação acadêmica corresponde ao requisito da vaga.\n'
+            '- fit.score_tecnico: 0-100, quanto as habilidades técnicas correspondem ao exigido pela vaga.\n'
+            '- fit.recomendacao: "Avançar" (score_fit>=70), "Em análise" (40-69), '
             '"Não recomendado" (<40).\n'
         )
         fit_jd = f"\n\nDESCRIÇÃO DA VAGA (use para preencher o campo fit):\n{job_description.strip()[:3_000]}"
@@ -59,7 +65,9 @@ REGRAS ABSOLUTAS:
 - habilidades.tecnicas: máximo 12 itens.
 - habilidades.comportamentais: máximo 6 itens.
 - experiencias: as 3 mais recentes, da mais recente para a mais antiga.
-- scores: valores de 0 a 100 baseados no conteúdo real do currículo.
+- scores.experiencia_relevante: 0-100, profundidade e volume de experiência profissional do currículo.
+- scores.formacao_academica: 0-100, nível e qualidade da formação acadêmica apresentada no currículo.
+- scores.score_geral: deixe 0 (será calculado automaticamente).
 - confianca_extracao: "Alta" se claro e completo, "Média" se parcial, "Baixa" se difícil.
 {fit_rule}
 FORMATO JSON DE SAÍDA (siga rigorosamente — inclua TODOS os campos, mesmo que null):
@@ -114,8 +122,6 @@ FORMATO JSON DE SAÍDA (siga rigorosamente — inclua TODOS os campos, mesmo que
   "scores": {{
     "experiencia_relevante": 0,
     "formacao_academica": 0,
-    "habilidades_tecnicas": 0,
-    "clareza_comunicacao": 0,
     "score_geral": 0
   }},{fit_schema}
   "confianca_extracao": "Alta|Média|Baixa",

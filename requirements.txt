@@ -18,3 +18,12 @@ pydantic[email]==2.7.*
 
 # ── Configuração local ─────────────────────────────────────────
 python-dotenv==1.0.*
+
+# ── Autenticação (JWT + bcrypt) ────────────────────────────────
+python-jose[cryptography]==3.3.*
+passlib[bcrypt]==1.7.*
+
+# ── Dashboard (local only — em produção o dashboard roda no Streamlit Cloud) ──
+# Descomente abaixo apenas para rodar o dashboard localmente:
+# streamlit>=1.44,<2.0
+# plotly>=5.22,<6.0

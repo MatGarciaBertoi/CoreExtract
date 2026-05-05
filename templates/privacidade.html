@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Política de Privacidade — CoreExtract</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:  #0D1B2A;
+      --blue:  #1A6BFF;
+      --cyan:  #00C8FF;
+      --gray:  #6B7A99;
+      --light: #F0F4FF;
+      --white: #FFFFFF;
+      --border: #DDE8FF;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F6F9FF;
+      color: var(--navy);
+      line-height: 1.7;
+    }
+
+    /* ── Header ─────────────────────────────────────────── */
+    .header {
+      background: linear-gradient(135deg, #0D1B2A 0%, #1A3A6B 60%, #1A6BFF 100%);
+      padding: 0 24px;
+    }
+    .header-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .header-logo {
+      width: 32px; height: 32px;
+      background: rgba(26,107,255,0.2);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .header-wordmark {
+      font-size: 16px; font-weight: 800; color: #fff; letter-spacing: -0.3px;
+    }
+    .header-wordmark span { color: #00C8FF; }
+    .header-back {
+      font-size: 13px; color: rgba(255,255,255,0.7);
+      text-decoration: none; display: flex; align-items: center; gap: 6px;
+      transition: color 0.2s;
+    }
+    .header-back:hover { color: #fff; }
+
+    /* ── Hero ───────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #0D1B2A 0%, #1A3A6B 60%, #1A6BFF 100%);
+      padding: 56px 24px 60px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px; padding: 4px 14px;
+      font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85);
+      letter-spacing: 0.5px; margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: 36px; font-weight: 800; color: #fff; letter-spacing: -1px;
+      margin-bottom: 12px;
+    }
+    .hero h1 span { color: #00C8FF; }
+    .hero p {
+      font-size: 15px; color: rgba(255,255,255,0.7); max-width: 540px; margin: 0 auto 24px;
+    }
+    .hero-meta {
+      display: flex; align-items: center; justify-content: center; gap: 24px;
+      flex-wrap: wrap;
+    }
+    .hero-meta-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12.5px; color: rgba(255,255,255,0.6);
+    }
+
+    /* ── Layout ─────────────────────────────────────────── */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    /* ── Índice lateral ──────────────────────────────────── */
+    .toc {
+      position: sticky;
+      top: 24px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .toc-title {
+      font-size: 11px; font-weight: 700; color: var(--gray);
+      text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+    .toc-list { list-style: none; }
+    .toc-list li { margin-bottom: 2px; }
+    .toc-list a {
+      font-size: 12.5px; color: var(--gray);
+      text-decoration: none; display: block;
+      padding: 5px 8px; border-radius: 7px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .toc-list a:hover { background: var(--light); color: var(--blue); }
+    .toc-list a.active { background: rgba(26,107,255,0.08); color: var(--blue); font-weight: 600; }
+
+    /* ── Conteúdo ────────────────────────────────────────── */
+    .content { min-width: 0; }
+
+    /* Alerta importante */
+    .alert-box {
+      background: rgba(26,107,255,0.06);
+      border: 1.5px solid rgba(26,107,255,0.25);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 36px;
+      display: flex; gap: 14px; align-items: flex-start;
+    }
+    .alert-box-icon { flex-shrink: 0; margin-top: 2px; }
+    .alert-box p { font-size: 13.5px; color: #1A3A6B; line-height: 1.6; }
+    .alert-box strong { color: var(--blue); }
+
+    /* Seções */
+    .section { margin-bottom: 48px; scroll-margin-top: 24px; }
+
+    .section-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, #1A6BFF, #00C8FF);
+      border-radius: 8px;
+      font-size: 12px; font-weight: 800; color: #fff;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+    .section-header {
+      display: flex; align-items: center;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1.5px solid var(--border);
+    }
+    .section-header h2 {
+      font-size: 18px; font-weight: 700; color: var(--navy);
+    }
+
+    p { font-size: 14px; color: #3A4A6B; margin-bottom: 14px; }
+    p:last-child { margin-bottom: 0; }
+
+    /* Cards de dados */
+    .data-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .data-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .data-card-title {
+      font-size: 11px; font-weight: 700; color: var(--gray);
+      text-transform: uppercase; letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+    .data-card ul { list-style: none; }
+    .data-card li {
+      font-size: 13px; color: #3A4A6B;
+      padding: 3px 0;
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+    .data-card li::before { content: "•"; color: var(--blue); font-weight: 700; flex-shrink: 0; }
+
+    /* Tabela de bases legais */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    table { width: 100%; border-collapse: collapse; background: #fff; }
+    thead tr { background: var(--light); }
+    th {
+      font-size: 11.5px; font-weight: 700; color: var(--gray);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border);
+    }
+    td {
+      font-size: 13px; color: #3A4A6B;
+      padding: 12px 16px; border-bottom: 1px solid #EEF3FF;
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #FAFCFF; }
+    .badge-legal {
+      display: inline-block;
+      font-size: 11px; font-weight: 600; padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .badge-legal.consent   { background: rgba(0,214,143,0.12); color: #007A52; }
+    .badge-legal.legit     { background: rgba(26,107,255,0.10); color: #1A4AB0; }
+    .badge-legal.contract  { background: rgba(255,184,48,0.15); color: #7A5000; }
+    .badge-legal.legal-ob  { background: rgba(255,87,87,0.10); color: #A0000A; }
+
+    /* Direitos dos titulares */
+    .rights-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .right-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex; gap: 12px;
+    }
+    .right-icon {
+      width: 34px; height: 34px; flex-shrink: 0;
+      background: var(--light); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .right-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+    .right-desc  { font-size: 12px; color: var(--gray); line-height: 1.5; }
+
+    /* Transferência internacional */
+    .transfer-box {
+      background: #FFF9EC;
+      border: 1.5px solid #FFE4A0;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin: 16px 0;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .transfer-box p { color: #7A5000; margin: 0; }
+
+    /* Contato */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .contact-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+    .contact-card-label { font-size: 11px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+    .contact-card-value { font-size: 14px; font-weight: 600; color: var(--navy); }
+    .contact-card-value a { color: var(--blue); text-decoration: none; }
+    .contact-card-value a:hover { text-decoration: underline; }
+
+    /* Prazo de resposta */
+    .deadline-box {
+      background: rgba(0,214,143,0.06);
+      border: 1.5px solid rgba(0,214,143,0.3);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .deadline-box p { margin: 0; font-size: 13.5px; color: #005A3A; }
+    .deadline-box strong { color: #007A52; }
+
+    /* Footer */
+    .page-footer {
+      background: var(--navy);
+      padding: 32px 24px;
+      text-align: center;
+    }
+    .page-footer p { font-size: 13px; color: rgba(255,255,255,0.4); margin: 0; }
+    .page-footer a { color: rgba(255,255,255,0.6); text-decoration: none; }
+    .page-footer a:hover { color: #fff; }
+
+    @media (max-width: 700px) {
+      .container { grid-template-columns: 1fr; }
+      .toc { position: static; }
+      .data-grid, .rights-grid, .contact-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-inner">
+    <a class="header-brand" href="/">
+      <div class="header-logo">
+        <svg width="18" height="18" viewBox="0 0 64 64" fill="none">
+          <polygon points="32,6 54,19 54,45 32,58 10,45 10,19" fill="#1A6BFF" opacity="0.5" stroke="#00C8FF" stroke-width="2"/>
+          <circle cx="32" cy="32" r="4" fill="#FFFFFF"/>
+        </svg>
+      </div>
+      <span class="header-wordmark">Core<span>Extract</span></span>
+    </a>
+    <a class="header-back" href="/">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Voltar ao sistema
+    </a>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-badge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+      <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>
+    LGPD — Lei nº 13.709/2018
+  </div>
+  <h1>Política de <span>Privacidade</span></h1>
+  <p>Entenda como o CoreExtract coleta, usa e protege os dados pessoais no processo de triagem de currículos.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Versão 1.0 — Maio/2026
+    </div>
+    <div class="hero-meta-item">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Idioma: Português (Brasil)
+    </div>
+    <div class="hero-meta-item">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Conformidade LGPD
+    </div>
+  </div>
+</div>
+
+<!-- Conteúdo -->
+<div class="container">
+
+  <!-- Índice -->
+  <aside>
+    <div class="toc">
+      <div class="toc-title">Índice</div>
+      <ul class="toc-list">
+        <li><a href="#controlador">1. Controlador e Operador</a></li>
+        <li><a href="#encarregado">2. Encarregado (DPO)</a></li>
+        <li><a href="#dados">3. Dados Coletados</a></li>
+        <li><a href="#bases">4. Bases Legais</a></li>
+        <li><a href="#finalidade">5. Finalidade do Tratamento</a></li>
+        <li><a href="#transferencia">6. Transferência Internacional</a></li>
+        <li><a href="#retencao">7. Retenção dos Dados</a></li>
+        <li><a href="#seguranca">8. Segurança</a></li>
+        <li><a href="#direitos">9. Direitos dos Titulares</a></li>
+        <li><a href="#cookies">10. Cookies e Logs</a></li>
+        <li><a href="#menores">11. Menores de Idade</a></li>
+        <li><a href="#alteracoes">12. Alterações</a></li>
+        <li><a href="#contato">13. Contato</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Texto -->
+  <main class="content">
+
+    <!-- Aviso inicial -->
+    <div class="alert-box">
+      <div class="alert-box-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <p>
+        O <strong>CoreExtract</strong> é uma ferramenta B2B de triagem de currículos desenvolvida pela <strong>Bertoi Informática</strong>.
+        Esta política descreve como tratamos os dados dos <strong>usuários do sistema</strong> (profissionais de RH) e as obrigações que as
+        <strong>empresas contratantes</strong> assumem em relação aos dados dos <strong>candidatos</strong> cujos currículos são processados.
+      </p>
+    </div>
+
+    <!-- 1. Controlador e Operador -->
+    <section class="section" id="controlador">
+      <div class="section-header">
+        <span class="section-num">1</span>
+        <h2>Controlador e Operador de Dados</h2>
+      </div>
+
+      <p>No ecossistema do CoreExtract existem dois papéis distintos previstos pela LGPD:</p>
+
+      <div class="data-grid">
+        <div class="data-card">
+          <div class="data-card-title">Bertoi Informática (Operador)</div>
+          <ul>
+            <li>Desenvolve e mantém o CoreExtract</li>
+            <li>Processa dados dos usuários do sistema (RH)</li>
+            <li>Trata dados de candidatos <em>por ordem</em> das empresas contratantes</li>
+            <li>Não define a finalidade do tratamento de currículos</li>
+          </ul>
+        </div>
+        <div class="data-card">
+          <div class="data-card-title">Empresa Contratante (Controlador)</div>
+          <ul>
+            <li>Define a finalidade do processo seletivo</li>
+            <li>É responsável pela coleta dos currículos dos candidatos</li>
+            <li>Deve garantir a base legal para o tratamento dos CVs</li>
+            <li>Responde perante os candidatos pelo uso dos dados</li>
+          </ul>
+        </div>
+      </div>
+
+      <p>
+        <strong>Identificação da Bertoi Informática:</strong><br>
+        Razão Social: Bertoi Informática LTDA &nbsp;|&nbsp; CNPJ: [a preencher] &nbsp;|&nbsp;
+        Endereço: [a preencher] &nbsp;|&nbsp; E-mail: <a href="mailto:contato@bertoi.com.br">contato@bertoi.com.br</a>
+      </p>
+    </section>
+
+    <!-- 2. DPO -->
+    <section class="section" id="encarregado">
+      <div class="section-header">
+        <span class="section-num">2</span>
+        <h2>Encarregado de Proteção de Dados (DPO)</h2>
+      </div>
+      <p>
+        Nos termos do Art. 41 da LGPD, a Bertoi Informática designou um Encarregado de Proteção de Dados
+        responsável por atuar como canal de comunicação entre a empresa, os titulares e a Autoridade Nacional de
+        Proteção de Dados (ANPD).
+      </p>
+      <div class="contact-grid">
+        <div class="contact-card">
+          <div class="contact-card-label">Encarregado</div>
+          <div class="contact-card-value">Matheus Garcia Bertoi</div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card-label">E-mail do DPO</div>
+          <div class="contact-card-value"><a href="mailto:privacidade@bertoi.com.br">privacidade@bertoi.com.br</a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Dados Coletados -->
+    <section class="section" id="dados">
+      <div class="section-header">
+        <span class="section-num">3</span>
+        <h2>Quais Dados São Coletados</h2>
+      </div>
+
+      <p>O CoreExtract coleta dados em dois contextos distintos:</p>
+
+      <p><strong>3.1 Dados dos Usuários do Sistema (profissionais de RH):</strong></p>
+      <div class="data-grid">
+        <div class="data-card">
+          <div class="data-card-title">Cadastro e Autenticação</div>
+          <ul>
+            <li>Nome completo</li>
+            <li>Endereço de e-mail</li>
+            <li>Senha (armazenada com hash bcrypt — nunca em texto plano)</li>
+            <li>Cargo / função</li>
+            <li>Data e hora do consentimento LGPD</li>
+          </ul>
+        </div>
+        <div class="data-card">
+          <div class="data-card-title">Uso e Auditoria</div>
+          <ul>
+            <li>Logs de acesso (data, hora, ação)</li>
+            <li>IP de origem das requisições</li>
+            <li>Histórico de processamentos (sem o conteúdo dos CVs)</li>
+            <li>Configurações de e-mail SMTP</li>
+          </ul>
+        </div>
+      </div>
+
+      <p><strong>3.2 Dados dos Candidatos (processados por ordem da empresa contratante):</strong></p>
+      <div class="data-grid">
+        <div class="data-card">
+          <div class="data-card-title">Extraídos dos Currículos</div>
+          <ul>
+            <li>Nome completo</li>
+            <li>E-mail e telefone</li>
+            <li>LinkedIn, GitHub, portfólio</li>
+            <li>Endereço (cidade, estado, país)</li>
+            <li>Histórico de empregos e cargos</li>
+            <li>Formação acadêmica e certificações</li>
+            <li>Habilidades técnicas e comportamentais</li>
+            <li>Anos de experiência estimados</li>
+          </ul>
+        </div>
+        <div class="data-card">
+          <div class="data-card-title">Gerados pela IA</div>
+          <ul>
+            <li>Score de aderência à vaga (0–100)</li>
+            <li>Recomendação de triagem (Avançar / Em análise / Não recomendado)</li>
+            <li>Pontos fortes e lacunas identificadas</li>
+            <li>Resumo profissional sintetizado</li>
+            <li>Nível de senioridade inferido</li>
+          </ul>
+        </div>
+      </div>
+
+      <p>
+        <strong>Dados sensíveis:</strong> O CoreExtract <em>não solicita</em> e <em>não armazena</em> intencionalmente dados sensíveis
+        (Art. 5, II LGPD) como origem racial, convicção religiosa, opinião política, saúde ou dados biométricos.
+        Caso esses dados constem em um currículo enviado pelo usuário, a Bertoi Informática não se responsabiliza
+        pelo seu processamento — a responsabilidade é integralmente da empresa contratante.
+      </p>
+    </section>
+
+    <!-- 4. Bases Legais -->
+    <section class="section" id="bases">
+      <div class="section-header">
+        <span class="section-num">4</span>
+        <h2>Bases Legais para o Tratamento (Art. 7 LGPD)</h2>
+      </div>
+      <p>Todo tratamento de dados realizado pelo CoreExtract possui base legal expressa:</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Atividade</th>
+              <th>Base Legal</th>
+              <th>Artigo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Criação de conta e autenticação de usuários do sistema</td>
+              <td><span class="badge-legal consent">Consentimento</span></td>
+              <td>Art. 7, I</td>
+            </tr>
+            <tr>
+              <td>Execução do contrato de licença entre Bertoi e a empresa</td>
+              <td><span class="badge-legal contract">Execução de contrato</span></td>
+              <td>Art. 7, V</td>
+            </tr>
+            <tr>
+              <td>Processamento de currículos de candidatos em processos seletivos</td>
+              <td><span class="badge-legal legit">Legítimo interesse</span></td>
+              <td>Art. 7, IX</td>
+            </tr>
+            <tr>
+              <td>Registro de audit log de ações sensíveis</td>
+              <td><span class="badge-legal legal-ob">Obrigação legal / Exercício regular de direitos</span></td>
+              <td>Art. 7, II e VI</td>
+            </tr>
+            <tr>
+              <td>Anonimização de dados a pedido do titular</td>
+              <td><span class="badge-legal consent">Consentimento / Direito do titular</span></td>
+              <td>Art. 7, I e Art. 18</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        <strong>Atenção — Empresas contratantes:</strong> Ao usar o CoreExtract para processar currículos de candidatos,
+        a empresa contratante declara ter base legal adequada para esse tratamento (consentimento do candidato,
+        legítimo interesse no processo seletivo, ou contrato de trabalho em negociação).
+        Essa responsabilidade é do controlador (empresa), não da Bertoi Informática.
+      </p>
+    </section>
+
+    <!-- 5. Finalidade -->
+    <section class="section" id="finalidade">
+      <div class="section-header">
+        <span class="section-num">5</span>
+        <h2>Finalidade do Tratamento</h2>
+      </div>
+      <p>Os dados são tratados exclusivamente para as seguintes finalidades:</p>
+      <div class="data-card" style="margin-bottom:12px;">
+        <div class="data-card-title">Usuários do Sistema</div>
+        <ul>
+          <li>Autenticação e controle de acesso à plataforma</li>
+          <li>Registro de auditoria de ações (segurança e compliance)</li>
+          <li>Envio de e-mails de triagem em nome da empresa</li>
+          <li>Suporte técnico e atendimento ao cliente</li>
+        </ul>
+      </div>
+      <div class="data-card">
+        <div class="data-card-title">Currículos dos Candidatos</div>
+        <ul>
+          <li>Extração e estruturação automática de informações do CV</li>
+          <li>Análise de aderência a uma vaga específica (quando fornecida)</li>
+          <li>Geração de relatório Excel e e-mail de triagem</li>
+          <li>Exibição no dashboard analítico da empresa</li>
+        </ul>
+      </div>
+      <p style="margin-top:14px;">
+        O CoreExtract <strong>não usa</strong> os dados para treinamento de modelos de IA próprios,
+        publicidade, venda a terceiros ou qualquer finalidade incompatível com a declarada.
+      </p>
+    </section>
+
+    <!-- 6. Transferência Internacional -->
+    <section class="section" id="transferencia">
+      <div class="section-header">
+        <span class="section-num">6</span>
+        <h2>Transferência Internacional de Dados</h2>
+      </div>
+      <div class="transfer-box">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B07000" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:2px;">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <p>
+          <strong>Atenção:</strong> O CoreExtract utiliza a <strong>API Gemini do Google</strong> para extração e análise de currículos.
+          O conteúdo textual dos CVs é transmitido aos servidores do Google, que podem estar localizados fora do Brasil.
+          Essa transferência é regida pelas <strong>Políticas de Privacidade do Google</strong> e pela adequação da Google LLC
+          ao Regulamento Geral de Proteção de Dados (GDPR) europeu, garantindo nível de proteção equivalente ao exigido pela LGPD (Art. 33, I).
+        </p>
+      </div>
+      <p>
+        Os dados são enviados à API do Google exclusivamente para processamento de IA e <strong>não são retidos pelo Google para treinamento</strong>
+        quando utilizada via API (conforme termos de uso da Google AI Studio API).
+        Recomendamos que as empresas contratantes revisem a
+        <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Política de Privacidade do Google</a>
+        e os <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener">Termos de Uso da Gemini API</a>.
+      </p>
+      <p>
+        Nenhum outro dado (cadastros de usuários, senhas, configurações SMTP, audit log) é transferido para fora do Brasil.
+      </p>
+    </section>
+
+    <!-- 7. Retenção -->
+    <section class="section" id="retencao">
+      <div class="section-header">
+        <span class="section-num">7</span>
+        <h2>Retenção e Descarte dos Dados</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Tipo de Dado</th><th>Prazo de Retenção</th><th>Critério</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Conta de usuário ativa</td>
+              <td>Enquanto o contrato estiver vigente</td>
+              <td>Execução do contrato</td>
+            </tr>
+            <tr>
+              <td>Conta de usuário após encerramento</td>
+              <td>Até 5 anos após o encerramento</td>
+              <td>Obrigações legais e fiscais</td>
+            </tr>
+            <tr>
+              <td>Audit log de ações</td>
+              <td>5 anos</td>
+              <td>Exercício regular de direitos</td>
+            </tr>
+            <tr>
+              <td>Resultados de extração de CVs (sessões)</td>
+              <td>Até 90 dias ou descarte manual pela empresa</td>
+              <td>Legítimo interesse — processo seletivo</td>
+            </tr>
+            <tr>
+              <td>Dados anonimizados a pedido do titular</td>
+              <td>Imediatamente (irreversível)</td>
+              <td>Direito ao esquecimento (Art. 18, IV)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Ao encerrar o contrato com a Bertoi Informática, a empresa contratante pode solicitar a exportação
+        e/ou exclusão de todos os dados armazenados no sistema. O prazo para atendimento é de até 15 dias úteis.
+      </p>
+    </section>
+
+    <!-- 8. Segurança -->
+    <section class="section" id="seguranca">
+      <div class="section-header">
+        <span class="section-num">8</span>
+        <h2>Medidas de Segurança (Art. 46 LGPD)</h2>
+      </div>
+      <p>A Bertoi Informática adota medidas técnicas e organizacionais adequadas para proteger os dados pessoais:</p>
+      <div class="data-grid">
+        <div class="data-card">
+          <div class="data-card-title">Medidas Técnicas</div>
+          <ul>
+            <li>Senhas armazenadas com hash bcrypt (fator de custo 12)</li>
+            <li>Autenticação via JWT assinado (HS256, expiração 8h)</li>
+            <li>Comunicação criptografada via HTTPS/TLS</li>
+            <li>Banco de dados SQLite com acesso restrito ao servidor</li>
+            <li>Audit log imutável de todas as ações sensíveis</li>
+            <li>Isolamento multi-tenant por empresa_id</li>
+          </ul>
+        </div>
+        <div class="data-card">
+          <div class="data-card-title">Medidas Organizacionais</div>
+          <ul>
+            <li>Acesso mínimo necessário por função (roles)</li>
+            <li>Superadmin segregado das empresas clientes</li>
+            <li>Credenciais de produção não versionadas no código</li>
+            <li>Revisão periódica de acessos e permissões</li>
+            <li>Política de retenção e descarte documentada</li>
+          </ul>
+        </div>
+      </div>
+      <p>
+        Em caso de incidente de segurança que possa acarretar risco ou dano relevante aos titulares, a Bertoi Informática
+        notificará a ANPD e os titulares afetados em prazo razoável, conforme Art. 48 da LGPD.
+      </p>
+    </section>
+
+    <!-- 9. Direitos dos Titulares -->
+    <section class="section" id="direitos">
+      <div class="section-header">
+        <span class="section-num">9</span>
+        <h2>Direitos dos Titulares (Art. 18 LGPD)</h2>
+      </div>
+      <p>
+        Todo titular de dados pessoais tratados pelo CoreExtract tem os seguintes direitos, exercíveis a qualquer momento:
+      </p>
+      <div class="rights-grid">
+        <div class="right-card">
+          <div class="right-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <div>
+            <div class="right-title">Acesso</div>
+            <div class="right-desc">Confirmar a existência de tratamento e obter cópia dos dados.</div>
+          </div>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+          <div>
+            <div class="right-title">Correção</div>
+            <div class="right-desc">Solicitar atualização de dados incompletos, inexatos ou desatualizados.</div>
+          </div>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+          </div>
+          <div>
+            <div class="right-title">Eliminação</div>
+            <div class="right-desc">Solicitar anonimização ou exclusão de dados desnecessários ou tratados com consentimento.</div>
+          </div>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <div>
+            <div class="right-title">Portabilidade</div>
+            <div class="right-desc">Receber os dados em formato estruturado e interoperável.</div>
+          </div>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          </div>
+          <div>
+            <div class="right-title">Revogação do Consentimento</div>
+            <div class="right-desc">Retirar o consentimento a qualquer tempo, sem prejuízo da licitude do tratamento anterior.</div>
+          </div>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <div class="right-title">Informação sobre Compartilhamento</div>
+            <div class="right-desc">Saber com quais entidades públicas e privadas seus dados são compartilhados.</div>
+          </div>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div>
+            <div class="right-title">Revisão de Decisões Automatizadas</div>
+            <div class="right-desc">Solicitar revisão humana de decisões tomadas exclusivamente com base em tratamento automatizado (Art. 20).</div>
+          </div>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2" stroke-linecap="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+          <div>
+            <div class="right-title">Petição à ANPD</div>
+            <div class="right-desc">Peticionar contra o controlador perante a Autoridade Nacional de Proteção de Dados.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="deadline-box">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007A52" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <p>Todas as solicitações de exercício de direitos são respondidas em até <strong>15 dias úteis</strong> contados do recebimento. Envie para <strong>privacidade@bertoi.com.br</strong> com o assunto "Direitos LGPD".</p>
+      </div>
+
+      <p>
+        <strong>Usuários do sistema:</strong> A função de exclusão de conta está disponível diretamente na plataforma,
+        em <em>Configurações → Minha Conta → Excluir meus dados</em>. A operação anonimiza seus dados pessoais
+        (nome e e-mail substituídos por identificadores genéricos) preservando o audit log para fins de segurança.
+      </p>
+    </section>
+
+    <!-- 10. Cookies -->
+    <section class="section" id="cookies">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <h2>Cookies, Armazenamento Local e Logs</h2>
+      </div>
+      <p>O CoreExtract utiliza <strong>localStorage</strong> do navegador (não cookies tradicionais) para armazenar o token de autenticação JWT e preferências de interface. Esses dados:</p>
+      <div class="data-card">
+        <ul>
+          <li>Ficam exclusivamente no dispositivo do usuário</li>
+          <li>Não são transmitidos a terceiros</li>
+          <li>São removidos ao clicar em "Sair" ou ao chamar o endpoint de encerramento de sessão</li>
+          <li>Expiram automaticamente após 8 horas de inatividade</li>
+        </ul>
+      </div>
+      <p style="margin-top:14px;">
+        O servidor registra logs de acesso (IP, timestamp, ação, usuário) para fins de auditoria e segurança,
+        conforme descrito na seção 7 (Retenção). O CoreExtract <strong>não utiliza cookies de rastreamento,
+        analytics de terceiros ou pixels de publicidade</strong>.
+      </p>
+    </section>
+
+    <!-- 11. Menores -->
+    <section class="section" id="menores">
+      <div class="section-header">
+        <span class="section-num">11</span>
+        <h2>Menores de Idade</h2>
+      </div>
+      <p>
+        O CoreExtract é destinado exclusivamente a empresas e profissionais de RH maiores de 18 anos.
+        Não coletamos intencionalmente dados de menores de idade. Caso currículos de candidatos menores de 18 anos
+        sejam enviados para processamento, a empresa contratante é responsável por garantir a base legal adequada
+        (Art. 14 LGPD — consentimento específico dos pais ou responsáveis legais).
+      </p>
+    </section>
+
+    <!-- 12. Alterações -->
+    <section class="section" id="alteracoes">
+      <div class="section-header">
+        <span class="section-num">12</span>
+        <h2>Alterações nesta Política</h2>
+      </div>
+      <p>
+        Esta Política de Privacidade pode ser atualizada periodicamente. Alterações relevantes serão comunicadas por
+        e-mail aos usuários do sistema com antecedência mínima de 15 dias, ou imediatamente em caso de exigência legal.
+        A versão vigente estará sempre disponível em <code>/politica-de-privacidade</code> no sistema.
+      </p>
+      <p>
+        O uso continuado do CoreExtract após a entrada em vigor de uma nova versão constitui aceitação das alterações.
+        Caso não concorde, o usuário poderá solicitar o encerramento da conta conforme a seção 9.
+      </p>
+    </section>
+
+    <!-- 13. Contato -->
+    <section class="section" id="contato">
+      <div class="section-header">
+        <span class="section-num">13</span>
+        <h2>Contato e Canal de Privacidade</h2>
+      </div>
+      <p>Para exercer seus direitos ou esclarecer dúvidas sobre o tratamento de dados, entre em contato:</p>
+      <div class="contact-grid">
+        <div class="contact-card">
+          <div class="contact-card-label">Canal de Privacidade (DPO)</div>
+          <div class="contact-card-value"><a href="mailto:privacidade@bertoi.com.br">privacidade@bertoi.com.br</a></div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card-label">Suporte Geral</div>
+          <div class="contact-card-value"><a href="mailto:contato@bertoi.com.br">contato@bertoi.com.br</a></div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card-label">ANPD (Autoridade Nacional)</div>
+          <div class="contact-card-value"><a href="https://www.gov.br/anpd" target="_blank" rel="noopener">www.gov.br/anpd</a></div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card-label">Versão desta Política</div>
+          <div class="contact-card-value">1.0 — Maio de 2026</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="page-footer">
+  <p>
+    CoreExtract · Bertoi Informática · <a href="/">Voltar ao sistema</a> ·
+    Dúvidas: <a href="mailto:privacidade@bertoi.com.br">privacidade@bertoi.com.br</a>
+  </p>
+</footer>
+
+<script>
+  // Índice ativo baseado no scroll
+  const sections = document.querySelectorAll('.section[id]');
+  const links    = document.querySelectorAll('.toc-list a');
+
+  function updateToc() {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 60) current = s.id;
+    });
+    links.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  }
+
+  window.addEventListener('scroll', updateToc, { passive: true });
+  updateToc();
+</script>
+</body>
+</html>

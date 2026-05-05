@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CoreExtract — Painel Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:    #0D1B2A;
+      --blue:    #1A6BFF;
+      --cyan:    #00C8FF;
+      --emerald: #00D68F;
+      --amber:   #FFB830;
+      --coral:   #FF5757;
+      --slate:   #F0F4FF;
+      --gray:    #6B7A99;
+      --white:   #FFFFFF;
+      --border:  #E0E8FF;
+    }
+    body { background: var(--slate); font-family: 'Inter', sans-serif; color: var(--navy); min-height: 100vh; }
+
+    /* ── Navbar ── */
+    .navbar {
+      background: linear-gradient(135deg, #0D1B2A 0%, #1A3A6B 100%);
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .navbar-brand {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none;
+    }
+    .navbar-logo {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, #1A6BFF, #00C8FF);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .navbar-title { font-size: 16px; font-weight: 700; color: #fff; }
+    .navbar-badge {
+      font-size: 11px; font-weight: 600; padding: 2px 8px;
+      background: rgba(255,184,48,0.2); color: #FFB830;
+      border: 1px solid rgba(255,184,48,0.4);
+      border-radius: 20px;
+    }
+    .navbar-right { display: flex; align-items: center; gap: 12px; }
+    .user-pill {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.08); border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px; color: rgba(255,255,255,0.85);
+    }
+    .btn-logout {
+      background: rgba(255,87,87,0.15); border: 1px solid rgba(255,87,87,0.3);
+      color: #FF7070; border-radius: 8px; padding: 6px 14px;
+      font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: background 0.2s;
+    }
+    .btn-logout:hover { background: rgba(255,87,87,0.25); }
+
+    /* ── Layout ── */
+    .page { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+    .page-header { margin-bottom: 32px; }
+    .page-title { font-size: 26px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+    .page-subtitle { font-size: 14px; color: var(--gray); }
+
+    /* ── Stat cards ── */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px; margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--white); border-radius: 16px; padding: 20px 24px;
+      box-shadow: 0 2px 12px rgba(13,27,42,0.06);
+      display: flex; align-items: center; gap: 16px;
+    }
+    .stat-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .stat-icon.blue  { background: rgba(26,107,255,0.1); color: var(--blue); }
+    .stat-icon.green { background: rgba(0,214,143,0.1); color: var(--emerald); }
+    .stat-icon.amber { background: rgba(255,184,48,0.1); color: var(--amber); }
+    .stat-num { font-size: 28px; font-weight: 800; color: var(--navy); line-height: 1; }
+    .stat-label { font-size: 12px; color: var(--gray); margin-top: 2px; }
+
+    /* ── Secoes ── */
+    .section { margin-bottom: 32px; }
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .section-title { font-size: 17px; font-weight: 700; color: var(--navy); }
+    .section-subtitle { font-size: 12px; color: var(--gray); margin-top: 2px; }
+
+    /* ── Card ── */
+    .card {
+      background: var(--white); border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(13,27,42,0.06);
+      overflow: hidden;
+    }
+
+    /* ── Formulário de nova empresa ── */
+    .form-card { padding: 24px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-grid.full { grid-template-columns: 1fr; }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-label { font-size: 12px; font-weight: 600; color: var(--navy); }
+    .form-input {
+      padding: 10px 12px; border: 1.5px solid var(--border);
+      border-radius: 8px; font-size: 13px; font-family: inherit;
+      color: var(--navy); background: #F8FAFF;
+      transition: border-color 0.2s; outline: none;
+    }
+    .form-input:focus { border-color: var(--blue); background: #fff; }
+    .form-hint { font-size: 11px; color: var(--gray); }
+    .form-divider {
+      grid-column: 1 / -1;
+      border: none; border-top: 1px dashed var(--border);
+      margin: 4px 0;
+    }
+    .form-section-label {
+      grid-column: 1 / -1;
+      font-size: 11px; font-weight: 700; color: var(--blue);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .btn {
+      padding: 10px 18px; border-radius: 8px;
+      font-size: 13px; font-weight: 700; font-family: inherit;
+      cursor: pointer; transition: opacity 0.2s, transform 0.15s;
+      border: none; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-primary { background: linear-gradient(90deg, #1A6BFF, #00C8FF); color: #fff; }
+    .btn-danger { background: #FFF5F5; color: #C62828; border: 1px solid #FFCDD2; }
+    .btn-success { background: #F0FFF8; color: #1B5E20; border: 1px solid #B2DFDB; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 6px; }
+
+    /* ── Tabela ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.5px; color: var(--gray);
+      padding: 12px 16px; text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    td {
+      padding: 14px 16px; font-size: 13px; color: var(--navy);
+      border-bottom: 1px solid rgba(224,232,255,0.5);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(26,107,255,0.02); }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+    }
+    .badge.green { background: rgba(0,214,143,0.1); color: #0A8A50; }
+    .badge.red   { background: rgba(255,87,87,0.1); color: #C62828; }
+    .badge.blue  { background: rgba(26,107,255,0.1); color: var(--blue); }
+    .badge.amber { background: rgba(255,184,48,0.1); color: #9A6400; }
+
+    /* ── Usuarios dentro de empresa ── */
+    .users-panel {
+      display: none;
+      background: #F8FAFF;
+      border-top: 1px solid var(--border);
+      padding: 20px 24px;
+    }
+    .users-panel.open { display: block; }
+    .users-mini-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 10px; margin-top: 14px;
+    }
+    .user-chip {
+      background: #fff; border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 14px;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .user-chip-info { flex: 1; min-width: 0; }
+    .user-chip-name { font-size: 13px; font-weight: 600; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-chip-email { font-size: 11px; color: var(--gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ── Alertas ── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--navy); color: #fff; border-radius: 12px;
+      padding: 14px 20px; font-size: 13px; font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      transform: translateY(80px); opacity: 0;
+      transition: transform 0.3s, opacity 0.3s;
+      z-index: 9999; max-width: 360px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.ok  { background: #1B5E20; }
+    .toast.err { background: #B71C1C; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4); z-index: 500;
+      display: none; align-items: center; justify-content: center; padding: 24px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 16px; padding: 28px;
+      width: 100%; max-width: 440px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+    }
+    .modal-title { font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 16px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+    .empty-state {
+      text-align: center; padding: 40px; color: var(--gray); font-size: 14px;
+    }
+    .empty-state svg { margin-bottom: 12px; opacity: 0.4; }
+
+    .loading { text-align: center; padding: 32px; color: var(--gray); font-size: 13px; }
+
+    .btn-edit {
+      background: rgba(26,107,255,0.08); color: var(--blue);
+      border: 1px solid rgba(26,107,255,0.25);
+    }
+    .btn-edit:hover { background: rgba(26,107,255,0.15); }
+
+    .actions-cell { display: flex; gap: 6px; align-items: center; }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <a class="navbar-brand" href="/">
+    <div class="navbar-logo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round">
+        <path d="M4 6h16M4 12h10M4 18h7"/>
+        <circle cx="20" cy="17" r="3"/><path d="M22.5 19.5l1.5 1.5"/>
+      </svg>
+    </div>
+    <span class="navbar-title">CoreExtract</span>
+  </a>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span class="navbar-badge">SUPERADMIN</span>
+  </div>
+  <div class="navbar-right">
+    <div class="user-pill">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+      <span id="navUser">—</span>
+    </div>
+    <button class="btn-logout" onclick="logout()">Sair</button>
+  </div>
+</nav>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" id="toastIcon">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+  <span id="toastMsg"></span>
+</div>
+
+<!-- Modal adicionar usuário -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal-box">
+    <div class="modal-title">Adicionar Usuário à Empresa</div>
+    <input type="hidden" id="modalEmpresaId">
+    <div class="form-grid" style="gap:14px;">
+      <div class="form-group">
+        <label class="form-label">Nome completo</label>
+        <input class="form-input" type="text" id="mNome" placeholder="Maria Silva">
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-mail corporativo</label>
+        <input class="form-input" type="email" id="mEmail" placeholder="maria@empresa.com.br">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Senha inicial</label>
+        <input class="form-input" type="password" id="mSenha" placeholder="Mínimo 8 caracteres">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Perfil</label>
+        <select class="form-input" id="mRole">
+          <option value="user">Usuário</option>
+          <option value="admin">Administrador da empresa</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeUserModal()" style="background:#F0F4FF;color:var(--gray);">Cancelar</button>
+      <button class="btn btn-primary" onclick="createUser()">Criar Usuário</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal editar empresa -->
+<div class="modal-overlay" id="editEmpresaModal">
+  <div class="modal-box">
+    <div class="modal-title">Editar Empresa</div>
+    <input type="hidden" id="editEmpresaId">
+    <div class="form-grid" style="gap:14px;">
+      <div class="form-group" style="grid-column:1/-1;">
+        <label class="form-label">Razão Social *</label>
+        <input class="form-input" type="text" id="editERazao" placeholder="Empresa Exemplo Ltda">
+      </div>
+      <div class="form-group">
+        <label class="form-label">CNPJ</label>
+        <input class="form-input" type="text" id="editECNPJ" placeholder="00.000.000/0000-00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-mail do Admin</label>
+        <input class="form-input" type="email" id="editEEmailAdmin" placeholder="admin@empresa.com.br">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeEditEmpresaModal()" style="background:#F0F4FF;color:var(--gray);">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveEditEmpresa()">Salvar Alterações</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal editar usuário -->
+<div class="modal-overlay" id="editUserModal">
+  <div class="modal-box">
+    <div class="modal-title">Editar Usuário</div>
+    <input type="hidden" id="editUserId">
+    <div class="form-grid" style="gap:14px;">
+      <div class="form-group" style="grid-column:1/-1;">
+        <label class="form-label">Nome completo</label>
+        <input class="form-input" type="text" id="editUNome" placeholder="Nome do usuário">
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-mail</label>
+        <input class="form-input" type="email" id="editUEmail" placeholder="email@empresa.com.br">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Perfil</label>
+        <select class="form-input" id="editURole">
+          <option value="user">Usuário</option>
+          <option value="admin">Administrador da empresa</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeEditUserModal()" style="background:#F0F4FF;color:var(--gray);">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveEditUser()">Salvar Alterações</button>
+    </div>
+  </div>
+</div>
+
+<!-- Conteúdo -->
+<div class="page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-title">Painel de Administração</div>
+    <div class="page-subtitle">Gerencie empresas e usuários do CoreExtract · Bertoi Informática</div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon blue">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </div>
+      <div>
+        <div class="stat-num" id="statEmpresas">—</div>
+        <div class="stat-label">Empresas ativas</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <div>
+        <div class="stat-num" id="statUsuarios">—</div>
+        <div class="stat-label">Usuários cadastrados</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon amber">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+      </div>
+      <div>
+        <div class="stat-num" id="statSessoes">—</div>
+        <div class="stat-label">Triagens realizadas</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nova Empresa -->
+  <div class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Cadastrar Nova Empresa</div>
+        <div class="section-subtitle">Apenas o superadmin pode cadastrar empresas no sistema</div>
+      </div>
+    </div>
+    <div class="card form-card">
+      <div class="form-grid">
+        <!-- Dados da empresa -->
+        <div class="form-section-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          </svg>
+          Dados da Empresa
+        </div>
+        <div class="form-group">
+          <label class="form-label">Razão Social *</label>
+          <input class="form-input" type="text" id="eRazao" placeholder="Empresa Exemplo Ltda">
+        </div>
+        <div class="form-group">
+          <label class="form-label">CNPJ</label>
+          <input class="form-input" type="text" id="eCNPJ" placeholder="00.000.000/0000-00">
+          <span class="form-hint">Opcional</span>
+        </div>
+        <hr class="form-divider">
+        <!-- Dados do admin -->
+        <div class="form-section-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          Primeiro Administrador da Empresa
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nome completo *</label>
+          <input class="form-input" type="text" id="eNomeAdmin" placeholder="Ana Souza">
+        </div>
+        <div class="form-group">
+          <label class="form-label">E-mail corporativo *</label>
+          <input class="form-input" type="email" id="eEmailAdmin" placeholder="ana@empresa.com.br">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Senha inicial *</label>
+          <input class="form-input" type="password" id="eSenhaAdmin" placeholder="Mínimo 8 caracteres">
+          <span class="form-hint">O admin deve trocar no primeiro acesso</span>
+        </div>
+        <div style="display:flex;align-items:flex-end;">
+          <button class="btn btn-primary" onclick="criarEmpresa()" style="width:100%;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Cadastrar Empresa
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Empresas -->
+  <div class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Empresas Cadastradas</div>
+        <div class="section-subtitle">Clique em uma empresa para ver e gerenciar seus usuários</div>
+      </div>
+      <button class="btn" onclick="loadEmpresas()" style="background:#F0F4FF;color:var(--blue);font-size:12px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
+        </svg>
+        Atualizar
+      </button>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Empresa</th>
+              <th>CNPJ</th>
+              <th>Admin</th>
+              <th>Usuários</th>
+              <th>Status</th>
+              <th>Cadastro</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="empresasBody">
+            <tr><td colspan="7" class="loading">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Painel de usuários expandido -->
+      <div id="usersPanel" class="users-panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-size:14px;font-weight:700;color:var(--navy);" id="usersPanelTitle">Usuários</div>
+          <button class="btn btn-primary btn-sm" onclick="openUserModal()">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Adicionar Usuário
+          </button>
+        </div>
+        <div class="users-mini-grid" id="usersGrid">
+          <div class="loading">Selecione uma empresa...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ── Auth guard ─────────────────────────────────────────────────
+  const _token    = localStorage.getItem('ce_token');
+  const _role     = localStorage.getItem('ce_role');
+  const _nome     = localStorage.getItem('ce_nome');
+  const _empresa  = localStorage.getItem('ce_empresa_nome');
+
+  if (!_token || _role !== 'superadmin') {
+    window.location.href = '/login';
+    throw new Error('unauthorized');
+  }
+
+  document.getElementById('navUser').textContent = _nome || 'Superadmin';
+
+  function _authHeaders() {
+    return { 'Authorization': `Bearer ${_token}`, 'Content-Type': 'application/json' };
+  }
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = '/login';
+  }
+
+  // ── Toast ──────────────────────────────────────────────────────
+  function showToast(msg, type = 'ok') {
+    const t = document.getElementById('toast');
+    const icon = document.getElementById('toastIcon');
+    document.getElementById('toastMsg').textContent = msg;
+    t.className = `toast ${type} show`;
+    if (type === 'err') {
+      icon.innerHTML = `<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>`;
+    } else {
+      icon.innerHTML = `<polyline points="20 6 9 17 4 12"/>`;
+    }
+    setTimeout(() => { t.className = `toast ${type}`; }, 3500);
+  }
+
+  // ── Formatador de data ─────────────────────────────────────────
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    try {
+      return new Date(iso).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' });
+    } catch { return iso; }
+  }
+
+  // ── Carregar empresas ─────────────────────────────────────────
+  let _activeEmpresaId = null;
+  let _empresasData = [];
+
+  async function loadEmpresas() {
+    document.getElementById('empresasBody').innerHTML =
+      '<tr><td colspan="7" class="loading">Carregando...</td></tr>';
+    document.getElementById('usersPanel').classList.remove('open');
+
+    try {
+      const resp = await fetch('/admin/empresas', { headers: _authHeaders() });
+      if (!resp.ok) throw new Error('Erro ao carregar empresas');
+      const empresas = await resp.json();
+      _empresasData = empresas;
+
+      const ativas   = empresas.filter(e => e.ativo).length;
+      const usuarios = empresas.reduce((s, e) => s + (e.total_usuarios || 0), 0);
+      document.getElementById('statEmpresas').textContent  = ativas;
+      document.getElementById('statUsuarios').textContent  = usuarios;
+      document.getElementById('statSessoes').textContent   = '—';  // futuramente
+
+      if (empresas.length === 0) {
+        document.getElementById('empresasBody').innerHTML =
+          `<tr><td colspan="7">
+            <div class="empty-state">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+              <div>Nenhuma empresa cadastrada ainda.</div>
+            </div>
+          </td></tr>`;
+        return;
+      }
+
+      document.getElementById('empresasBody').innerHTML = empresas.map(e => `
+        <tr id="row-${e.id}" style="cursor:pointer;" onclick="toggleUsers('${e.id}', '${e.razao_social}')">
+          <td>
+            <div style="font-weight:600;color:var(--navy);">${e.razao_social}</div>
+          </td>
+          <td style="color:var(--gray);font-size:12px;">${e.cnpj || '—'}</td>
+          <td style="font-size:12px;">${e.email_admin}</td>
+          <td>
+            <span class="badge blue">${e.total_usuarios || 0} usuário${(e.total_usuarios||0)!==1?'s':''}</span>
+          </td>
+          <td>
+            <span class="badge ${e.ativo ? 'green' : 'red'}">${e.ativo ? 'Ativa' : 'Inativa'}</span>
+          </td>
+          <td style="color:var(--gray);font-size:12px;">${fmtDate(e.created_at)}</td>
+          <td onclick="event.stopPropagation()">
+            <div class="actions-cell">
+              <button class="btn btn-edit btn-sm" title="Editar"
+                onclick="openEditEmpresa('${e.id}','${e.razao_social}','${e.cnpj||''}','${e.email_admin}')">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+              ${e.ativo
+                ? `<button class="btn btn-danger btn-sm" onclick="toggleEmpresa('${e.id}', false)">Desativar</button>`
+                : `<button class="btn btn-success btn-sm" onclick="toggleEmpresa('${e.id}', true)">Reativar</button>`
+              }
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      document.getElementById('empresasBody').innerHTML =
+        `<tr><td colspan="7" style="color:var(--coral);padding:20px;">Erro: ${err.message}</td></tr>`;
+    }
+  }
+
+  // ── Painel de usuarios ────────────────────────────────────────
+  async function toggleUsers(empresaId, nome) {
+    const panel = document.getElementById('usersPanel');
+    if (_activeEmpresaId === empresaId && panel.classList.contains('open')) {
+      panel.classList.remove('open');
+      _activeEmpresaId = null;
+      return;
+    }
+    _activeEmpresaId = empresaId;
+    document.getElementById('modalEmpresaId').value = empresaId;
+    document.getElementById('usersPanelTitle').textContent = `Usuários — ${nome}`;
+    panel.classList.add('open');
+    loadUsers(empresaId);
+  }
+
+  async function loadUsers(empresaId) {
+    const grid = document.getElementById('usersGrid');
+    grid.innerHTML = '<div class="loading">Carregando...</div>';
+    try {
+      const resp = await fetch(`/empresa/usuarios`, { headers: _authHeaders() });
+      // Filtra pelo empresa_id (o endpoint retorna da empresa do token, mas superadmin vê todas)
+      // Para o superadmin ver usuários de outras empresas usamos /admin/empresas + join manual
+      // Por simplicidade, usamos a listagem geral e filtramos no client
+      const data = await resp.json();
+      const users = Array.isArray(data) ? data.filter(u => u.empresa_id === empresaId) : [];
+
+      if (users.length === 0) {
+        grid.innerHTML = '<div style="color:var(--gray);font-size:13px;">Nenhum usuário ainda. Adicione o primeiro!</div>';
+        return;
+      }
+      grid.innerHTML = users.map(u => `
+        <div class="user-chip">
+          <div class="user-chip-info">
+            <div class="user-chip-name">${u.nome}</div>
+            <div class="user-chip-email">${u.email}</div>
+            <div style="margin-top:3px;">
+              <span class="badge ${u.role==='admin'?'amber':'blue'}" style="font-size:10px;">${u.role}</span>
+              ${!u.ativo ? '<span class="badge red" style="font-size:10px;margin-left:4px;">Inativo</span>' : ''}
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+            <button class="btn btn-edit btn-sm" title="Editar"
+              onclick="openEditUser('${u.id}','${u.nome}','${u.email}','${u.role}')">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+            ${u.ativo
+              ? `<button class="btn btn-danger btn-sm" title="Desativar" onclick="desativarUser('${u.id}', '${u.nome}')">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>`
+              : `<button class="btn btn-success btn-sm" title="Reativar" onclick="reativarUser('${u.id}')">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </button>`
+            }
+          </div>
+        </div>
+      `).join('');
+    } catch (err) {
+      grid.innerHTML = `<div style="color:var(--coral);">Erro: ${err.message}</div>`;
+    }
+  }
+
+  // ── Criar empresa ─────────────────────────────────────────────
+  async function criarEmpresa() {
+    const razao      = document.getElementById('eRazao').value.trim();
+    const cnpj       = document.getElementById('eCNPJ').value.trim();
+    const nomeAdmin  = document.getElementById('eNomeAdmin').value.trim();
+    const emailAdmin = document.getElementById('eEmailAdmin').value.trim();
+    const senhaAdmin = document.getElementById('eSenhaAdmin').value;
+
+    if (!razao || !nomeAdmin || !emailAdmin || !senhaAdmin) {
+      showToast('Preencha todos os campos obrigatórios.', 'err'); return;
+    }
+    if (senhaAdmin.length < 8) {
+      showToast('A senha deve ter pelo menos 8 caracteres.', 'err'); return;
+    }
+
+    try {
+      const resp = await fetch('/admin/empresas', {
+        method: 'POST',
+        headers: _authHeaders(),
+        body: JSON.stringify({
+          razao_social: razao,
+          cnpj: cnpj || null,
+          email_admin: emailAdmin,
+          nome_admin: nomeAdmin,
+          senha_admin: senhaAdmin,
+        }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) { showToast(data.detail || 'Erro ao criar empresa.', 'err'); return; }
+
+      showToast(`Empresa "${razao}" criada com sucesso!`, 'ok');
+      ['eRazao','eCNPJ','eNomeAdmin','eEmailAdmin','eSenhaAdmin'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      loadEmpresas();
+    } catch (err) {
+      showToast('Erro de conexão.', 'err');
+    }
+  }
+
+  // ── Toggle empresa ────────────────────────────────────────────
+  async function toggleEmpresa(empresaId, ativar) {
+    const url = ativar
+      ? `/admin/empresas/${empresaId}/reativar`
+      : `/admin/empresas/${empresaId}`;
+    const method = ativar ? 'PUT' : 'DELETE';
+    try {
+      const resp = await fetch(url, { method, headers: _authHeaders() });
+      if (!resp.ok) { const d = await resp.json(); showToast(d.detail || 'Erro.', 'err'); return; }
+      showToast(ativar ? 'Empresa reativada.' : 'Empresa desativada.', 'ok');
+      loadEmpresas();
+    } catch { showToast('Erro de conexão.', 'err'); }
+  }
+
+  // ── Modal usuario ─────────────────────────────────────────────
+  function openUserModal() {
+    if (!_activeEmpresaId) { showToast('Selecione uma empresa primeiro.', 'err'); return; }
+    document.getElementById('userModal').classList.add('open');
+  }
+  function closeUserModal() {
+    document.getElementById('userModal').classList.remove('open');
+    ['mNome','mEmail','mSenha'].forEach(id => document.getElementById(id).value = '');
+  }
+
+  async function createUser() {
+    const nome  = document.getElementById('mNome').value.trim();
+    const email = document.getElementById('mEmail').value.trim();
+    const senha = document.getElementById('mSenha').value;
+    const role  = document.getElementById('mRole').value;
+    if (!nome || !email || !senha) { showToast('Preencha todos os campos.', 'err'); return; }
+    if (senha.length < 8) { showToast('Senha deve ter ao menos 8 caracteres.', 'err'); return; }
+
+    try {
+      // Para criar usuario em empresa específica via superadmin,
+      // usamos o endpoint de empresa (JWT do superadmin tem empresa_id = system,
+      // então precisamos impersonar — por ora usamos o endpoint direto do admin)
+      const resp = await fetch('/empresa/usuarios', {
+        method: 'POST',
+        headers: _authHeaders(),
+        body: JSON.stringify({ nome, email, senha, role }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) { showToast(data.detail || 'Erro ao criar usuário.', 'err'); return; }
+      showToast(`Usuário "${nome}" criado com sucesso!`, 'ok');
+      closeUserModal();
+      if (_activeEmpresaId) loadUsers(_activeEmpresaId);
+    } catch { showToast('Erro de conexão.', 'err'); }
+  }
+
+  // ── Desativar / Reativar usuario ──────────────────────────────
+  async function desativarUser(userId, nome) {
+    if (!confirm(`Desativar o usuário "${nome}"? Ele perderá acesso ao sistema.`)) return;
+    try {
+      const resp = await fetch(`/empresa/usuarios/${userId}`, {
+        method: 'DELETE', headers: _authHeaders(),
+      });
+      if (!resp.ok) { const d = await resp.json(); showToast(d.detail||'Erro.','err'); return; }
+      showToast(`Usuário "${nome}" desativado.`, 'ok');
+      if (_activeEmpresaId) loadUsers(_activeEmpresaId);
+    } catch { showToast('Erro de conexão.', 'err'); }
+  }
+
+  async function reativarUser(userId) {
+    try {
+      const resp = await fetch(`/empresa/usuarios/${userId}/reativar`, {
+        method: 'PUT', headers: _authHeaders(),
+      });
+      if (!resp.ok) { showToast('Erro ao reativar.','err'); return; }
+      showToast('Usuário reativado.', 'ok');
+      if (_activeEmpresaId) loadUsers(_activeEmpresaId);
+    } catch { showToast('Erro de conexão.', 'err'); }
+  }
+
+  // ── Editar empresa ────────────────────────────────────────────
+  function openEditEmpresa(id, razao, cnpj, emailAdmin) {
+    document.getElementById('editEmpresaId').value    = id;
+    document.getElementById('editERazao').value       = razao;
+    document.getElementById('editECNPJ').value        = cnpj || '';
+    document.getElementById('editEEmailAdmin').value  = emailAdmin;
+    document.getElementById('editEmpresaModal').classList.add('open');
+  }
+  function closeEditEmpresaModal() {
+    document.getElementById('editEmpresaModal').classList.remove('open');
+  }
+  async function saveEditEmpresa() {
+    const id         = document.getElementById('editEmpresaId').value;
+    const razao      = document.getElementById('editERazao').value.trim();
+    const cnpj       = document.getElementById('editECNPJ').value.trim();
+    const emailAdmin = document.getElementById('editEEmailAdmin').value.trim();
+    if (!razao) { showToast('Razão social é obrigatória.', 'err'); return; }
+    try {
+      const resp = await fetch(`/admin/empresas/${id}`, {
+        method: 'PUT',
+        headers: _authHeaders(),
+        body: JSON.stringify({ razao_social: razao, cnpj: cnpj || null, email_admin: emailAdmin }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) { showToast(data.detail || 'Erro ao salvar.', 'err'); return; }
+      showToast('Empresa atualizada com sucesso!', 'ok');
+      closeEditEmpresaModal();
+      loadEmpresas();
+    } catch { showToast('Erro de conexão.', 'err'); }
+  }
+
+  // ── Editar usuário ─────────────────────────────────────────────
+  function openEditUser(id, nome, email, role) {
+    document.getElementById('editUserId').value   = id;
+    document.getElementById('editUNome').value    = nome;
+    document.getElementById('editUEmail').value   = email;
+    document.getElementById('editURole').value    = role;
+    document.getElementById('editUserModal').classList.add('open');
+  }
+  function closeEditUserModal() {
+    document.getElementById('editUserModal').classList.remove('open');
+  }
+  async function saveEditUser() {
+    const id    = document.getElementById('editUserId').value;
+    const nome  = document.getElementById('editUNome').value.trim();
+    const email = document.getElementById('editUEmail').value.trim();
+    const role  = document.getElementById('editURole').value;
+    if (!nome || !email) { showToast('Nome e e-mail são obrigatórios.', 'err'); return; }
+    try {
+      const resp = await fetch(`/admin/usuarios/${id}`, {
+        method: 'PUT',
+        headers: _authHeaders(),
+        body: JSON.stringify({ nome, email, role }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) { showToast(data.detail || 'Erro ao salvar.', 'err'); return; }
+      showToast('Usuário atualizado com sucesso!', 'ok');
+      closeEditUserModal();
+      if (_activeEmpresaId) loadUsers(_activeEmpresaId);
+    } catch { showToast('Erro de conexão.', 'err'); }
+  }
+
+  // ── Init ──────────────────────────────────────────────────────
+  loadEmpresas();
+</script>
+</body>
+</html>

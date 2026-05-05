@@ -10,8 +10,14 @@ env/
 .env
 *.env
 
+# Streamlit secrets (contém API_BASE_URL e outras configurações sensíveis)
+.streamlit/secrets.toml
+
 # Database (has credentials)
 coreextract.db
+
+# Session data (conteúdo de extração, não commitar)
+last_session.json
 
 # Logs
 *.log

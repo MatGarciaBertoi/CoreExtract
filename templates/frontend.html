@@ -646,6 +646,84 @@
 [data-theme="dark"] .btn-expand-exp { border-color: rgba(255,255,255,0.15); }
 [data-theme="dark"] .btn-expand-exp:hover { border-color: var(--blue); }
 
+/* ── Legenda expandível ─────────────────────────────── */
+.legend-extra { display: none; }
+.legend-extra.open { display: block; }
+.legend-box {
+  margin-top: 10px; border-radius: 10px; padding: 14px 16px;
+  background: #F7F9FF; border: 1px solid #E2E8F8;
+  display: flex; flex-direction: column; gap: 14px;
+}
+[data-theme="dark"] .legend-box {
+  background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1);
+}
+.legend-group-title {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--gray); margin-bottom: 7px;
+}
+.legend-rows { display: flex; flex-direction: column; gap: 6px; }
+.legend-row {
+  display: flex; align-items: center; gap: 10px; font-size: 12px;
+}
+.legend-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.legend-chip {
+  padding: 2px 10px; border-radius: 12px; font-size: 11px;
+  font-weight: 600; min-width: 64px; text-align: center; flex-shrink: 0;
+}
+.legend-desc { color: var(--gray); font-size: 12px; line-height: 1.4; }
+
+/* ── Candidate Selection ──────────────────────────────── */
+.cand-checkbox-custom {
+  width: 26px; height: 26px; border-radius: 5px; flex-shrink: 0;
+  border: 2.5px solid rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.06);
+  cursor: pointer; transition: all 0.18s;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 2px;
+  box-shadow: 0 0 0 0 rgba(26,107,255,0);
+}
+.cand-checkbox-custom.checked {
+  background: var(--blue); border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(26,107,255,0.25);
+}
+.cand-checkbox-custom:hover { border-color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.14); }
+.result-card.deselected .result-card-header { opacity: 0.4; }
+.result-card.deselected .result-body { opacity: 0.35; pointer-events: none; }
+.selection-counter {
+  font-size: 12px; font-weight: 600; color: var(--gray);
+  margin-bottom: 14px; padding: 10px 16px;
+  background: #F0F4FF; border-radius: 10px;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+}
+[data-theme="dark"] .selection-counter { background: #0D1F3C; color: #6A84AA; }
+.sel-toggle-btn {
+  font-size: 11px; font-weight: 600; color: var(--blue);
+  background: none; border: none; cursor: pointer; padding: 0;
+  text-decoration: underline; white-space: nowrap;
+}
+/* Preview modal candidate checkbox */
+.preview-candidate { cursor: pointer; transition: background 0.12s; user-select: none; }
+.preview-candidate:hover { background: #E8EEFF; }
+[data-theme="dark"] .preview-candidate:hover { background: #0D2040; }
+.preview-candidate.unchecked { opacity: 0.4; }
+.preview-cand-check {
+  width: 18px; height: 18px; border-radius: 5px; flex-shrink: 0;
+  border: 2px solid #C0CBE8; background: white;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.12s;
+}
+[data-theme="dark"] .preview-cand-check { background: #0A1628; border-color: rgba(255,255,255,0.2); }
+.preview-cand-check.checked { background: var(--blue); border-color: var(--blue); }
+.preview-modal-counter {
+  font-size: 11px; font-weight: 600; color: var(--gray);
+  margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;
+}
+/* Índice geral score item highlight */
+.score-item.score-geral-item .score-label { color: var(--navy); font-weight: 700; }
+[data-theme="dark"] .score-item.score-geral-item .score-label { color: var(--navy); }
+
     .form-item { padding: 10px 0; border-bottom: 1px solid #F0F4FF; }
     .form-item:last-child { border-bottom: none; }
     .form-curso { font-size: 14px; font-weight: 600; color: var(--navy); }
@@ -766,7 +844,7 @@
 .preview-subject-value { font-size: 14px; font-weight: 600; color: var(--navy); }
 .preview-candidates { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; }
 .preview-candidate {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
   padding: 10px 14px; background: #F6F9FF;
   border: 1px solid #DDE4F5; border-radius: 8px;
 }
@@ -1156,6 +1234,27 @@
         <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
       </svg>
     </button>
+    <!-- Botão Dashboard -->
+    <a id="btnDashboard" href="#" target="_blank" title="Abrir Dashboard de análises"
+       style="display:inline-flex;align-items:center;gap:6px;background:rgba(26,107,255,0.15);border:1px solid rgba(26,107,255,0.35);color:#7FB3FF;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;text-decoration:none;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;">
+        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+      </svg>
+      Dashboard
+    </a>
+    <!-- User pill + logout (preenchido pelo JS após auth) -->
+    <div id="navUserPill" style="display:none;align-items:center;gap:6px;background:rgba(255,255,255,0.08);border-radius:20px;padding:5px 12px;font-size:12px;color:rgba(255,255,255,0.8);max-width:200px;overflow:hidden;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+      <span id="navUserName" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">—</span>
+    </div>
+    <button onclick="logout()" title="Sair" style="background:rgba(255,87,87,0.15);border:1px solid rgba(255,87,87,0.3);color:#FF9090;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;" id="btnLogout">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:-1px;margin-right:4px;">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      Sair
+    </button>
   </div>
 </nav>
 
@@ -1266,29 +1365,29 @@
             </div>
           </div>
 
-          <div class="model-card" data-model="models/gemini-1.5-flash" onclick="selectModel(this)">
+          <div class="model-card" data-model="models/gemini-3-flash-preview" onclick="selectModel(this)">
             <div class="model-card-header">
-              <div class="model-card-name">Gemini 1.5<br>Flash</div>
+              <div class="model-card-name">Gemini 3<br>Flash Preview</div>
               <div class="model-card-check"></div>
             </div>
-            <span class="model-quota quota-high">1.500 req/dia</span>
-            <div class="model-card-desc" style="margin-top:7px;">Cota alta no free tier. Ideal quando o 2.5 esgotar.</div>
+            <span class="model-quota quota-high">Cota independente</span>
+            <div class="model-card-desc" style="margin-top:7px;">Geração 3 — cota separada dos modelos 2.5. Use quando 2.5 esgotar.</div>
             <div class="model-card-tags">
-              <span class="model-tag">🔋 Alta cota</span>
-              <span class="model-tag">★★★★ Qualidade</span>
+              <span class="model-tag">🆕 Geração 3</span>
+              <span class="model-tag">★★★★★ Qualidade</span>
             </div>
           </div>
 
-          <div class="model-card" data-model="models/gemini-1.5-flash-8b" onclick="selectModel(this)">
+          <div class="model-card" data-model="models/gemini-flash-latest" onclick="selectModel(this)">
             <div class="model-card-header">
-              <div class="model-card-name">Gemini 1.5<br>Flash 8B</div>
+              <div class="model-card-name">Gemini Flash<br>Latest</div>
               <div class="model-card-check"></div>
             </div>
-            <span class="model-quota quota-high">1.500 req/dia</span>
-            <div class="model-card-desc" style="margin-top:7px;">Mais leve e rápido. Bom para triagens em lote.</div>
+            <span class="model-quota quota-high">Cota independente</span>
+            <div class="model-card-desc" style="margin-top:7px;">Alias estável para o Flash mais recente disponível. Fallback confiável.</div>
             <div class="model-card-tags">
-              <span class="model-tag">🔋 Alta cota</span>
-              <span class="model-tag">★★★ Qualidade</span>
+              <span class="model-tag">🔄 Sempre atual</span>
+              <span class="model-tag">★★★★ Qualidade</span>
             </div>
           </div>
 
@@ -1334,12 +1433,18 @@
     <div class="modal-body">
       <div id="emailPreviewContent"></div>
     </div>
-    <div class="modal-footer">
-      <button class="btn-modal-cancel" onclick="closeEmailPreview()">Cancelar</button>
-      <button class="btn-modal-save" id="btnConfirmSend" onclick="confirmSendEmail()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        Confirmar e Enviar
-      </button>
+    <div class="modal-footer" style="flex-wrap:wrap;gap:12px;">
+      <label style="display:flex;align-items:center;gap:14px;cursor:pointer;font-size:13px;color:var(--gray);flex:1;min-width:200px;">
+        <input type="checkbox" id="chkIncluirExcel" checked style="width:16px;height:16px;accent-color:var(--blue);cursor:pointer;flex-shrink:0;">
+        <span>📎 Incluir relatório Excel como anexo</span>
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-modal-cancel" onclick="closeEmailPreview()">Cancelar</button>
+        <button class="btn-modal-save" id="btnConfirmSend" onclick="confirmSendEmail()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Confirmar e Enviar
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -1507,6 +1612,14 @@
           <textarea class="form-textarea" id="eSendContexto" placeholder="Ex: Priorize candidatos com experiência em cloud e inglês avançado..." style="min-height:68px;"></textarea>
         </div>
       </div>
+      <div class="selection-counter" id="selectionCounter">
+        <span>Nenhum candidato selecionado</span>
+        <span>
+          <button class="sel-toggle-btn" onclick="selectAllCandidates()">Todos</button>
+          &nbsp;·&nbsp;
+          <button class="sel-toggle-btn" onclick="deselectAllCandidates()">Nenhum</button>
+        </span>
+      </div>
       <button class="btn-send-email" id="btnSendEmail" onclick="triggerEmailPreview()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg>
         Pré-visualizar e Enviar
@@ -1518,13 +1631,197 @@
 
 <!-- ── Footer ─────────────────────────────────────────────────── -->
 <footer class="footer">
-  CoreExtract v2.0 · <span>Bertoi Informática</span>
+  CoreExtract v2.2 · <span>Bertoi Informática</span> ·
+  <a href="/politica-de-privacidade" target="_blank" style="color:var(--blue);text-decoration:none;font-weight:500;">Política de Privacidade</a>
+  · <a href="mailto:privacidade@bertoi.com.br" style="color:var(--gray);text-decoration:none;">privacidade@bertoi.com.br</a>
 </footer>
+
+<!-- ── Modal de Consentimento LGPD ──────────────────────────── -->
+<div class="modal-overlay" id="lgpdConsentModal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="lgpdConsentTitle">
+  <div class="modal-box" style="max-width:520px;">
+    <div class="modal-header" style="border-bottom:1.5px solid #E0E8FF;padding:20px 24px 16px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;background:rgba(26,107,255,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2" stroke-linecap="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <div>
+          <div class="modal-title" id="lgpdConsentTitle" style="font-size:15px;font-weight:700;">Confirmação de Base Legal — LGPD</div>
+          <div style="font-size:12px;color:var(--gray);margin-top:1px;">Necessário antes de processar currículos</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-body" style="padding:20px 24px;">
+      <p style="font-size:13.5px;color:#3A4A6B;line-height:1.65;margin-bottom:16px;">
+        Os currículos contêm <strong>dados pessoais</strong> de candidatos (nome, e-mail, histórico profissional, etc.)
+        protegidos pela <strong>Lei Geral de Proteção de Dados — LGPD (Lei nº 13.709/2018)</strong>.
+      </p>
+      <p style="font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:20px;">
+        Ao processar, o texto dos CVs será enviado à <strong>API Gemini (Google)</strong> para extração por IA.
+        Consulte a <a href="/politica-de-privacidade" target="_blank" style="color:var(--blue);">Política de Privacidade</a> para detalhes sobre transferência internacional.
+      </p>
+
+      <!-- Checkboxes de consentimento -->
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:4px;">
+
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:12px 14px;background:#F6F9FF;border:1.5px solid #DDE8FF;border-radius:10px;transition:border-color 0.2s;" id="chk1Label">
+          <input type="checkbox" id="lgpdChk1" onchange="lgpdCheckUpdate()" style="margin-top:2px;accent-color:var(--blue);width:15px;height:15px;flex-shrink:0;">
+          <span style="font-size:13px;color:#3A4A6B;line-height:1.55;">
+            Confirmo que minha empresa possui <strong>base legal adequada</strong> para processar estes currículos
+            (consentimento dos candidatos, legítimo interesse no processo seletivo, ou contrato em negociação).
+          </span>
+        </label>
+
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:12px 14px;background:#F6F9FF;border:1.5px solid #DDE8FF;border-radius:10px;transition:border-color 0.2s;" id="chk2Label">
+          <input type="checkbox" id="lgpdChk2" onchange="lgpdCheckUpdate()" style="margin-top:2px;accent-color:var(--blue);width:15px;height:15px;flex-shrink:0;">
+          <span style="font-size:13px;color:#3A4A6B;line-height:1.55;">
+            Os dados extraídos serão utilizados <strong>exclusivamente para este processo seletivo</strong>
+            e descartados conforme nossa política de retenção.
+          </span>
+        </label>
+
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:12px 14px;background:#F6F9FF;border:1.5px solid #DDE8FF;border-radius:10px;transition:border-color 0.2s;" id="chk3Label">
+          <input type="checkbox" id="lgpdChk3" onchange="lgpdCheckUpdate()" style="margin-top:2px;accent-color:var(--blue);width:15px;height:15px;flex-shrink:0;">
+          <span style="font-size:13px;color:#3A4A6B;line-height:1.55;">
+            Li e concordo com a <a href="/politica-de-privacidade" target="_blank" style="color:var(--blue);font-weight:600;">Política de Privacidade</a>
+            do CoreExtract, incluindo as condições de transferência internacional de dados.
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <div class="modal-footer" style="padding:14px 24px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #EEF3FF;">
+      <span style="font-size:11.5px;color:var(--gray);">Este aceite é registrado com data e hora no audit log.</span>
+      <div style="display:flex;gap:8px;">
+        <button onclick="closeLgpdConsent()" style="padding:9px 18px;border-radius:8px;border:1.5px solid #DDE8FF;background:#fff;color:var(--gray);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Cancelar</button>
+        <button id="lgpdConfirmBtn" onclick="confirmLgpdConsent()" disabled
+          style="padding:9px 18px;border-radius:8px;border:none;background:#1A6BFF;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;opacity:0.4;transition:opacity 0.2s;">
+          Confirmar e Processar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
+// ══════════════════════════════════════════════════════════════
+// MÓDULO DE AUTENTICAÇÃO — JWT CoreExtract
+// ══════════════════════════════════════════════════════════════
+
+const _CE_TOKEN      = localStorage.getItem('ce_token');
+const _CE_ROLE       = localStorage.getItem('ce_role');
+const _CE_NOME       = localStorage.getItem('ce_nome');
+const _CE_EMPRESA    = localStorage.getItem('ce_empresa_nome');
+
+// Guard: redireciona para /login se não houver token
+if (!_CE_TOKEN) {
+  window.location.replace('/login');
+  throw new Error('Not authenticated');
+}
+
+// Retorna headers com JWT para todas as chamadas à API
+function _authHeaders() {
+  return _CE_TOKEN ? { 'Authorization': `Bearer ${_CE_TOKEN}` } : {};
+}
+
+// Trata 401 — token expirado ou inválido
+function _handle401(resp) {
+  if (resp && resp.status === 401) {
+    localStorage.clear();
+    window.location.href = '/login';
+    return true;
+  }
+  return false;
+}
+
+// ── LGPD Consent Modal ─────────────────────────────────────────
+// Armazena o aceite na sessionStorage (válido por sessão de trabalho).
+// Toda vez que o usuário abre uma nova aba/janela, precisa reconfirmar.
+const _LGPD_KEY = 'ce_lgpd_consent_v1';
+
+function _hasLgpdConsent() {
+  return sessionStorage.getItem(_LGPD_KEY) === 'true';
+}
+
+// Callback chamado depois que o usuário confirma — executa o processamento
+let _lgpdPendingAction = null;
+
+/** Abre o modal e enfileira a ação a executar após o aceite. */
+function requireLgpdConsent(action) {
+  if (_hasLgpdConsent()) { action(); return; }
+  _lgpdPendingAction = action;
+  // Reseta checkboxes
+  ['lgpdChk1','lgpdChk2','lgpdChk3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.checked = false;
+  });
+  lgpdCheckUpdate();
+  document.getElementById('lgpdConsentModal').style.display = 'flex';
+}
+
+function lgpdCheckUpdate() {
+  const all = ['lgpdChk1','lgpdChk2','lgpdChk3'].every(id => {
+    const el = document.getElementById(id);
+    return el && el.checked;
+  });
+  const btn = document.getElementById('lgpdConfirmBtn');
+  if (btn) { btn.disabled = !all; btn.style.opacity = all ? '1' : '0.4'; }
+  // Destaca labels com borda azul quando marcado
+  ['lgpdChk1','lgpdChk2','lgpdChk3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    const lbl = document.getElementById(`chk${i+1}Label`);
+    if (el && lbl) lbl.style.borderColor = el.checked ? 'var(--blue)' : '#DDE8FF';
+  });
+}
+
+function confirmLgpdConsent() {
+  sessionStorage.setItem(_LGPD_KEY, 'true');
+  document.getElementById('lgpdConsentModal').style.display = 'none';
+  // Registra no audit log via API
+  fetch('/lgpd/consent-log', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
+    body: JSON.stringify({ versao_politica: '1.0', contexto: 'processamento_curriculos' }),
+  }).catch(() => {}); // silencioso — não bloqueia o fluxo
+  if (_lgpdPendingAction) { _lgpdPendingAction(); _lgpdPendingAction = null; }
+}
+
+function closeLgpdConsent() {
+  document.getElementById('lgpdConsentModal').style.display = 'none';
+  _lgpdPendingAction = null;
+}
+
+// Logout
+function logout() {
+  localStorage.clear();
+  window.location.href = '/login';
+}
+
+// Dashboard button — detecta local vs produção automaticamente
+(function _initDashboardBtn() {
+  const btn = document.getElementById('btnDashboard');
+  if (!btn) return;
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  btn.href = isLocal
+    ? `http://${window.location.hostname}:8081`
+    : (window.location.origin + '/dashboard/');
+})();
+
+// Exibe nome do usuário na navbar
+(function _initUserDisplay() {
+  const pill = document.getElementById('navUserPill');
+  if (pill) pill.style.display = 'flex';
+  const nameEl = document.getElementById('navUserName');
+  if (nameEl) nameEl.textContent = _CE_NOME || 'Usuário';
+})();
+
+// ══════════════════════════════════════════════════════════════
+
 // ── Config ────────────────────────────────────────────────────
 const API_URL = '/extract';
 
@@ -1541,7 +1838,8 @@ let _providerData   = {
 // ── Init: load current model from API and update navbar ───────
 (async () => {
   try {
-    const res = await fetch('/settings');
+    const res = await fetch('/settings', { headers: _authHeaders() });
+    if (_handle401(res)) return;
     if (res.ok) {
       const cfg = await res.json();
       const model = cfg.gemini_model || 'models/gemini-2.5-flash-lite';
@@ -1628,9 +1926,13 @@ function setStep(n) {
 // ── Submit ────────────────────────────────────────────────────
 let _pendingFormData = null;
 
-btnSubmit.addEventListener('click', async () => {
+btnSubmit.addEventListener('click', () => {
   if (!selectedFiles.length) return;
+  // Exige confirmação LGPD antes de enviar à API (Art. 7 LGPD)
+  requireLgpdConsent(_doProcessFiles);
+});
 
+async function _doProcessFiles() {
   const formData = new FormData();
   selectedFiles.forEach(f => formData.append('files', f, f.name));
   formData.append('job_description', document.getElementById('fJD').value.trim());
@@ -1655,7 +1957,8 @@ btnSubmit.addEventListener('click', async () => {
 
   try {
     const t0 = Date.now();
-    const resp = await fetch(API_URL, { method: 'POST', body: formData });
+    const resp = await fetch(API_URL, { method: 'POST', body: formData, headers: _authHeaders() });
+    if (_handle401(resp)) return;
     stepTimers.forEach(clearTimeout);
     let data = await resp.json();
     const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
@@ -1681,7 +1984,7 @@ btnSubmit.addEventListener('click', async () => {
     showToast('Erro ao processar. Verifique a conexão.', 'error');
     console.error(err);
   }
-});
+}
 
 // ── Render Results ────────────────────────────────────────────
 function renderResults(data, elapsed) {
@@ -1780,7 +2083,7 @@ function renderResults(data, elapsed) {
       ...(resume.habilidades?.idiomas || []).slice(0,3).map(s=>`<span class="skill-tag lang">${s}</span>`),
     ].join('');
 
-    // Experiences (first 3 + expandable rest)
+    // Experiences — todas colapsadas, reveladas por botão
     const allExps = resume.experiencias || [];
     const renderExp = e => `
       <div class="exp-item">
@@ -1789,14 +2092,12 @@ function renderResults(data, elapsed) {
         <div class="exp-periodo">${e.periodo || ''}</div>
         ${e.descricao ? `<div class="exp-desc">${e.descricao}</div>` : ''}
       </div>`;
-    const expsVisible = allExps.slice(0,3).map(renderExp).join('');
-    const expsExtra   = allExps.slice(3).map(renderExp).join('');
-    const expsHtml = expsVisible + (expsExtra ? `
-      <div class="exp-extra" id="exp-extra-${i}">${expsExtra}</div>
-      <button class="btn-expand-exp" id="exp-btn-${i}" onclick="toggleExpExtra(${i},${allExps.length - 3})">
+    const expsHtml = allExps.length === 0 ? '' : `
+      <div class="exp-extra" id="exp-extra-${i}">${allExps.map(renderExp).join('')}</div>
+      <button class="btn-expand-exp" id="exp-btn-${i}" onclick="toggleExpExtra(${i},${allExps.length})">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-        Ver mais ${allExps.length - 3} experiência${allExps.length - 3 > 1 ? 's' : ''}
-      </button>` : '');
+        Ver ${allExps.length} experiência${allExps.length !== 1 ? 's' : ''}
+      </button>`;
 
     // Formações
     const formacoesHtml = (resume.formacoes || resume.formacao || []).slice(0,3).map(f => `
@@ -1851,7 +2152,7 @@ function renderResults(data, elapsed) {
       ...(allExps.map(e => e.empresa || '')),
     ].join(' ').toLowerCase();
     resultsList.innerHTML += `
-      <div class="result-card" data-search="${searchKey.replace(/"/g, '&quot;')}">
+      <div class="result-card" id="result-card-${i}" data-search="${searchKey.replace(/"/g, '&quot;')}">
         <div class="result-card-header">
           <div class="result-header-left">
             <div class="result-name">${resume.nome || 'Nome não identificado'}</div>
@@ -1863,9 +2164,12 @@ function renderResults(data, elapsed) {
           </div>
           <div class="result-header-right">
             ${rankBadge}
-            <div class="result-score-label">Score Geral</div>
-            <div class="result-score-big">${scoreGeral}</div>
             <span class="result-badge" style="background:${bgColor};color:${txColor}">${nivel}</span>
+            <div class="cand-checkbox-custom checked" id="sel-box-${i}"
+                 onclick="event.stopPropagation();toggleCandidateSelect('${r.filename.replace(/'/g,"\\'").replace(/"/g,'&quot;')}','sel-box-${i}','result-card-${i}')"
+                 title="Incluir/excluir do e-mail">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
           </div>
         </div>
         <div class="result-body">
@@ -1888,16 +2192,62 @@ function renderResults(data, elapsed) {
 
           ${resume.resumo_profissional ? `<p class="resumo-box">${resume.resumo_profissional}</p>` : ''}
 
-          <div class="section-title">Scores Detalhados</div>
-          <div class="score-row">
-            ${[['Experiência', scores.experiencia_relevante||0],['Técnico',scores.habilidades_tecnicas||0],['Formação',scores.formacao_academica||0],['Comunicação',scores.clareza_comunicacao||0]].map(([l,v])=>`
-            <div class="score-item">
-              <div class="score-label"><span>${l}</span><span style="font-weight:700;color:${scoreColor(v)}">${v}</span></div>
-              <div class="score-bar-bg"><div class="score-bar-fill" style="width:${v}%;background:${scoreColor(v)}"></div></div>
-            </div>`).join('')}
-          </div>
+          ${skillsHtml ? `
+            <div class="section-title">Habilidades</div>
+            <div class="skills-wrap">${skillsHtml}</div>
+            <button class="btn-expand-exp" id="legend-btn-${i}" onclick="toggleLegend(${i})">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              Ver legenda
+            </button>
+            <div class="legend-extra" id="legend-extra-${i}">
+              <div class="legend-box">
 
-          ${skillsHtml ? `<div class="section-title">Habilidades</div><div class="skills-wrap">${skillsHtml}</div>` : ''}
+                <div>
+                  <div class="legend-group-title">Cores das Habilidades</div>
+                  <div class="legend-rows">
+                    <div class="legend-row">
+                      <span class="legend-chip" style="background:#EEF2FF;color:#2D4A9A;">Técnica</span>
+                      <span class="legend-desc">Linguagens, frameworks, bibliotecas e tecnologias técnicas</span>
+                    </div>
+                    <div class="legend-row">
+                      <span class="legend-chip" style="background:#F0FFF4;color:#1A6B45;">Soft Skill</span>
+                      <span class="legend-desc">Habilidades comportamentais e interpessoais</span>
+                    </div>
+                    <div class="legend-row">
+                      <span class="legend-chip" style="background:#FFF8E8;color:#8B5E00;">Idioma</span>
+                      <span class="legend-desc">Línguas com nível de proficiência</span>
+                    </div>
+                    <div class="legend-row">
+                      <span class="legend-chip" style="background:#F5F0FF;color:#5B3DB5;">Ferramenta</span>
+                      <span class="legend-desc">IDEs, plataformas, SaaS e ferramentas de produtividade</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="legend-group-title">Confiança de Extração</div>
+                  <div class="legend-rows">
+                    <div class="legend-row">
+                      <span class="legend-dot" style="background:#00C07A;"></span>
+                      <span class="legend-chip" style="background:#D6FAE8;color:#007A4C;">Alta</span>
+                      <span class="legend-desc">Texto claro e completo — dados confiáveis, sem necessidade de revisão</span>
+                    </div>
+                    <div class="legend-row">
+                      <span class="legend-dot" style="background:#FFB830;"></span>
+                      <span class="legend-chip" style="background:#FFF8E1;color:#7A4F00;">Média</span>
+                      <span class="legend-desc">Arquivo parcialmente legível — confira o original antes de decidir</span>
+                    </div>
+                    <div class="legend-row">
+                      <span class="legend-dot" style="background:#FF5757;"></span>
+                      <span class="legend-chip" style="background:#FFE8E8;color:#CC2200;">Baixa</span>
+                      <span class="legend-desc">PDF de imagem ou texto quebrado — score pode estar impreciso</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          ` : ''}
 
           ${expsHtml ? `<div class="section-title">Experiências</div>${expsHtml}` : ''}
 
@@ -1933,6 +2283,9 @@ function renderResults(data, elapsed) {
   });
   // Load saved comments after cards are rendered
   setTimeout(() => loadComments(data.results || []), 50);
+
+  // Init candidate selection (all ok selected by default)
+  initCandidateSelection(sortedResults);
 
   // Show email send section when there are successful results
   const emailSendSec = document.getElementById('emailSendSection');
@@ -1983,10 +2336,10 @@ function _updateNavbarBadge(modelId) {
   const badge = document.getElementById('navModelBadge');
   if (!badge) return;
   const labels = {
-    'models/gemini-2.5-flash-lite': 'Gemini 2.5 Flash Lite',
-    'models/gemini-2.5-flash':      'Gemini 2.5 Flash',
-    'models/gemini-1.5-flash':      'Gemini 1.5 Flash',
-    'models/gemini-1.5-flash-8b':   'Gemini 1.5 Flash 8B',
+    'models/gemini-2.5-flash-lite':      'Gemini 2.5 Flash Lite',
+    'models/gemini-2.5-flash':           'Gemini 2.5 Flash',
+    'models/gemini-3-flash-preview':     'Gemini 3 Flash Preview',
+    'models/gemini-flash-latest':        'Gemini Flash Latest',
   };
   badge.textContent = '⚡ ' + (labels[modelId] || modelId.replace('models/', ''));
 }
@@ -2065,7 +2418,8 @@ async function openSettings() {
   document.getElementById('settingsModal').classList.add('open');
   document.getElementById('testResult').textContent = '';
   try {
-    const res = await fetch('/settings');
+    const res = await fetch('/settings', { headers: _authHeaders() });
+    if (_handle401(res)) return;
     const cfg = await res.json();
     // Popula cache de credenciais por provedor
     _providerData.gmail   = { user: cfg.gmail_user   || '', hasSavedPwd: cfg.gmail_app_password   === '__SAVED__' };
@@ -2126,7 +2480,7 @@ async function saveSettings() {
   try {
     const res = await fetch('/settings', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ..._authHeaders() },
       body: (() => {
         const userVal = document.getElementById('sGmailUser').value.trim();
         const pwdVal  = document.getElementById('sGmailPwd').value.trim();
@@ -2171,7 +2525,7 @@ async function testEmail() {
   try {
     const res = await fetch('/settings/test-email', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ..._authHeaders() },
       body: (() => {
         const userVal = document.getElementById('sGmailUser').value.trim();
         const pwdVal  = document.getElementById('sGmailPwd').value.trim() || '__SAVED__';
@@ -2225,7 +2579,7 @@ async function saveComment(idx) {
   try {
     await fetch('/comments', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ..._authHeaders() },
       body: JSON.stringify({ filename, comment }),
     });
     btn.classList.add('saved');
@@ -2247,7 +2601,7 @@ async function loadComments(results) {
   const filenames = results.map(r => r.filename).join(',');
   if (!filenames) return;
   try {
-    const res = await fetch(`/comments?filenames=${encodeURIComponent(filenames)}`);
+    const res = await fetch(`/comments?filenames=${encodeURIComponent(filenames)}`, { headers: _authHeaders() });
     const data = await res.json();
     results.forEach((r, i) => {
       const area = document.getElementById(`comment-${i}`);
@@ -2301,13 +2655,88 @@ function toggleExpExtra(idx, count) {
   const extra = document.getElementById(`exp-extra-${idx}`);
   const btn   = document.getElementById(`exp-btn-${idx}`);
   const open  = extra.classList.toggle('open');
+  const plural = count !== 1 ? 's' : '';
   btn.innerHTML = open
-    ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg> Ver menos`
-    : `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg> Ver mais ${count} experiência${count > 1 ? 's' : ''}`;
+    ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg> Ocultar experiência${plural}`
+    : `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg> Ver ${count} experiência${plural}`;
+}
+
+function toggleLegend(idx) {
+  const extra = document.getElementById(`legend-extra-${idx}`);
+  const btn   = document.getElementById(`legend-btn-${idx}`);
+  const open  = extra.classList.toggle('open');
+  btn.innerHTML = open
+    ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg> Ocultar legenda`
+    : `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Ver legenda`;
 }
 
 // ── Filter Results ────────────────────────────────────────
 let _lastResults = [];
+
+// ── Candidate Selection ───────────────────────────────────
+let _selectedCandidates = new Set(); // filenames
+
+function initCandidateSelection(results) {
+  _selectedCandidates = new Set(
+    results.filter(r => r.status === 'ok').map(r => r.filename)
+  );
+  updateSelectionCounter();
+}
+
+function toggleCandidateSelect(filename, boxId, cardId) {
+  const isSelected = _selectedCandidates.has(filename);
+  if (isSelected) {
+    _selectedCandidates.delete(filename);
+  } else {
+    _selectedCandidates.add(filename);
+  }
+  const box  = document.getElementById(boxId);
+  const card = document.getElementById(cardId);
+  if (box)  box.classList.toggle('checked',    !isSelected);
+  if (card) card.classList.toggle('deselected', isSelected);
+  updateSelectionCounter();
+}
+
+function selectAllCandidates() {
+  const okResults = _lastResults.filter(r => r.status === 'ok');
+  okResults.forEach((r, i) => {
+    _selectedCandidates.add(r.filename);
+    const idx = _lastResults.indexOf(r);
+    const box  = document.getElementById(`sel-box-${idx}`);
+    const card = document.getElementById(`result-card-${idx}`);
+    if (box)  box.classList.add('checked');
+    if (card) card.classList.remove('deselected');
+  });
+  updateSelectionCounter();
+}
+
+function deselectAllCandidates() {
+  const okResults = _lastResults.filter(r => r.status === 'ok');
+  okResults.forEach((r, i) => {
+    _selectedCandidates.delete(r.filename);
+    const idx = _lastResults.indexOf(r);
+    const box  = document.getElementById(`sel-box-${idx}`);
+    const card = document.getElementById(`result-card-${idx}`);
+    if (box)  box.classList.remove('checked');
+    if (card) card.classList.add('deselected');
+  });
+  updateSelectionCounter();
+}
+
+function updateSelectionCounter() {
+  const total = _lastResults.filter(r => r.status === 'ok').length;
+  const sel   = _selectedCandidates.size;
+  const el    = document.getElementById('selectionCounter');
+  if (el) {
+    el.innerHTML = `
+      <span><b>${sel}</b> de <b>${total}</b> candidato${total !== 1 ? 's' : ''} selecionado${sel !== 1 ? 's' : ''} para o e-mail</span>
+      <span>
+        <button class="sel-toggle-btn" onclick="selectAllCandidates()">Todos</button>
+        &nbsp;·&nbsp;
+        <button class="sel-toggle-btn" onclick="deselectAllCandidates()">Nenhum</button>
+      </span>`;
+  }
+}
 
 function filterResults() {
   const q = document.getElementById('filterInput').value.toLowerCase().trim();
@@ -2349,16 +2778,25 @@ function triggerEmailPreview() {
   const destDisplay = nomeDestinatario ||
     destinatario.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
-  const okResults = _lastResults.filter(r => r.status === 'ok');
+  // Only selected ok results (but render all ok so user can re-toggle in modal)
+  const allOkResults  = _lastResults.filter(r => r.status === 'ok');
+  const initSelected  = new Set(_selectedCandidates); // snapshot for modal
   const subject = `[CoreExtract] Triagem de Currículos${tema !== 'Triagem Geral' ? ' — ' + tema : ''}`;
 
-  const candidatesHtml = okResults.map(r => {
-    const score = r.resume?.scores?.score_geral || 0;
-    const nivel = r.resume?.nivel_senioridade || '';
-    const cargo = r.resume?.experiencias?.[0]?.cargo || '';
+  const candidatesHtml = allOkResults.map(r => {
+    const score    = r.resume?.scores?.score_geral || 0;
+    const nivel    = r.resume?.nivel_senioridade || '';
+    const cargo    = r.resume?.experiencias?.[0]?.cargo || '';
+    const isChecked = initSelected.has(r.filename);
+    const safeId   = 'prev-' + r.filename.replace(/[^a-zA-Z0-9]/g,'_');
+    const safeFn   = r.filename.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
     return `
-      <div class="preview-candidate">
-        <div>
+      <div class="preview-candidate${isChecked ? '' : ' unchecked'}" id="${safeId}"
+           onclick="togglePreviewCandidate('${safeFn}','${safeId}')">
+        <div class="preview-cand-check${isChecked ? ' checked' : ''}">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div style="flex:1;min-width:0;">
           <div class="preview-cand-name">${r.resume?.nome || r.filename}</div>
           <div class="preview-cand-role">${cargo}${nivel ? ' · ' + nivel : ''}</div>
         </div>
@@ -2366,6 +2804,7 @@ function triggerEmailPreview() {
       </div>`;
   }).join('');
 
+  const selCount = initSelected.size;
   document.getElementById('emailPreviewContent').innerHTML = `
     <div class="preview-subject">
       <div class="preview-subject-label">Assunto</div>
@@ -2375,12 +2814,17 @@ function triggerEmailPreview() {
       <span>📨 Para: <b>${destDisplay}</b> &lt;${destinatario}&gt;</span>
       ${cc ? `<span>📋 CC: <b>${cc}</b></span>` : ''}
       ${recrutador ? `<span>👤 De: <b>${recrutador}${empresa ? ' · ' + empresa : ''}</b></span>` : ''}
-      <span>📄 <b>${okResults.length}</b> candidato${okResults.length !== 1 ? 's' : ''}</span>
-      <span style="color:#007A4C;font-weight:600;">📎 Relatório Excel (com gráficos) será anexado</span>
+      <span id="previewExcelBadge" style="color:#007A4C;font-weight:600;">📎 Relatório Excel (com gráficos) será anexado</span>
     </div>
-    <div class="preview-section-title">Candidatos incluídos no relatório</div>
+    <div class="preview-modal-counter">
+      <span id="previewCounter"><b>${selCount}</b> candidato${selCount !== 1 ? 's' : ''} no relatório</span>
+      <span style="font-size:10px;color:var(--gray);">Clique para incluir/excluir</span>
+    </div>
     <div class="preview-candidates">${candidatesHtml}</div>
   `;
+
+  // Init modal selection snapshot
+  window._previewSelected = new Set(initSelected);
 
   // Store payload for confirmSendEmail
   _pendingFormData = {
@@ -2391,15 +2835,49 @@ function triggerEmailPreview() {
     nome_recrutador:     recrutador || null,
     empresa_recrutadora: empresa    || null,
     contexto_adicional:  contexto   || null,
-    results:             _lastResults,
+    _allResults:         _lastResults,  // full list — filtered on confirm
   };
 
   document.getElementById('emailPreviewModal').classList.add('open');
+
+  // Sync Excel badge with checkbox state on each open
+  const chk = document.getElementById('chkIncluirExcel');
+  const badge = document.getElementById('previewExcelBadge');
+  if (chk && badge) {
+    const sync = () => {
+      badge.style.display  = chk.checked ? '' : 'none';
+    };
+    sync();
+    chk.onchange = sync;
+  }
 }
 
 function closeEmailPreview() {
   document.getElementById('emailPreviewModal').classList.remove('open');
   _pendingFormData = null;
+  window._previewSelected = new Set();
+}
+
+function togglePreviewCandidate(filename, elId) {
+  const ps = window._previewSelected || new Set();
+  const el = document.getElementById(elId);
+  const check = el?.querySelector('.preview-cand-check');
+  const isChecked = ps.has(filename);
+  if (isChecked) {
+    ps.delete(filename);
+    el?.classList.add('unchecked');
+    check?.classList.remove('checked');
+  } else {
+    ps.add(filename);
+    el?.classList.remove('unchecked');
+    check?.classList.add('checked');
+  }
+  window._previewSelected = ps;
+  const counter = document.getElementById('previewCounter');
+  if (counter) {
+    const n = ps.size;
+    counter.innerHTML = `<b>${n}</b> candidato${n !== 1 ? 's' : ''} no relatório`;
+  }
 }
 
 // Converte qualquer formato de erro do FastAPI em string legível
@@ -2422,13 +2900,29 @@ async function confirmSendEmail() {
   const btn = document.getElementById('btnConfirmSend');
   btn.disabled = true;
   btn.innerHTML = '⏳ Enviando...';
+
+  // Build payload with only the candidates checked in the modal
+  const ps = window._previewSelected || new Set();
+  if (ps.size === 0) {
+    showToast('Selecione ao menos um candidato para enviar.', 'error');
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg> Confirmar e Enviar';
+    return;
+  }
+  const allRes      = _pendingFormData._allResults || [];
+  const filtered    = allRes.filter(r => r.status !== 'ok' || ps.has(r.filename));
+  const incluirExcel = document.getElementById('chkIncluirExcel')?.checked !== false;
+  const { _allResults: _, ...basePayload } = _pendingFormData;
+  const payload = { ...basePayload, results: filtered, incluir_excel: incluirExcel };
+
   // Não fechar o modal antes — só fecha em caso de sucesso
   try {
     const resp = await fetch('/email/send', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(_pendingFormData),
+      headers: { 'Content-Type': 'application/json', ..._authHeaders() },
+      body: JSON.stringify(payload),
     });
+    if (_handle401(resp)) return;
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({ detail: `HTTP ${resp.status}` }));
       throw new Error(_apiError(err, 'Erro ao enviar e-mail'));
@@ -2498,7 +2992,7 @@ async function exportToExcel() {
 
     const resp = await fetch('/export/excel', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ..._authHeaders() },
       body: JSON.stringify({
         results:             _lastResults,
         tema:                tema,
@@ -2506,6 +3000,7 @@ async function exportToExcel() {
         empresa_recrutadora: empresa,
       }),
     });
+    if (_handle401(resp)) return;
 
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({ detail: `HTTP ${resp.status}` }));
