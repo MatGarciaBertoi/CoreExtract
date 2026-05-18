@@ -1,7 +1,7 @@
 """
 auth.py
 ══════════════════════════════════════════════════════════════════════════════
-JWT (HS256) + bcrypt para o sistema de autenticacao multi-tenant CoreExtract.
+JWT (HS256) + bcrypt para o sistema de autenticacao multi-tenant BTExtract.
 
 Dependencias (requirements.txt):
   python-jose[cryptography]

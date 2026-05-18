@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# CoreExtract — Deploy para Google Cloud Functions (2ª geração)
+# BTExtract — Deploy para Google Cloud Functions (2ª geração)
 # =============================================================================
 # Pré-requisitos:
 #   gcloud auth login
@@ -14,8 +14,8 @@ set -euo pipefail
 
 PROJECT_ID="seu-projeto-gcp"
 REGION="us-central1"
-FUNCTION_NAME="coreextract-api"
-BUCKET="coreextract-uploads"
+FUNCTION_NAME="btextract-api"
+BUCKET="btextract-uploads"
 SENDGRID_SECRET="sendgrid-api-key"
 
 # 1. Cria o bucket de uploads (se não existir)

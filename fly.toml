@@ -1,39 +1,35 @@
-# fly.toml — CoreExtract (FastAPI)
-# Gerado para Fly.io free tier (shared-cpu-1x, 256 MB RAM)
+# fly.toml app configuration file generated for btextract-bertoi on 2026-05-05T18:48:13-03:00
 #
-# ANTES DE FAZER DEPLOY: altere o valor de `app` para o nome que você
-# escolher no Fly.io (deve ser único globalmente, ex: coreextract-bertoi)
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
-app            = "coreextract-bertoi"
-primary_region = "gru"          # São Paulo — mais próximo do Brasil
+app = 'btextract-bertoi'
+primary_region = 'gru'
 
 [build]
-  # Usa o Dockerfile da raiz do projeto
 
 [env]
-  CE_DB_PATH = "/data/coreextract.db"
-  # As variáveis sensíveis (SECRET_KEY, GEMINI_API_KEY, etc.) devem ser
-  # definidas via: fly secrets set NOME=VALOR  (nunca no fly.toml!)
+  BT_DB_PATH = '/data/btextract.db'
+
+[[mounts]]
+  source = 'btextract_data'
+  destination = '/data'
+  initial_size = '1gb'
 
 [http_service]
-  internal_port        = 8080
-  force_https          = true
-  auto_stop_machines   = false   # mantém online 24/7 (free tier não cobra por isso)
-  auto_start_machines  = true
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'off'
+  auto_start_machines = true
   min_machines_running = 1
 
   [http_service.concurrency]
-    type       = "connections"
+    type = 'connections'
     hard_limit = 25
     soft_limit = 20
 
 [[vm]]
-  memory   = "256mb"
-  cpu_kind = "shared"
-  cpus     = 1
-
-# Volume persistente para o SQLite — 1 GB gratuito no free tier
-[[mounts]]
-  source      = "coreextract_data"
-  destination = "/data"
-  initial_size = "1gb"
+  memory = '256mb'
+  cpu_kind = 'shared'
+  cpus = 1
+  memory_mb = 256

@@ -1,18 +1,18 @@
 #!/bin/bash
 # =============================================================================
-# CoreExtract — Setup para Oracle Cloud (Oracle Linux 9)
+# BTExtract — Setup para Oracle Cloud (Oracle Linux 9)
 # Execute como usuário 'opc':
-#   curl -O https://raw.githubusercontent.com/MatGarciaBertoi/CoreExtract/master/setup_oracle_linux.sh
+#   curl -O https://raw.githubusercontent.com/MatGarciaBertoi/BTExtract/master/setup_oracle_linux.sh
 #   chmod +x setup_oracle_linux.sh && ./setup_oracle_linux.sh
 # =============================================================================
 
 set -euo pipefail
 
-REPO_URL="https://github.com/MatGarciaBertoi/CoreExtract.git"
-APP_DIR="/opt/coreextract"
-DATA_DIR="/opt/coreextract_data"
+REPO_URL="https://github.com/MatGarciaBertoi/BTExtract.git"
+APP_DIR="/opt/btextract"
+DATA_DIR="/opt/btextract_data"
 VENV_DIR="$APP_DIR/venv"
-SERVICE_NAME="coreextract"
+SERVICE_NAME="btextract"
 
 GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
 info() { echo -e "${GREEN}[INFO]${NC} $1"; }
@@ -65,7 +65,7 @@ info "Dependências instaladas ✓"
 # ── 6. Variáveis de ambiente ───────────────────────────────────────────────
 echo ""
 echo "============================================================"
-echo "  Configure as variáveis de ambiente do CoreExtract"
+echo "  Configure as variáveis de ambiente do BTExtract"
 echo "============================================================"
 
 ask "SECRET_KEY (Enter para gerar automaticamente):"
@@ -93,7 +93,7 @@ if [[ "$SMTP_RESP" =~ ^[Ss]$ ]]; then
     SMTP_HOST="smtp.gmail.com"; SMTP_PORT="587"
     ask "Gmail (SMTP_USER):"; read -r SMTP_USER
     ask "Senha de app Gmail:"; read -rs SMTP_PASSWORD; echo ""
-    SMTP_FROM="CoreExtract <$SMTP_USER>"
+    SMTP_FROM="BTExtract <$SMTP_USER>"
 fi
 
 # ── 7. Criar .env ──────────────────────────────────────────────────────────
@@ -102,7 +102,7 @@ SECRET_KEY=$SECRET_KEY
 SUPERADMIN_EMAIL=$SUPERADMIN_EMAIL
 SUPERADMIN_PASSWORD=$SUPERADMIN_PASSWORD
 GEMINI_API_KEY=$GEMINI_API_KEY
-CE_DB_PATH=$DATA_DIR/coreextract.db
+BT_DB_PATH=$DATA_DIR/btextract.db
 SMTP_HOST=$SMTP_HOST
 SMTP_PORT=$SMTP_PORT
 SMTP_USER=$SMTP_USER
@@ -115,7 +115,7 @@ info ".env criado ✓"
 # ── 8. Serviço systemd ─────────────────────────────────────────────────────
 sudo tee /etc/systemd/system/${SERVICE_NAME}.service > /dev/null << EOF
 [Unit]
-Description=CoreExtract FastAPI
+Description=BTExtract FastAPI
 After=network.target
 
 [Service]
@@ -135,10 +135,10 @@ sudo systemctl enable --now "$SERVICE_NAME"
 info "Serviço systemd ✓"
 
 # ── 9. nginx ───────────────────────────────────────────────────────────────
-ask "Seu domínio DuckDNS (ex: coreextract-bertoi.duckdns.org):"
+ask "Seu domínio DuckDNS (ex: btextract-bertoi.duckdns.org):"
 read -r DOMAIN
 
-sudo tee /etc/nginx/conf.d/coreextract.conf > /dev/null << EOF
+sudo tee /etc/nginx/conf.d/btextract.conf > /dev/null << EOF
 server {
     listen 80;
     server_name $DOMAIN;
@@ -172,7 +172,7 @@ fi
 # ── Status final ───────────────────────────────────────────────────────────
 echo ""
 echo "============================================================"
-echo -e "${GREEN}  ✓ CoreExtract instalado com sucesso!${NC}"
+echo -e "${GREEN}  ✓ BTExtract instalado com sucesso!${NC}"
 echo "============================================================"
 sudo systemctl status "$SERVICE_NAME" --no-pager -l | head -15
 echo ""

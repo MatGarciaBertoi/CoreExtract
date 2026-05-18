@@ -35,9 +35,9 @@ def _build_email_texts(
     empresa_str = f" — {empresa_recrutadora}" if empresa_recrutadora else ""
 
     # Assunto
-    subject = f"[CoreExtract] Triagem de Currículos — {tema}"
+    subject = f"[BTExtract] Triagem de Currículos — {tema}"
     if len(subject) > 80:
-        subject = f"[CoreExtract] Triagem — {tema[:50]}"
+        subject = f"[BTExtract] Triagem — {tema[:50]}"
 
     # Título e subtítulo
     email_title    = f"Triagem — {tema}"
@@ -67,7 +67,7 @@ def _build_email_texts(
     )
 
     closing_html = (
-        f"<p>Esta análise foi gerada automaticamente pelo <b>CoreExtract · RH Inteligente</b> "
+        f"<p>Esta análise foi gerada automaticamente pelo <b>BTExtract · RH Inteligente</b> "
         f"com base nos dados extraídos dos currículos. Recomendamos revisão humana antes de "
         f"tomar decisões finais de contratação.</p>"
         f"<p>Atenciosamente,<br><b>{assinatura}{empresa_str}</b></p>"

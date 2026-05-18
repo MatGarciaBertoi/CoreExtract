@@ -1,5 +1,5 @@
 """
-Configurações centralizadas do CoreExtract.
+Configurações centralizadas do BTExtract.
 Lidas do arquivo .env na raiz do projeto (via python-dotenv).
 SQLite values (via settings_db) override .env values when present.
 """
@@ -34,7 +34,7 @@ CORS_ORIGINS: list[str] = os.environ.get("CORS_ORIGINS", "*").split(",")
 # ── E-mail (Gmail SMTP) ────────────────────────────────────────
 GMAIL_USER: str         = settings_db.get("GMAIL_USER", os.environ.get("GMAIL_USER", ""))
 GMAIL_APP_PASSWORD: str = settings_db.get("GMAIL_APP_PASSWORD", os.environ.get("GMAIL_APP_PASSWORD", ""))
-EMAIL_FROM_NAME: str    = settings_db.get("EMAIL_FROM_NAME", os.environ.get("EMAIL_FROM_NAME", "CoreExtract · RH Inteligente"))
+EMAIL_FROM_NAME: str    = settings_db.get("EMAIL_FROM_NAME", os.environ.get("EMAIL_FROM_NAME", "BTExtract · RH Inteligente"))
 
 # ── Limites de upload ──────────────────────────────────────────
 MAX_FILE_SIZE_MB: int      = int(os.environ.get("MAX_FILE_SIZE_MB", "10"))

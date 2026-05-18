@@ -8,7 +8,7 @@ O script gera utils/managed_key.py com a chave codificada via XOR+base64.
 Esse arquivo é listado no .gitignore e NUNCA sobe para o repositório.
 
 Depois de rodar este script, execute:
-    pyinstaller CoreExtract.spec --noconfirm
+    pyinstaller BTExtract.spec --noconfirm
 ou simplesmente:
     build_installer.bat
 """

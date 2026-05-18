@@ -1,5 +1,5 @@
 """
-Gerador de relatório Excel — CoreExtract.
+Gerador de relatório Excel — BTExtract.
 
 Abas produzidas:
   1. Dashboard           — KPIs executivos + 4 gráficos semânticos + matriz
@@ -193,7 +193,7 @@ def _sheet_dashboard(wb, ok, tema, recrutador, empresa, has_fit):
     # ── Cabeçalho ──
     ws.merge_cells("C2:Q2")
     c = ws["C2"]
-    c.value = "CoreExtract — Dashboard Executivo de Triagem"
+    c.value = "BTExtract — Dashboard Executivo de Triagem"
     c.font = _font(bold=True, size=20, color=_WHITE);  c.fill = _fill(_NAVY)
     c.alignment = _center();  ws.row_dimensions[2].height = 44
 

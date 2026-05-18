@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CoreExtract — Motor Inteligente de Currículos</title>
+  <title>BTExtract — Motor Inteligente de Currículos</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
@@ -1310,7 +1310,7 @@
         </div>
         <div class="settings-field">
           <label class="settings-label">Nome do Remetente</label>
-          <input type="text" id="sFromName" class="settings-input" placeholder="CoreExtract · RH Inteligente">
+          <input type="text" id="sFromName" class="settings-input" placeholder="BTExtract · RH Inteligente">
         </div>
 
         <div class="settings-actions-row">
@@ -1404,7 +1404,7 @@
           <li>Acesse <a href="https://myaccount.google.com/security" target="_blank">myaccount.google.com/security</a></li>
           <li>Ative a <b>Verificação em 2 etapas</b> (se ainda não ativou)</li>
           <li>Volte em Segurança → <b>Senhas de app</b></li>
-          <li>Selecione "Outro" → digite <b>CoreExtract</b> → clique em Gerar</li>
+          <li>Selecione "Outro" → digite <b>BTExtract</b> → clique em Gerar</li>
           <li>Copie os 16 caracteres e cole no campo acima</li>
         </ol>
       </div>
@@ -1462,7 +1462,7 @@
       <span class="accent">qualquer currículo</span>
     </h1>
     <p class="hero-subtitle">
-      Envie PDF, DOCX, XLSX ou TXT. O CoreExtract usa IA generativa para entregar
+      Envie PDF, DOCX, XLSX ou TXT. O BTExtract usa IA generativa para entregar
       um resumo estruturado, scores de perfil e análise de fit — em segundos.
     </p>
     <div class="hero-formats">
@@ -1543,7 +1543,7 @@
     <div class="form-grid" style="margin-top:16px;">
       <div class="form-group full">
         <label class="form-label">Descrição da Vaga</label>
-        <textarea class="form-textarea" id="fJD" placeholder="Cole aqui a descrição da vaga para que o CoreExtract calcule o score de aderência de cada candidato..."></textarea>
+        <textarea class="form-textarea" id="fJD" placeholder="Cole aqui a descrição da vaga para que o BTExtract calcule o score de aderência de cada candidato..."></textarea>
       </div>
     </div>
   </div>
@@ -1631,7 +1631,7 @@
 
 <!-- ── Footer ─────────────────────────────────────────────────── -->
 <footer class="footer">
-  CoreExtract v2.2 · <span>Bertoi Informática</span> ·
+  BTExtract v2.2 · <span>Bertoi Informática</span> ·
   <a href="/politica-de-privacidade" target="_blank" style="color:var(--blue);text-decoration:none;font-weight:500;">Política de Privacidade</a>
   · <a href="mailto:privacidade@bertoi.com.br" style="color:var(--gray);text-decoration:none;">privacidade@bertoi.com.br</a>
 </footer>
@@ -1686,7 +1686,7 @@
           <input type="checkbox" id="lgpdChk3" onchange="lgpdCheckUpdate()" style="margin-top:2px;accent-color:var(--blue);width:15px;height:15px;flex-shrink:0;">
           <span style="font-size:13px;color:#3A4A6B;line-height:1.55;">
             Li e concordo com a <a href="/politica-de-privacidade" target="_blank" style="color:var(--blue);font-weight:600;">Política de Privacidade</a>
-            do CoreExtract, incluindo as condições de transferência internacional de dados.
+            do BTExtract, incluindo as condições de transferência internacional de dados.
           </span>
         </label>
       </div>
@@ -1710,7 +1710,7 @@
 
 <script>
 // ══════════════════════════════════════════════════════════════
-// MÓDULO DE AUTENTICAÇÃO — JWT CoreExtract
+// MÓDULO DE AUTENTICAÇÃO — JWT BTExtract
 // ══════════════════════════════════════════════════════════════
 
 const _CE_TOKEN      = localStorage.getItem('ce_token');
@@ -1809,7 +1809,7 @@ function logout() {
   const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   btn.href = isLocal
     ? `http://${window.location.hostname}:8081`
-    : 'https://coreextract-bertoi.streamlit.app';
+    : 'https://btextract-bertoi.streamlit.app';
 })();
 
 // Exibe nome do usuário na navbar
@@ -2360,7 +2360,7 @@ const _PROVIDER_CFG = {
       'Acesse <a href="https://myaccount.google.com/security" target="_blank">myaccount.google.com/security</a>',
       'Ative a <b>Verificação em 2 etapas</b> (se ainda não ativou)',
       'Volte em Segurança → <b>Senhas de app</b>',
-      'Selecione "Outro" → digite <b>CoreExtract</b> → clique em Gerar',
+      'Selecione "Outro" → digite <b>BTExtract</b> → clique em Gerar',
       'Copie os 16 caracteres e cole no campo acima',
     ],
   },
@@ -2378,7 +2378,7 @@ const _PROVIDER_CFG = {
       '<b>Sem MFA:</b> use diretamente seu e-mail e senha normais da conta Microsoft',
       '<b>Com MFA ativado:</b> acesse <a href="https://account.microsoft.com/security" target="_blank">account.microsoft.com/security</a>',
       'Vá em <b>Opções de segurança avançadas</b> → <b>Senhas de app</b>',
-      'Crie uma senha de app chamada <b>CoreExtract</b> e cole no campo acima',
+      'Crie uma senha de app chamada <b>BTExtract</b> e cole no campo acima',
       'Servidor usado: <code style="font-size:11px">smtp.office365.com:587</code> (STARTTLS)',
     ],
   },
@@ -2781,7 +2781,7 @@ function triggerEmailPreview() {
   // Only selected ok results (but render all ok so user can re-toggle in modal)
   const allOkResults  = _lastResults.filter(r => r.status === 'ok');
   const initSelected  = new Set(_selectedCandidates); // snapshot for modal
-  const subject = `[CoreExtract] Triagem de Currículos${tema !== 'Triagem Geral' ? ' — ' + tema : ''}`;
+  const subject = `[BTExtract] Triagem de Currículos${tema !== 'Triagem Geral' ? ' — ' + tema : ''}`;
 
   const candidatesHtml = allOkResults.map(r => {
     const score    = r.resume?.scores?.score_geral || 0;
@@ -3013,7 +3013,7 @@ async function exportToExcel() {
     const cd       = resp.headers.get('Content-Disposition') || '';
     const fnMatch  = cd.match(/filename="([^"]+)"/);
     a.href         = url;
-    a.download     = fnMatch ? fnMatch[1] : 'CoreExtract_Triagem.xlsx';
+    a.download     = fnMatch ? fnMatch[1] : 'BTExtract_Triagem.xlsx';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

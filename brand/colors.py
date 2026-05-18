@@ -1,5 +1,5 @@
 """
-Paleta de cores e tokens visuais do CoreExtract.
+Paleta de cores e tokens visuais do BTExtract.
 Usados nos templates HTML de e-mail e frontend.
 """
 

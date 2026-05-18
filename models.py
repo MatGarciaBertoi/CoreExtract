@@ -1,5 +1,5 @@
 """
-Modelos Pydantic do CoreExtract.
+Modelos Pydantic do BTExtract.
 Versão enriquecida com todos os campos que o Gemini pode extrair
 e campos de metadados de processamento.
 Inclui modelos de autenticação multi-tenant (JWT, empresas, usuários).

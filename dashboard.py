@@ -1,5 +1,5 @@
 """
-CoreExtract — Dashboard Streamlit (Cloud Edition)
+BTExtract — Dashboard Streamlit (Cloud Edition)
 ══════════════════════════════════════════════════════════════════════════════
 Versão cloud: autentica via API FastAPI e lê dados por HTTP.
 Configuração local  → .streamlit/secrets.toml
@@ -21,7 +21,7 @@ import streamlit as st
 
 # ── Config página ─────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="CoreExtract · Dashboard",
+    page_title="BTExtract · Dashboard",
     page_icon="🧠",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -118,9 +118,9 @@ if not st.session_state["token"]:
     <div style='text-align:center;margin-top:60px;margin-bottom:32px'>
       <div style='font-size:48px'>🧠</div>
       <h1 style='color:#fff;font-size:28px;margin:8px 0 4px'>
-        CoreExtract <span style='color:#1A6BFF'>Dashboard</span>
+        BTExtract <span style='color:#1A6BFF'>Dashboard</span>
       </h1>
-      <p style='color:#6B7A99;font-size:14px'>Entre com sua conta CoreExtract para ver os resultados</p>
+      <p style='color:#6B7A99;font-size:14px'>Entre com sua conta BTExtract para ver os resultados</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -313,7 +313,7 @@ def _load_history() -> list[dict]:
 # SIDEBAR — histórico + logout
 # ══════════════════════════════════════════════════════════════════════════════
 with st.sidebar:
-    st.markdown(f"<div style='color:#fff;font-weight:700;font-size:15px'>🧠 CoreExtract</div>",
+    st.markdown(f"<div style='color:#fff;font-weight:700;font-size:15px'>🧠 BTExtract</div>",
                 unsafe_allow_html=True)
     st.markdown(f"<div style='color:#6B7A99;font-size:12px;margin-bottom:16px'>"
                 f"Olá, {st.session_state['nome']}</div>", unsafe_allow_html=True)
@@ -363,7 +363,7 @@ with col_logo:
     st.markdown("<div style='font-size:40px;padding-top:8px'>🧠</div>", unsafe_allow_html=True)
 with col_title:
     st.markdown(
-        "<h1 style='color:#FFFFFF;margin:0;font-size:28px'>CoreExtract "
+        "<h1 style='color:#FFFFFF;margin:0;font-size:28px'>BTExtract "
         "<span style=\"color:#1A6BFF\">Dashboard</span></h1>",
         unsafe_allow_html=True,
     )
@@ -389,7 +389,7 @@ if not session:
       <div style='font-size:56px'>📂</div>
       <h3 style='color:#A0B4CC;margin:16px 0 8px'>Nenhuma análise encontrada</h3>
       <p>Processe currículos no
-        <a href='{API_BASE}' target='_blank' style='color:#1A6BFF'>CoreExtract</a>
+        <a href='{API_BASE}' target='_blank' style='color:#1A6BFF'>BTExtract</a>
         e volte aqui para ver o dashboard.
       </p>
     </div>
@@ -641,7 +641,7 @@ st.dataframe(
 st.markdown(f"""
 <div style='text-align:center;color:#2a3a55;font-size:11px;margin-top:40px;
              border-top:1px solid #1e3050;padding-top:16px'>
-  CoreExtract Dashboard · Bertoi Informática ·
+  BTExtract Dashboard · Bertoi Informática ·
   Dados de: {session.get("timestamp","—")[:16].replace("T"," ")}
 </div>
 """, unsafe_allow_html=True)

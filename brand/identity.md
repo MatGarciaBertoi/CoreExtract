@@ -1,7 +1,7 @@
-# CoreExtract — Identidade Visual
+# BTExtract — Identidade Visual
 
 ## Conceito
-CoreExtract é a "essência extraída" de qualquer documento. O nome carrega
+BTExtract é a "essência extraída" de qualquer documento. O nome carrega
 a ideia de núcleo (core) + extração inteligente (extract). A identidade
 visual reforça precisão, tecnologia e profissionalismo corporativo.
 
@@ -50,7 +50,7 @@ O símbolo é formado por:
 - Um hexágono estilizado representando estrutura e organização de dados
 - Dois ângulos de extração (setas diagonais entrando no centro) simbolizando
   a "extração do núcleo" de informação
-- Wordmark "CoreExtract" em Inter Bold ao lado
+- Wordmark "BTExtract" em Inter Bold ao lado
 
 Variações:
 - `logo-full.svg`    — símbolo + wordmark (horizontal)

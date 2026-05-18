@@ -2,12 +2,12 @@
 set -e
 
 # ── Environment defaults ────────────────────────────────────────────────────
-export CE_DB_PATH="${CE_DB_PATH:-/data/coreextract.db}"
+export BT_DB_PATH="${BT_DB_PATH:-/data/btextract.db}"
 export PORT="${PORT:-8080}"
 
 echo "============================================================"
-echo "  CoreExtract - RH Inteligente"
-echo "  DB   : $CE_DB_PATH"
+echo "  BTExtract - RH Inteligente"
+echo "  DB   : $BT_DB_PATH"
 echo "  PORT : $PORT"
 echo "============================================================"
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# Testa o CoreExtract localmente com functions-framework
+# Testa o BTExtract localmente com functions-framework
 # =============================================================================
 # Uso: bash test_local.sh caminho/para/curriculo.pdf [email@destino.com]
 # =============================================================================
@@ -31,7 +31,7 @@ if [ -n "$EMAIL" ]; then
   EMAIL_FIELDS="-F send_email=true \
     -F destinatario=${EMAIL} \
     -F tema=Triagem+de+Currículos \
-    -F nome_recrutador=Recrutador+CoreExtract"
+    -F nome_recrutador=Recrutador+BTExtract"
 fi
 
 echo "Enviando ${FILENAME} para http://localhost:8080..."

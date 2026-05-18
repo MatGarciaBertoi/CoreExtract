@@ -1,4 +1,4 @@
-# Deploy CoreExtract — Oracle Cloud Always Free ARM A1
+# Deploy BTExtract — Oracle Cloud Always Free ARM A1
 
 ## Por que Oracle Cloud?
 
@@ -34,7 +34,7 @@ No menu do Console Oracle (☰):
 
 | Campo | Valor |
 |---|---|
-| **Name** | `coreextract-vm` |
+| **Name** | `btextract-vm` |
 | **Image** | Ubuntu 22.04 (clique em "Change image") |
 | **Shape** | VM.Standard.A1.Flex (clique em "Change shape") |
 | **OCPUs** | `2` |
@@ -82,11 +82,11 @@ Precisamos de um domínio para o HTTPS funcionar.
 
 1. Acesse: **https://www.duckdns.org/**
 2. Faça login com Google/GitHub
-3. Crie um subdomínio: `coreextract-bertoi` (ou o nome que quiser)
+3. Crie um subdomínio: `btextract-bertoi` (ou o nome que quiser)
 4. Em **"current ip"**, coloque o **IP Público** da sua VM Oracle
 5. Clique em **"update ip"**
 
-Você terá um domínio tipo: `coreextract-bertoi.duckdns.org`
+Você terá um domínio tipo: `btextract-bertoi.duckdns.org`
 
 > **Aguarde 1-2 minutos** para o DNS propagar antes de continuar.
 
@@ -114,7 +114,7 @@ Já conectado na VM:
 
 ```bash
 # Baixar o script de setup diretamente do seu repositório
-curl -O https://raw.githubusercontent.com/MatGarciaBertoi/CoreExtract/master/setup_oracle.sh
+curl -O https://raw.githubusercontent.com/MatGarciaBertoi/BTExtract/master/setup_oracle.sh
 
 # Dar permissão de execução
 chmod +x setup_oracle.sh
@@ -133,20 +133,20 @@ O script vai:
 7. ✅ Configurar nginx
 8. ✅ Configurar HTTPS com certbot
 
-Quando ele perguntar o domínio, coloque: `coreextract-bertoi.duckdns.org`
+Quando ele perguntar o domínio, coloque: `btextract-bertoi.duckdns.org`
 
 ---
 
 ## PARTE 6 — Atualizar Streamlit Cloud
 
-Após o CoreExtract estar rodando em `https://coreextract-bertoi.duckdns.org`:
+Após o BTExtract estar rodando em `https://btextract-bertoi.duckdns.org`:
 
 1. Acesse **https://share.streamlit.io**
 2. Clique em **"⋮"** no seu app → **"Settings"**
 3. Vá em **"Secrets"** e atualize:
 
 ```toml
-API_BASE_URL = "https://coreextract-bertoi.duckdns.org"
+API_BASE_URL = "https://btextract-bertoi.duckdns.org"
 ```
 
 4. Clique em **"Save"** → **"Reboot app"**
@@ -155,12 +155,12 @@ API_BASE_URL = "https://coreextract-bertoi.duckdns.org"
 
 ## PARTE 7 — Atualizar link do Dashboard no frontend
 
-No arquivo `C:\CoreExtract\templates\frontend.html`, na função `_initDashboardBtn`:
+No arquivo `C:\BTExtract\templates\frontend.html`, na função `_initDashboardBtn`:
 
 ```javascript
 btn.href = isLocal
   ? `http://${window.location.hostname}:8081`
-  : 'https://coreextract-bertoi.streamlit.app';
+  : 'https://btextract-bertoi.streamlit.app';
 ```
 
 Depois faça commit e push (o Oracle já atualiza automaticamente via `git pull`):
@@ -173,7 +173,7 @@ git push
 
 Na VM Oracle:
 ```bash
-cd /opt/coreextract && git pull && sudo systemctl restart coreextract
+cd /opt/btextract && git pull && sudo systemctl restart btextract
 ```
 
 ---
@@ -182,35 +182,35 @@ cd /opt/coreextract && git pull && sudo systemctl restart coreextract
 
 | Serviço | URL |
 |---|---|
-| CoreExtract (FastAPI) | https://coreextract-bertoi.duckdns.org |
-| Dashboard (Streamlit) | https://coreextract-bertoi.streamlit.app |
-| Health check | https://coreextract-bertoi.duckdns.org/health |
+| BTExtract (FastAPI) | https://btextract-bertoi.duckdns.org |
+| Dashboard (Streamlit) | https://btextract-bertoi.streamlit.app |
+| Health check | https://btextract-bertoi.duckdns.org/health |
 
 ---
 
 ## Comandos de manutenção na VM
 
 ```bash
-# Ver status do CoreExtract
-sudo systemctl status coreextract
+# Ver status do BTExtract
+sudo systemctl status btextract
 
 # Ver logs em tempo real
-sudo journalctl -u coreextract -f
+sudo journalctl -u btextract -f
 
 # Reiniciar
-sudo systemctl restart coreextract
+sudo systemctl restart btextract
 
 # Atualizar código após git push
-cd /opt/coreextract && git pull && sudo systemctl restart coreextract
+cd /opt/btextract && git pull && sudo systemctl restart btextract
 
 # Ver uso de memória e CPU
 htop
 
 # Acessar banco SQLite
-sqlite3 /opt/coreextract_data/coreextract.db
+sqlite3 /opt/btextract_data/btextract.db
 
 # Fazer backup do banco
-cp /opt/coreextract_data/coreextract.db ~/backup_$(date +%Y%m%d).db
+cp /opt/btextract_data/btextract.db ~/backup_$(date +%Y%m%d).db
 ```
 
 ---
@@ -231,11 +231,11 @@ Se quiser trazer o banco existente do Fly.io:
 
 ```bash
 # No seu computador Windows (PowerShell):
-fly ssh sftp get /data/coreextract.db ./coreextract_backup.db
+fly ssh sftp get /data/btextract.db ./btextract_backup.db
 
 # Enviar para a VM Oracle:
-scp -i "ssh-key-XXXX.key" coreextract_backup.db ubuntu@IP_DA_VM:/opt/coreextract_data/coreextract.db
+scp -i "ssh-key-XXXX.key" btextract_backup.db ubuntu@IP_DA_VM:/opt/btextract_data/btextract.db
 
 # Na VM, reiniciar:
-sudo systemctl restart coreextract
+sudo systemctl restart btextract
 ```

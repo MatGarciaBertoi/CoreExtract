@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# CoreExtract — Setup automatizado para Oracle Cloud ARM A1 (Ubuntu 22.04)
+# BTExtract — Setup automatizado para Oracle Cloud ARM A1 (Ubuntu 22.04)
 # =============================================================================
 # Execute na VM Oracle Cloud como usuário 'ubuntu':
 #   chmod +x setup_oracle.sh && ./setup_oracle.sh
@@ -8,11 +8,11 @@
 
 set -euo pipefail
 
-REPO_URL="https://github.com/MatGarciaBertoi/CoreExtract.git"
-APP_DIR="/opt/coreextract"
-SERVICE_NAME="coreextract"
+REPO_URL="https://github.com/MatGarciaBertoi/BTExtract.git"
+APP_DIR="/opt/btextract"
+SERVICE_NAME="btextract"
 VENV_DIR="$APP_DIR/venv"
-DATA_DIR="/opt/coreextract_data"
+DATA_DIR="/opt/btextract_data"
 
 # ── Cores para output ──────────────────────────────────────────────────────
 GREEN='\033[0;32m'; YELLOW='\033[1;33m'; RED='\033[0;31m'; NC='\033[0m'
@@ -70,7 +70,7 @@ info "Dependências instaladas ✓"
 # ── 7. Coletar variáveis de ambiente ──────────────────────────────────────
 echo ""
 echo "============================================================"
-echo "  Configure as variáveis de ambiente do CoreExtract"
+echo "  Configure as variáveis de ambiente do BTExtract"
 echo "============================================================"
 echo ""
 
@@ -109,18 +109,18 @@ if [[ "$SMTP_RESP" =~ ^[Ss]$ ]]; then
     ask "SMTP_PASSWORD (senha de app do Gmail):"
     read -rs SMTP_PASSWORD
     echo ""
-    SMTP_FROM="CoreExtract <$SMTP_USER>"
+    SMTP_FROM="BTExtract <$SMTP_USER>"
 fi
 
 # ── 8. Criar arquivo .env ──────────────────────────────────────────────────
 info "Criando arquivo .env..."
 cat > "$APP_DIR/.env" << EOF
-# CoreExtract — Variáveis de ambiente
+# BTExtract — Variáveis de ambiente
 SECRET_KEY=$SECRET_KEY
 SUPERADMIN_EMAIL=$SUPERADMIN_EMAIL
 SUPERADMIN_PASSWORD=$SUPERADMIN_PASSWORD
 GEMINI_API_KEY=$GEMINI_API_KEY
-CE_DB_PATH=$DATA_DIR/coreextract.db
+BT_DB_PATH=$DATA_DIR/btextract.db
 
 # SMTP (deixe vazio se não usar e-mail)
 SMTP_HOST=$SMTP_HOST
@@ -136,7 +136,7 @@ info "Arquivo .env criado ✓"
 info "Criando serviço systemd..."
 sudo bash -c "cat > /etc/systemd/system/${SERVICE_NAME}.service" << EOF
 [Unit]
-Description=CoreExtract FastAPI
+Description=BTExtract FastAPI
 After=network.target
 
 [Service]
@@ -160,11 +160,11 @@ sudo systemctl start "$SERVICE_NAME"
 info "Serviço systemd criado e iniciado ✓"
 
 # ── 10. Configurar nginx (HTTP primeiro, SSL depois com certbot) ───────────
-ask "Qual é o seu domínio/subdomínio? (ex: coreextract.duckdns.org):"
+ask "Qual é o seu domínio/subdomínio? (ex: btextract.duckdns.org):"
 read -r DOMAIN
 
 info "Configurando nginx para $DOMAIN..."
-sudo bash -c "cat > /etc/nginx/sites-available/coreextract" << EOF
+sudo bash -c "cat > /etc/nginx/sites-available/btextract" << EOF
 server {
     listen 80;
     server_name $DOMAIN;
@@ -188,7 +188,7 @@ server {
 }
 EOF
 
-sudo ln -sf /etc/nginx/sites-available/coreextract /etc/nginx/sites-enabled/coreextract
+sudo ln -sf /etc/nginx/sites-available/btextract /etc/nginx/sites-enabled/btextract
 sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t && sudo systemctl reload nginx
 info "nginx configurado ✓"
@@ -208,7 +208,7 @@ fi
 # ── 12. Status final ────────────────────────────────────────────────────────
 echo ""
 echo "============================================================"
-echo -e "${GREEN}  ✓ CoreExtract instalado com sucesso!${NC}"
+echo -e "${GREEN}  ✓ BTExtract instalado com sucesso!${NC}"
 echo "============================================================"
 echo ""
 info "Status do serviço:"

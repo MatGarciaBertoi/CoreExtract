@@ -38,7 +38,7 @@ class StructuredFormatter(logging.Formatter):
 
         # Injeta campos extras passados via extra={}
         for key, value in record.__dict__.items():
-            if key.startswith("ce_"):  # prefixo CoreExtract
+            if key.startswith("ce_"):  # prefixo BTExtract
                 entry[key] = value
 
         # Stack trace em caso de exceção

@@ -4,7 +4,7 @@ Envio de e-mail via Gmail SMTP — 100% gratuito.
 Pré-requisito (uma única vez):
   1. Acesse myaccount.google.com → Segurança → Verificação em duas etapas (ativar)
   2. Acesse myaccount.google.com → Segurança → Senhas de app
-  3. Gere uma senha de app para "Outro (nome personalizado)" → "CoreExtract"
+  3. Gere uma senha de app para "Outro (nome personalizado)" → "BTExtract"
   4. Coloque a senha gerada em GMAIL_APP_PASSWORD no .env
 
 A senha de app é diferente da sua senha normal do Gmail.

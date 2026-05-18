@@ -1,8 +1,8 @@
 """
-SQLite-based key-value store for CoreExtract application settings.
+SQLite-based key-value store for BTExtract application settings.
 
-Database location (distributed): %APPDATA%\\CoreExtract\\coreextract.db
-Database location (dev):         <project_root>/coreextract.db
+Database location (distributed): %APPDATA%\\BTExtract\\btextract.db
+Database location (dev):         <project_root>/btextract.db
 Thread-safe: yes (module-level lock).
 
 Keys managed:

@@ -1,5 +1,5 @@
 """
-Centraliza toda a resolução de caminhos do CoreExtract.
+Centraliza toda a resolução de caminhos do BTExtract.
 
 Distingue dois cenários:
   • Rodando a partir do código-fonte (dev / run.bat)
@@ -7,7 +7,7 @@ Distingue dois cenários:
 
 Regra geral:
   - Arquivos LIDOS (templates, assets) → get_resource()   → dentro do bundle
-  - Dados do USUÁRIO (db, .env)        → get_data_dir()   → AppData\\Roaming\\CoreExtract
+  - Dados do USUÁRIO (db, .env)        → get_data_dir()   → AppData\\Roaming\\BTExtract
 """
 from __future__ import annotations
 
@@ -36,12 +36,12 @@ def get_app_dir() -> Path:
 def get_data_dir() -> Path:
     """
     Diretório de dados do usuário — sempre gravável.
-    - Frozen : %APPDATA%\\CoreExtract\\   (ex: C:\\Users\\João\\AppData\\Roaming\\CoreExtract)
+    - Frozen : %APPDATA%\\BTExtract\\   (ex: C:\\Users\\João\\AppData\\Roaming\\BTExtract)
     - Source  : raiz do projeto (comportamento original — não quebra o dev)
     """
     if is_frozen():
         appdata = os.environ.get("APPDATA") or str(Path.home())
-        data_dir = Path(appdata) / "CoreExtract"
+        data_dir = Path(appdata) / "BTExtract"
         data_dir.mkdir(parents=True, exist_ok=True)
         return data_dir
     return get_app_dir()
@@ -75,9 +75,9 @@ def get_resource(relative_path: str) -> Path:
 
 
 # Atalhos para caminhos frequentes
-# CE_DB_PATH pode ser definido via env var para deploy Docker/cloud (ex: /data/coreextract.db)
-_db_override = os.environ.get("CE_DB_PATH")
-DB_PATH        = Path(_db_override) if _db_override else get_data_dir() / "coreextract.db"
+# BT_DB_PATH pode ser definido via env var para deploy Docker/cloud (ex: /data/btextract.db)
+_db_override = os.environ.get("BT_DB_PATH")
+DB_PATH        = Path(_db_override) if _db_override else get_data_dir() / "btextract.db"
 ENV_PATH       = get_data_dir()    / ".env"
 SESSION_PATH   = get_install_dir() / "last_session.json"   # compartilhado com Streamlit
 FRONTEND_PATH  = get_resource("templates/frontend.html")

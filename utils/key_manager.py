@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import base64
 
-_SALT = b"CoreExtract-BertoiInformatica-2025-RH"
+_SALT = b"BTExtract-BertoiInformatica-2025-RH"
 
 
 def encode_key(plain_key: str) -> str:

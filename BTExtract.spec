@@ -1,8 +1,8 @@
 # -*- mode: python ; coding: utf-8 -*-
 """
-PyInstaller spec — CoreExtract v2.0
-Gera uma pasta dist/CoreExtract/ com o executável e todos os assets.
-Build: pyinstaller CoreExtract.spec
+PyInstaller spec — BTExtract v2.0
+Gera uma pasta dist/BTExtract/ com o executável e todos os assets.
+Build: pyinstaller BTExtract.spec
 """
 
 import sys
@@ -14,6 +14,8 @@ ROOT = Path(SPECPATH)  # noqa: F821  (variável injetada pelo PyInstaller)
 datas = [
     # (origem,              destino dentro do bundle)
     (str(ROOT / "templates"), "templates"),   # frontend.html, email_base.html
+    # dashboard.py NÃO entra no bundle — é copiado pelo build_installer.bat
+    # diretamente para dist/BTExtract/ (precisa ser um arquivo normal, não embutido)
 ]
 
 # ── Hidden imports que o PyInstaller não detecta automaticamente ─────────────
@@ -65,7 +67,7 @@ hidden_imports = [
     "email.mime.base",
     # SQLite (built-in, mas garantindo)
     "sqlite3",
-    # Outros
+    # Outros  (Streamlit/Plotly/Pandas NÃO entram aqui — rodam via Python embutido)
     "multipart",
     "python_multipart",
     "anyio",
@@ -112,7 +114,7 @@ exe = EXE(  # noqa: F821
     a.scripts,
     [],
     exclude_binaries=True,
-    name="CoreExtract",
+    name="BTExtract",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -134,5 +136,5 @@ coll = COLLECT(  # noqa: F821
     strip=False,
     upx=True,
     upx_exclude=[],
-    name="CoreExtract",     # → dist/CoreExtract/
+    name="BTExtract",     # → dist/BTExtract/
 )

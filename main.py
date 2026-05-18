@@ -1,5 +1,5 @@
 """
-CoreExtract — Motor Inteligente de Extração e Resumo de Currículos
+BTExtract — Motor Inteligente de Extração e Resumo de Currículos
 Servidor FastAPI — multi-tenant com autenticação JWT.
 
 Iniciar:
@@ -103,12 +103,12 @@ logger = get_logger("main")
 @asynccontextmanager
 async def _lifespan(app: FastAPI):
     # ── Startup ──
-    logger.info("CoreExtract inicializando...")
+    logger.info("BTExtract inicializando...")
     auth.bootstrap_superadmin()
     logger.info("Bootstrap superadmin concluido.")
     yield
     # ── Shutdown ──
-    logger.info("CoreExtract encerrando.")
+    logger.info("BTExtract encerrando.")
 
 
 # =========================================================================== #
@@ -116,7 +116,7 @@ async def _lifespan(app: FastAPI):
 # =========================================================================== #
 
 app = FastAPI(
-    title="CoreExtract",
+    title="BTExtract",
     description="Motor Inteligente de Extração e Resumo de Currículos",
     version="2.0.0",
     docs_url="/docs",
@@ -275,7 +275,7 @@ async def frontend():
     """Serve o frontend principal (autenticação verificada via JS)."""
     if _FRONTEND.exists():
         return HTMLResponse(_FRONTEND.read_text(encoding="utf-8"))
-    return HTMLResponse("<h1>CoreExtract API</h1><p>Use POST /extract</p>")
+    return HTMLResponse("<h1>BTExtract API</h1><p>Use POST /extract</p>")
 
 
 @app.get("/login", response_class=HTMLResponse, include_in_schema=False)
@@ -284,7 +284,7 @@ async def login_page():
     login_path = get_resource("templates/login.html")
     if login_path.exists():
         return HTMLResponse(login_path.read_text(encoding="utf-8"))
-    return HTMLResponse("<h1>Login — CoreExtract</h1>")
+    return HTMLResponse("<h1>Login — BTExtract</h1>")
 
 
 @app.get("/politica-de-privacidade", response_class=HTMLResponse, include_in_schema=False)
@@ -293,7 +293,7 @@ async def privacy_page():
     path = get_resource("templates/privacidade.html")
     if path.exists():
         return HTMLResponse(path.read_text(encoding="utf-8"))
-    return HTMLResponse("<h1>Política de Privacidade — CoreExtract</h1>")
+    return HTMLResponse("<h1>Política de Privacidade — BTExtract</h1>")
 
 
 @app.get("/admin", response_class=HTMLResponse, include_in_schema=False)
@@ -302,14 +302,14 @@ async def admin_page():
     admin_path = get_resource("templates/admin.html")
     if admin_path.exists():
         return HTMLResponse(admin_path.read_text(encoding="utf-8"))
-    return HTMLResponse("<h1>Admin — CoreExtract</h1>")
+    return HTMLResponse("<h1>Admin — BTExtract</h1>")
 
 
 @app.get("/health")
 async def health():
     return {
         "status":  "healthy",
-        "service": "coreextract",
+        "service": "btextract",
         "model":   config.GEMINI_MODEL,
         "limits": {
             "max_files":   config.MAX_FILES_PER_REQUEST,
@@ -812,7 +812,7 @@ async def get_settings(current_user: dict = Depends(get_current_user)):
         "outlook_user":         out_user,
         "outlook_app_password": "__SAVED__" if out_pwd else "",
         "outlook_configured":   bool(out_user and out_pwd),
-        "email_from_name":      db.get("EMAIL_FROM_NAME", "CoreExtract · RH Inteligente"),
+        "email_from_name":      db.get("EMAIL_FROM_NAME", "BTExtract · RH Inteligente"),
         "gemini_model":         db.get("GEMINI_MODEL", config.GEMINI_MODEL),
         "email_provider":       db.get("EMAIL_PROVIDER", "gmail"),
         "gemini_managed":       config.GEMINI_MANAGED,
@@ -906,13 +906,13 @@ async def test_email(
 
         from_name = settings_db.get("EMAIL_FROM_NAME", config.EMAIL_FROM_NAME)
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = "CoreExtract — Teste de configuração"
+        msg["Subject"] = "BTExtract — Teste de configuração"
         msg["From"]    = f"{from_name} <{test_user}>"
         msg["To"]      = test_user
         html_body = (
-            "<p>Olá! Se você recebeu este e-mail, o CoreExtract está configurado "
+            "<p>Olá! Se você recebeu este e-mail, o BTExtract está configurado "
             "corretamente para enviar relatórios de triagem.</p>"
-            "<p><b>CoreExtract · RH Inteligente</b></p>"
+            "<p><b>BTExtract · RH Inteligente</b></p>"
         )
         msg.attach(MIMEText("Este e-mail requer HTML.", "plain", "utf-8"))
         msg.attach(MIMEText(html_body, "html", "utf-8"))
@@ -1048,7 +1048,7 @@ async def extract(
                 )
                 ts = datetime.now().strftime("%Y%m%d_%H%M")
                 attachments = [{
-                    "filename": f"CoreExtract_Triagem_{ts}.xlsx",
+                    "filename": f"BTExtract_Triagem_{ts}.xlsx",
                     "data":     xlsx_bytes,
                     "mimetype": (
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -1135,7 +1135,7 @@ async def send_triagem_email(
             )
             ts = datetime.now().strftime("%Y%m%d_%H%M")
             attachments = [{
-                "filename": f"CoreExtract_Triagem_{ts}.xlsx",
+                "filename": f"BTExtract_Triagem_{ts}.xlsx",
                 "data":     xlsx_bytes,
                 "mimetype": (
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -1180,7 +1180,7 @@ async def export_excel(
             empresa_recrutadora=payload.empresa_recrutadora,
         )
         ts       = datetime.now().strftime("%Y%m%d_%H%M")
-        filename = f"CoreExtract_Triagem_{ts}.xlsx"
+        filename = f"BTExtract_Triagem_{ts}.xlsx"
         return StreamingResponse(
             io.BytesIO(xlsx_bytes),
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
