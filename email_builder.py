@@ -162,10 +162,11 @@ def _candidate_card(result: ProcessingResult, index: int,
         f'<span class="skill-chip">{s}</span>'
         for s in ((r.habilidades.tecnicas or [])[:6] + (r.habilidades.ferramentas or [])[:2])[:8]
     )
+    _tecnico_score = (r.fit.score_tecnico if r.fit else None)
     scores_html = (
         _score_bar("Score Geral",  r.scores.score_geral)
         + _score_bar("Experiência", r.scores.experiencia_relevante)
-        + _score_bar("Técnico",     r.scores.habilidades_tecnicas)
+        + (_score_bar("Técnico", _tecnico_score) if _tecnico_score else "")
         + _score_bar("Formação",    r.scores.formacao_academica)
     )
     contato_parts = []
