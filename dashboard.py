@@ -6,7 +6,7 @@ Configuração local  → .streamlit/secrets.toml
 Configuração cloud  → Streamlit Cloud > App Settings > Secrets
 
 Secrets necessários:
-    API_BASE_URL = "https://SEU-APP.fly.dev"
+    API_BASE_URL = "https://btextract-bertoi.duckdns.org"
 ══════════════════════════════════════════════════════════════════════════════
 """
 from __future__ import annotations
