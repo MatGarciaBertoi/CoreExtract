@@ -128,21 +128,63 @@ class BTExtractMonitor:
             logger.error("SSH restart falhou: %s", exc)
             return False
 
-    # ── Etapa 3: OCI force reboot ─────────────────────────────────────────────
+    # ── Etapa 3: OCI recovery inteligente ────────────────────────────────────
     def reboot_via_oci(self) -> bool:
-        """Reinicia a VM via Oracle Cloud API. Retorna True se chamada enviada."""
+        """
+        Recuperação inteligente via OCI API — lida com 4 cenários:
+          RUNNING   → RESET  (serviços travados mas VM viva)
+          STOPPING  → aguarda até STOPPED/RUNNING (max 3 min), depois START se necessário
+          STOPPED   → START
+          STARTING  → aguarda boot (max 2 min)
+        Retorna True se uma ação de recuperação foi enviada com sucesso.
+        """
         if not self.instance_ocid or not self.oci_config_path:
             logger.warning("OCI reboot ignorado: instance_ocid ou oci_config_path não configurados")
             return False
         try:
-            import oci  # pip install oci
-            config = oci.config.from_file(self.oci_config_path)
-            compute  = oci.core.ComputeClient(config)
-            compute.instance_action(self.instance_ocid, "SOFTRESET")
-            logger.warning("OCI SOFTRESET enviado para instância %s", self.instance_ocid[:20])
-            return True
+            import oci
+            import warnings as _w
+            _w.filterwarnings("ignore")
+            cfg     = oci.config.from_file(self.oci_config_path)
+            compute = oci.core.ComputeClient(cfg)
+
+            state = compute.get_instance(self.instance_ocid).data.lifecycle_state
+            logger.warning("OCI estado da instância: %s", state)
+
+            if state == "RUNNING":
+                # VM viva mas serviço não responde → RESET
+                compute.instance_action(self.instance_ocid, "RESET")
+                logger.warning("OCI RESET enviado (VM estava RUNNING)")
+                return True
+
+            elif state in ("STOPPING", "STOPPED"):
+                # Oracle fez manutenção/migração — aguarda estabilizar
+                logger.warning("OCI: VM em %s — aguardando transição (max 3 min)...", state)
+                for _ in range(36):
+                    time.sleep(5)
+                    state = compute.get_instance(self.instance_ocid).data.lifecycle_state
+                    logger.info("OCI estado: %s", state)
+                    if state == "STOPPED":
+                        compute.instance_action(self.instance_ocid, "START")
+                        logger.warning("OCI START enviado após STOPPED")
+                        return True
+                    elif state == "RUNNING":
+                        logger.info("OCI: VM voltou RUNNING sozinha (migração Oracle)")
+                        return True  # voltou; SSH restart vai agir depois
+                logger.error("OCI: timeout aguardando transição de %s", state)
+                return False
+
+            elif state == "STARTING":
+                # Boot em andamento — apenas aguarda
+                logger.info("OCI: VM já está iniciando (STARTING) — aguardando boot...")
+                return True
+
+            else:
+                logger.error("OCI: estado inesperado '%s' — sem ação automática", state)
+                return False
+
         except Exception as exc:
-            logger.error("OCI reboot falhou: %s", exc)
+            logger.error("OCI recovery falhou: %s", exc)
             return False
 
     # ── Notificação por e-mail ────────────────────────────────────────────────
