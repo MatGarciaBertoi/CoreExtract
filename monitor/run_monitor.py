@@ -34,9 +34,9 @@ logging.basicConfig(
 # ── Config (pode sobrescrever via env vars ou editando aqui) ──────────────────
 CONFIG = {
     **DEFAULT_CONFIG,
-    # Descomente e preencha para habilitar OCI auto-reboot:
-    # "instance_ocid":   "ocid1.instance.oc1.sa-saopaulo-1.xxxxxx",
-    # "oci_config_path": r"C:\Users\matgb\.oci\config",
+    # OCI auto-reboot habilitado:
+    "instance_ocid":   "ocid1.instance.oc1.sa-saopaulo-1.antxeljrri4w5fyctsit3xu2tik43vkiu35k2edrgkwm6rgml6gmvr56kkeq",
+    "oci_config_path": r"C:\Users\matgb\.oci\config",
 
     # Senha do app Gmail para alertas por e-mail:
     "smtp_config": {
