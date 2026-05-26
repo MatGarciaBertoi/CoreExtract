@@ -1,0 +1,5 @@
+requests>=2.31.0
+paramiko>=3.4.0
+urllib3>=2.0.0
+# Descomente para habilitar OCI auto-reboot:
+# oci>=2.125.0
