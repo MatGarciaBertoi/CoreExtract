@@ -1,3 +1,6 @@
+# Dependências para deploy Vercel (sem Streamlit/plotly/pandas)
+# requirements.txt continua servindo o Streamlit Cloud
+
 # ── Servidor ──────────────────────────────────────────────────
 fastapi==0.111.*
 uvicorn[standard]==0.30.*
@@ -10,29 +13,21 @@ google-generativeai==0.7.*
 pdfplumber==0.11.*
 python-docx==1.1.*
 openpyxl==3.1.*
-pandas==2.2.*
 
 # ── Validação e modelos ────────────────────────────────────────
 pydantic==2.7.*
 pydantic[email]==2.7.*
 
-# ── Configuração local ─────────────────────────────────────────
+# ── Configuração ───────────────────────────────────────────────
 python-dotenv==1.0.*
 
 # ── Autenticação (JWT + bcrypt) ────────────────────────────────
 python-jose[cryptography]==3.3.*
 passlib[bcrypt]==1.7.*
-bcrypt==3.2.2          # passlib 1.7.x é incompatível com bcrypt 4.x
+bcrypt==3.2.2
 
-# ── Banco de dados PostgreSQL (Vercel + Supabase) ──────────────
+# ── Banco de dados PostgreSQL (Supabase) ──────────────────────
 psycopg2-binary==2.9.*
 
-# ── Adaptador Vercel serverless (ASGI → Lambda) ────────────────
+# ── Adaptador Vercel serverless (ASGI → Lambda) ───────────────
 mangum==0.19.*
-
-# ── Dashboard (Streamlit Cloud lê este requirements.txt) ──────────────────────
-plotly>=5.22,<6.0
-
-# Streamlit é instalado automaticamente pelo Streamlit Cloud — não adicione aqui
-# Para rodar localmente: descomente a linha abaixo
-# streamlit>=1.44,<2.0

@@ -1934,57 +1934,94 @@ btnSubmit.addEventListener('click', () => {
 });
 
 async function _doProcessFiles() {
-  const formData = new FormData();
-  selectedFiles.forEach(f => formData.append('files', f, f.name));
-  formData.append('job_description', document.getElementById('fJD').value.trim());
+  const jobDesc = document.getElementById('fJD').value.trim();
+  const files   = selectedFiles;
+  const total   = files.length;
 
   // UI loading
   btnSubmit.disabled = true;
   progressSteps.classList.add('visible');
   statusMsg.style.display = 'none';
   resultsSection.style.display = 'none';
-  // Hide email section while reprocessing
   const emailSendSection = document.getElementById('emailSendSection');
   if (emailSendSection) emailSendSection.style.display = 'none';
+
   setStep(1);
+  progressFill.style.width = '5%';
+  _startFileProgressLive(files);
 
-  const stepTimers = [
-    setTimeout(() => setStep(2), 800),
-    setTimeout(() => setStep(3), 2800),
-    setTimeout(() => setStep(4), 5500),
-  ];
-  progressFill.style.width = '10%';
-  startFileProgress(selectedFiles);
+  const results = [];
+  const t0 = Date.now();
+  let hadError = false;
 
-  try {
-    const t0 = Date.now();
-    const resp = await fetch(API_URL, { method: 'POST', body: formData, headers: _authHeaders() });
-    if (_handle401(resp)) return;
-    stepTimers.forEach(clearTimeout);
-    let data = await resp.json();
-    const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
+  for (let i = 0; i < total; i++) {
+    const file = files[i];
+    _updateFileProgressLive(i, total, file.name);
 
-    for (let i = 1; i <= 4; i++) {
-      const el = document.getElementById('step' + i);
-      el.classList.remove('active'); el.classList.add('done');
+    if (i === 0) setStep(2);
+    else if (i === Math.floor(total * 0.4)) setStep(3);
+
+    const fd = new FormData();
+    fd.append('file', file, file.name);
+    fd.append('job_description', jobDesc);
+
+    try {
+      const resp = await fetch('/extract/file', { method: 'POST', body: fd, headers: _authHeaders() });
+      if (_handle401(resp)) return;
+      if (!resp.ok) {
+        const errTxt = await resp.text();
+        results.push({ filename: file.name, status: 'error', error: `HTTP ${resp.status}: ${errTxt.slice(0,120)}` });
+        hadError = true;
+      } else {
+        const result = await resp.json();
+        results.push(result);
+        if (result.status !== 'ok') hadError = true;
+      }
+    } catch (netErr) {
+      results.push({ filename: file.name, status: 'error', error: String(netErr) });
+      hadError = true;
     }
-    progressFill.style.width = '100%';
 
-    setTimeout(() => {
-      progressSteps.classList.remove('visible');
-      stopFileProgress();
-      renderResults(data, elapsed);
-      btnSubmit.disabled = false;
-    }, 700);
+    const pct = Math.round(((i + 1) / total) * 85);
+    progressFill.style.width = pct + '%';
+  }
 
-  } catch (err) {
-    stepTimers.forEach(clearTimeout);
+  // Salvar sessão no banco
+  setStep(4);
+  progressFill.style.width = '95%';
+  try {
+    await fetch('/sessao/salvar', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', ..._authHeaders() },
+      body:    JSON.stringify({ results, tema: jobDesc || 'Triagem Geral' }),
+    });
+  } catch (_) { /* não-fatal */ }
+
+  progressFill.style.width = '100%';
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('step' + i);
+    if (el) { el.classList.remove('active'); el.classList.add('done'); }
+  }
+
+  const nOk  = results.filter(r => r.status === 'ok').length;
+  const nErr = results.filter(r => r.status !== 'ok').length;
+  const data = {
+    request_id: 'per-file',
+    total:      results.length,
+    success:    nOk,
+    errors:     nErr,
+    total_elapsed_ms: Date.now() - t0,
+    results,
+    email_sent: false,
+  };
+  const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
+
+  setTimeout(() => {
     progressSteps.classList.remove('visible');
     stopFileProgress();
+    renderResults(data, elapsed);
     btnSubmit.disabled = false;
-    showToast('Erro ao processar. Verifique a conexão.', 'error');
-    console.error(err);
-  }
+  }, 700);
 }
 
 // ── Render Results ────────────────────────────────────────────
@@ -2957,11 +2994,25 @@ function startFileProgress(files) {
     fill.style.width = pct + '%';
     lbl.textContent = `Processando ${idx + 1} de ${total}: ${files[idx].name}`;
     idx++;
-    // estimate ~5s per file, update each interval
     const interval = Math.max(1200, Math.min(6000, 5000 / total));
     _fileProgressTimer = setTimeout(update, interval);
   };
   update();
+}
+
+function _startFileProgressLive(files) {
+  const el  = document.getElementById('fileProgress');
+  const lbl = document.getElementById('fileProgressLabel');
+  if (!el) return;
+  el.style.display = 'block';
+  if (lbl) lbl.textContent = `Preparando ${files.length} arquivo(s)…`;
+}
+
+function _updateFileProgressLive(idx, total, filename) {
+  const fill = document.getElementById('fileProgressFill');
+  const lbl  = document.getElementById('fileProgressLabel');
+  if (fill) fill.style.width = Math.round((idx / total) * 85) + '%';
+  if (lbl)  lbl.textContent  = `Analisando ${idx + 1} de ${total}: ${filename}`;
 }
 
 function stopFileProgress() {

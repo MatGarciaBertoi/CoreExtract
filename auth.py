@@ -15,7 +15,6 @@ Roles:
 """
 from __future__ import annotations
 
-import sqlite3
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
@@ -171,21 +170,8 @@ def bootstrap_superadmin() -> None:
     if existing:
         return
 
-    from utils.paths import DB_PATH
-
-    # Garante que a empresa-sistema existe (INSERT OR IGNORE)
-    conn = sqlite3.connect(str(DB_PATH))
-    try:
-        conn.execute(
-            """
-            INSERT OR IGNORE INTO empresas (id, razao_social, email_admin)
-            VALUES (?, '[SISTEMA] Bertoi Informatica', ?)
-            """,
-            (auth_db.SYSTEM_EMPRESA_ID, email),
-        )
-        conn.commit()
-    finally:
-        conn.close()
+    # Garante que a empresa-sistema existe (idempotente — SQLite ou PostgreSQL)
+    auth_db.ensure_sistema_empresa(email)
 
     # Cria o superadmin
     senha_hash = hash_password(senha)

@@ -182,6 +182,11 @@ class CommentPayload(BaseModel):
     comment:  str
 
 
+class SalvarSessaoPayload(BaseModel):
+    results:  list[dict]
+    tema:     Optional[str] = "Triagem Geral"
+
+
 class ExcelExportPayload(BaseModel):
     results:             list[dict]
     tema:                Optional[str] = "Triagem Geral"
@@ -395,15 +400,8 @@ async def alterar_senha(
     if not user or not auth.verify_password(payload.senha_atual, user["senha_hash"]):
         raise HTTPException(status_code=400, detail="Senha atual incorreta.")
 
-    import sqlite3 as _sq
-    from utils.paths import DB_PATH
     new_hash = auth.hash_password(payload.nova_senha)
-    conn = _sq.connect(str(DB_PATH))
-    try:
-        conn.execute("UPDATE usuarios SET senha_hash = ? WHERE id = ?", (new_hash, user["id"]))
-        conn.commit()
-    finally:
-        conn.close()
+    auth_db.alterar_senha_hash(user["id"], new_hash)
 
     auth_db.log_acao(
         "senha_alterada",
@@ -1074,6 +1072,66 @@ async def extract(
         extra={"ce_request_id": req_id},
     )
     return JSONResponse(content=response_body)
+
+
+# =========================================================================== #
+#  /extract/file — processa UM arquivo (sem salvar sessão)                      #
+#  Usado pelo frontend em modo Vercel: uma chamada por arquivo, progresso live  #
+# =========================================================================== #
+
+@app.post("/extract/file")
+async def extract_single_file(
+    request: Request,
+    file:            Annotated[UploadFile, File(description="Arquivo de currículo")],
+    job_description: Annotated[Optional[str], Form()] = None,
+    current_user: dict = Depends(get_current_user),
+):
+    """Processa um único arquivo e retorna o resultado (sem persistir sessão)."""
+    req_id = request.state.request_id
+    if not config.GEMINI_API_KEY:
+        raise HTTPException(status_code=503, detail="GEMINI_API_KEY não configurada.")
+    content = await file.read()
+    result = _process_one(
+        file_bytes=content,
+        filename=file.filename or "arquivo",
+        job_description=job_description or None,
+        request_id=req_id,
+    )
+    return JSONResponse(content=result.model_dump())
+
+
+@app.post("/sessao/salvar")
+async def salvar_sessao_endpoint(
+    payload: SalvarSessaoPayload,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Salva uma sessão de extração com todos os resultados acumulados.
+    O frontend chama este endpoint após processar todos os arquivos via /extract/file.
+    """
+    import json as _json
+    tema = payload.tema or "Triagem Geral"
+    session_data = {
+        "tema":      tema,
+        "timestamp": datetime.now().isoformat(),
+        "results":   payload.results,
+    }
+    session_json = _json.dumps(session_data, ensure_ascii=False, default=str)
+    try:
+        sessao_id = auth_db.salvar_sessao(
+            empresa_id=current_user["empresa_id"],
+            usuario_id=current_user["sub"],
+            tema=tema,
+            results_json=session_json,
+        )
+        try:
+            _SESSION_PATH.write_text(session_json, encoding="utf-8")
+        except Exception:
+            pass
+        return {"ok": True, "sessao_id": sessao_id}
+    except Exception as exc:
+        logger.warning("Falha ao salvar sessão: %s", exc)
+        raise HTTPException(status_code=500, detail="Falha ao salvar sessão.")
 
 
 # =========================================================================== #

@@ -1,0 +1,17 @@
+# Excluir da build Vercel
+*.db
+*.sqlite
+*.log
+*.spec
+*.egg-info
+__pycache__/
+.env
+.env.*
+venv/
+.venv/
+build/
+dist/
+monitor/
+*.pem
+*.key
+last_session.json
